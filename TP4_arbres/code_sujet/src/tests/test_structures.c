@@ -18,7 +18,7 @@ void get_file_name(char *file_name, int i) {
 void test_bin_tree() {
     const string tab[] = { "9", "1", "2", "4", "8", "3", "5", "0", "6", "7" };
     
-    const char *base_name = "output/tree_000.mmd";
+    const char *base_name = "../output/tree_000.mmd";
     char file_name[strlen(base_name) + 1];
     strcpy(file_name, base_name);
 
@@ -43,5 +43,5 @@ void test_prefix_tree() {
         insert_in_prefix_tree(&t, strings[i]);
     }
     list_all_entries_prefix_tree(&t);
-    export_mermaid_prefix_tree(&t, "prefix.mmd");
+    export_mermaid_prefix_tree(&t, "../output/prefix.mmd");
 }
