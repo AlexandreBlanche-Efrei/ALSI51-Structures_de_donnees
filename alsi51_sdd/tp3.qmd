@@ -1,0 +1,359 @@
+---
+title: "TP3 - Algorithmes de tri"
+format:
+  html:
+    code-fold: true
+---
+
+Un *algorithme de tri* est un algorithme qui réordonne une liste, ou en renvoie une nouvelle, de manière à ce que les éléments de la liste soient triés par ordre croissant (ou selon un autre critère paramétrable). Dans ce TP, on ne considérera que des listes d'entiers, et on dira qu'une liste est *triée* si ses éléments sont triés par ordre croissant. On appellera la liste d'entrée $list$, et on notera l'élément d'indice $i$ par $list[i]$.    
+  
+# Partie 1 : implémentation
+
+Nous donnons dans cette section cinq algorithmes de tri classiques. Pour chacun d'entre eux :
+
+1. Implémenter l'algorithme dans le module correspondant.
+2. Modifier le tableau ``algos`` dans ``tests.c`` et la constante ``NB_ALGO`` dans ``tests.h`` pour ajouter votre algorithme au jeu de tests. Appeler la fonction ``test_algorithms`` du module ``tests`` pour vérifier que votre implémentation fonctionne.
+3. Estimer la complexité en pire cas de l'algorithme, et sa complexité en meilleur cas.
+4. Sa complexité en moyenne est-elle meilleure que la complexité en pire cas ?
+
+## Tri par sélection
+
+On note $n$ le nombre d'éléments de la liste.  
+
+- Pour $i$ de $0$ à $n - 1$ :  
+    - Trouver l'indice $i_{min}$ du plus petit élément de la liste parmi les éléments d'indices $\geq i$.
+    - Echanger les éléments d'indices $i_{min}$ et $i$.
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-trisel
+%%| fig-cap: Tri par sélection
+block-beta
+    columns 10
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:10
+    
+    B1["4"]:2
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+    
+    space:10
+    style B4 fill:#DAC,stroke:#333,stroke-width:2px
+    
+    C1["1"]:2
+    C2["3"]:2
+    C3["5"]:2
+    C4["4"]:2
+    C5["2"]:2
+    
+    space:10
+    B4 --> C1
+    B1 --> C4
+    style C1 fill:#FFF
+    style C5 fill:#DAC,stroke:#333,stroke-width:2px
+
+    D1["1"]:2
+    D2["2"]:2
+    D3["5"]:2
+    D4["4"]:2
+    D5["3"]:2
+
+    C5 --> D2
+    C2 --> D5
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    space:10
+    
+    E1["1"]:2
+    E2["2"]:2
+    E3["3"]:2
+    E4["4"]:2
+    E5["5"]:2
+    D3 --> E5
+    D5 --> E3
+    style D5 fill:#DAC,stroke:#333,stroke-width:2px
+    style E1 fill:#FFF
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+
+    style E4 fill:#DAC,stroke:#333,stroke-width:2px
+    space:10
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    E4 --> F4
+    
+    style F1 fill:#FFF
+    style F2 fill:#FFF
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+```
+
+Ou de manière équivalente :
+
+- Si la liste est de longueur $n \geq 2$ :
+    - Trouver le plus petit élément de la liste, et l'extraire de la liste.
+    - Ajouter cet élément en première position de la liste.
+    - Réitérer l'algorithme en ne considérant que les éléments à l'exception du premier.
+
+
+## Tri par insertion
+
+- On considère une liste $aux$, initialement vide, et que l'on veillera à garder toujours triée.  
+- Pour chaque élément $x$ de $list$ :
+    - extraire $x$ de $list$
+    - insérer $x$ dans $aux$ de manière à ce qu'elle reste triée.
+- $aux$ est la liste triée renvoyée.
+
+On également implémenter cet algorithme *en place*, c'est-à-dire dans un seul tableau, sans allouer de mémoire supplémentaire. Pour cela, on pourra utiliser les $i$ premières cases du tableau pour représenter $aux$, et les $n - i$ dernières cases pour la partie restante de $list$.
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-triinsert
+%%| fig-cap: Tri par insertion
+block-beta
+    columns 11
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:1
+    space:11
+    
+    B1["4"]:2
+    space:1
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+
+    A1 --> B1
+    
+    space:11
+    style A1 fill:#DAC,stroke:#333,stroke-width:2px
+    style B1 fill:#CFC
+    
+    C1["3"]:2
+    C2["4"]:2
+    space:1
+    C3["5"]:2
+    C4["1"]:2
+    C5["2"]:2
+
+    style B2 fill:#DAC,stroke:#333,stroke-width:2px
+    B2 --> C1
+    
+    space:11
+    
+    style C1 fill:#CFC
+    style C2 fill:#FFF
+
+    D1["3"]:2
+    D2["4"]:2
+    D3["5"]:2
+    space:1
+    D4["1"]:2
+    D5["2"]:2
+
+    style C3 fill:#DAC,stroke:#333,stroke-width:2px
+    C3 --> D3
+
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    style D3 fill:#CFC
+    space:11
+    
+    E1["1"]:2
+    E2["3"]:2
+    E3["4"]:2
+    E4["5"]:2
+    space:1
+    E5["2"]:2
+
+    style D4 fill:#DAC,stroke:#333,stroke-width:2px
+    D4 --> E1
+    
+    style E1 fill:#CFC
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+    style E4 fill:#FFF
+
+    space:11
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    space:1
+
+    style E5 fill:#DAC,stroke:#333,stroke-width:2px
+    E5 --> F2
+    
+    style F1 fill:#FFF
+    style F2 fill:#CFC
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+```
+
+## Tri à bulles
+
+L'opération $bulle(i)$ est définie par :
+
+- Pour $j$ de $0$ à $i$ :  
+    - si $list[j] > list[j+1]$, échanger $list[j]$ et $list[j+1]$.
+
+On note $n$ le nombre d'éléments de la liste.
+
+L'algorithme du **tri à bulles** est le suivant :
+
+- Pour $i$ décroissant de $n-2$ à $0$ :  
+    - appliquer l'opération $bulle(i)$
+
+
+Le nom de *bulle* vient du fait que les grands éléments de la liste vont progressivement monter jusqu'à la fin de la liste. En particulier, le maximum de la liste sera remonté jusqu'à la dernière position après la première application de l'opération $bulle$.
+
+## Tri rapide (Quicksort)
+
+L'algorithme du tri rapide et le suivant, le tri fusion, sont intrinsèquement récursifs : nous allons appliquer l'algorithme récursivement sur des sous-listes pour obtenir la liste triée.
+
+L'algorithme du **tri rapide** est le suivant :
+
+- On sélectionne un élément $p$ de la liste (par exemple $list[0]$), que l'on appelle le *pivot*, et on l'extrait de la liste.
+- On sépare la liste en deux sous-listes $l_{inf}$ et $l_{sup}$, où $l_{inf}$ contient tous les éléments $list[i] \leq p$, et $l_{sup}$ contient tous les éléments $list[i] > p$.
+- On applique récursivement l'algorithme du tri rapide sur $l_{inf}$ et $l_{sup}$. On suppose à présent qu'elles sont triées.
+- La liste concaténée $l_{inf} + [p] + l_{sup}$ est la liste triée de sortie.
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-quick
+%%| fig-cap: Tri rapide (Quicksort)
+flowchart TD
+    A["t"] --> Asplit(["split"])
+    Asplit --> B["t_inf = { t[i] &lt;= pivot }"]
+    Asplit --> C["pivot"]
+    Asplit --> D["t_sup = { t[i] > pivot }"]
+    
+    B --> Q1(["Quicksort"])
+    D --> Q2(["Quicksort"])
+    C ---> C2["pivot"]
+
+    Q1 --> B2["sorted t_inf"]
+    Q2 --> D2["sorted t_sup"]
+    B2 --> A2["sorted t"]
+    C2 --> A2
+    D2 --> A2
+     A:::ultra_wide_unsorted
+     B:::wide_unsorted
+     D:::wide_unsorted
+     B2:::wide_sorted
+     D2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Asplit fill:#BBDEFB
+    style C fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+```
+
+
+> L'algorithme du tri rapide a été inventé en 1960 par Tony Hoare (1934-), un chercheur britannique connu pour ses travaux fondateurs sur les langages de programmation, l'algorithmique, la vérification formelle (avec la *logique de Hoare*) et la programmation concurrente. Il a obtenu le Prix Turing en 1980 pour ses travaux sur les langages de programmation.
+
+## Tri fusion (Mergesort)
+
+L'opération de *combinaison* de deux listes triées $list_1$, $list_2$ est définie ainsi :
+
+- On crée une liste $l_{sort}$, initialement vide.
+- Tant que $list_1$ et $list_2$ sont non-vides :  
+    - Parmi les têtes $x_1$ et $x_2$ de $list_1$ et $list_2$, on choisit le plus petit élément et on l'extrait de sa liste.  
+    - On ajoute cet élément en dernière position de $l_{sort}$.  
+- L'une des listes est à présent vide. On vide l'autre liste, en plaçant ses éléments tour à tour en dernière position de $l_{sort}$.  
+- On renvoie la liste $l_{sort}$.
+
+On note $n$ le nombre d'éléments de la liste.  
+
+L'algorithme du **tri fusion** est le suivant :
+
+- Si $n \leq 1$, on renvoie la liste inchangée.
+- Sinon, on coupe la liste en deux sous-listes $list_1$ et $list_2$ de taille $\left\lfloor n/2\right\rfloor$ et $\left\lceil n/2 \right\rceil$.
+- On applique récursivement l'algorithme du tri fusion sur $list_1$ et $list_2$. On suppose à présent qu'elles sont triées.
+- On utilise l'opération de combinaison sur les listes $list_1$ et $list_2$. La liste $l_{sort}$ obtenue est une liste triée, c'est la sortie de l'algorithme.
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-merge
+%%| fig-cap: Tri fusion
+flowchart TD
+    A["list"]
+    A --> B1["list_1"]
+    A --> B2["list_2"]
+    
+    B1 --> Q1(["Merge sort"])
+    B2 --> Q2(["Merge sort"])
+
+    Q1 --> C1["sorted list_1"]
+    Q2 --> C2["sorted list_2"]
+    C1 --> Amerge(["Combine"])
+    C2 --> Amerge
+    Amerge --> A2["sorted list"]
+     A:::ultra_wide_unsorted
+     B1:::wide_unsorted
+     B2:::wide_unsorted
+     C1:::wide_sorted
+     C2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+```
+
+> Le tri fusion a été inventé par le chercheur hongrois et américain John Von Neumann (1903-1957) en 1945. Von Neumann est considéré comme un des plus grands scientifiques du XXème siècle, ayant apporté d'importantes contributions aux mathématiques, à la physique, à l'économie et à l'informatique. C'est un pionnier des fondements mathématiques de la mécanique quantique, de la théorie des jeux, des automates cellulaires et de l'analyse fonctionnelle. Il a travaillé sur le projet Manhattan pendant la Seconde Guerre mondiale, et on lui doit l'architecture des premiers ordinateurs programmables, dite *architecture de Von Neumann*.
+
+
+# Partie 2 : comparaisons
+
+1. Modifier la fonction ``measure_algorithms`` du module ``tests`` pour comparer le temps de calcul de chaque algorithme. Vous devez afficher les temps calculés dans la console.
+
+On dispose de la fonction ``export_csv`` dans le module ``algorithm``, qui exporte les résultats de tests au format CSV.
+
+2. Modifier la fonction ``measure_algorithms`` pour qu'elle génère un fichier au format CSV contenant les résultats de vos mesures.
+
+3. A l'aide de la librairie **Matplotlib**, écrire un programme **Python** qui affiche la courbe du temps de calcul de chaque algorithme en fonction de la taille de la liste.
+Conclure sur vos calculs de complexité.
+
+4. Eliminer les algorithmes les plus lents du jeu de tests, et comparer les algorithmes les plus rapides sur des listes plus grandes. Qu'observez-vous ?
+
+# Partie 3 : (Bonus) Implémentation avec des listes chaînées
+
+Implémenter les algorithmes de tri de ce TP, cette fois avec la structure ``t_stack`` du TP2. On adoptera cette fois une approche récursive.
+
+On pourra pour cela se donner des fonctions :
+```C
+T get_head(t_list *list);
+t_list get_tail(t_list *list);
+```
+où la *queue* (*tail*) désigne cette fois tous les éléments de la liste sauf le premier.
+
+Selon vous, quels algorithmes se prêtent mieux à une implémentation par liste chaînée ?

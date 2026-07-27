@@ -1,0 +1,290 @@
+---
+title: "Cours 1, partie 1 : Tableaux dynamiques"
+format:
+  html:
+    code-fold: true
+---
+
+
+# TP1 : Listes dynamiques
+
+Dans le TP1, nous cherchions à implémenter le type abstrait *liste dynamique* de deux manières différentes, chacune avec ses avantages et inconvénients. Les deux implémentations sont écrites sous forme de bibliothèques : elles sont interchangeables pour l'utilisateur, dans les fonctions qu'il écrira dans les autres fichiers du projet, et il peut utiliser la structure de liste sans gérer les détails de son implémentation.
+
+Une *liste dynamique* est une structure de donnée linéaire, dont les éléments sont indexées par des entiers de $0$ à $n-1$, et qui permet les opérations suivantes :
+
+- Création d'une liste vide
+- Ajout d'un élément en position quelconque
+- Accès à une valeur en position quelconque
+- Modification d'une valeur en position quelconque
+- Suppression d'une valeur en position quelconque
+- Le nombre de valeurs que l'on peut ajouter à la liste doit être non-borné
+
+Ce type abstrait est présent dans tous les langages de programmation et utilisé par un très grand nombre d'algorithmes. Il convient d'implémenter ce type pour garantir la meilleure complexité pour chacune des opérations. Malheureusement, il est difficile d'assurer une complexité optimale pour toutes les opérations simultanément, on doit en optimiser certaines et accepter que d'autres seront plus lentes.
+
+On appellera ce type ``t_list`` et le type des données ``T``. On définira ces deux types dans le fichier d'en-tête (au format ``.h``). Nous nous donnons les protoypes de fonctions suivants :
+```C
+t_list create_empty_list();
+
+T get(t_list *list, int index);
+
+void set(t_list *list, int index, T val);
+
+void push_front(t_list *list, T val);
+
+void push_back(t_list *list, T val);
+
+void insert(t_list *list, int index, T val);
+
+void delete_at(t_list *list, int index);
+```
+
+On propose deux implémentations du type liste dynamique : **tableaux dynamiques** et **listes chaînées**.
+
+# I - Tableaux dynamiques
+
+## Principe
+
+Pour cette implémentation, on utilise **la structure de tableau** du langage C, ici alloué dynamiquement, sur le tas.
+On stocke les éléments dans un tableau de taille initiale $M > 0$. On appelle *taille logique* le nombre d'éléments ajoutés à la structure, et *taille physique* le nombre de cases mémoires allouées à un moment donné. Initialement, la taille logique est égale à $0$ et la taille physique à $M$. Les cases mémoires composant le tableau devant être contiguës, on suppose qu'on ne peut *ajouter* un élément qu'en dernière position, sinon on parle d'*insertion* (qui implique un décalage des éléments à droite).
+
+Lorsque $M$ éléments ont été ajoutés à la structure, **on alloue une nouvelle plage mémoire** de taille strictement supérieure à $M$, puis on recopie les données de la liste sur la nouvelle plage mémoire, et on libère l'ancienne plage. On dispose alors de nouveaux emplacements libres pour réaliser des ajouts, et on réitère le procédé.
+
+
+## Implémentation
+
+### Définition du type
+
+On définit le tableau par une structure contenant un pointeur ``data`` vers la plage mémoire contenant les données, ainsi que la taille logique actuelle ``size`` et la taille physique de la plage actuellement allouée ``capacity``.
+
+Dans ``list_array.h``
+
+```C
+typedef int T; // type des données, ici int
+typedef struct {
+    T *data;
+    int size;
+    int capacity;
+} t_list;
+```
+
+Dans ``list_array.c``
+
+```C
+#include "list_array.h"
+#define INIT_CAPACITY 10
+t_list create_empty_list() {
+    t_list l;
+    l.data = (T*) malloc(INIT_CAPACITY * sizeof(T));
+    l.size = 0;
+    l.capacity = INIT_CAPACITY;
+    return l;
+}
+```
+
+### Accès et modification
+
+Comme dans un tableau C classique, l'accès a un coût constant $O(1)$.
+
+```C
+T get(t_list *list, int index) {
+    return list->data[index];
+}
+void set(t_list *list, int index, T val) {
+    list->data[index] = val;
+}
+```
+
+### Ajout en dernière position
+
+Lorsque ``size < capacity``, on dispose d'emplacements libres dans lesquels écrire. On peut insérer l'élément ``val`` directement en position ``size`` et incrémenter cette variable.
+
+```C
+    list->data[list->size] = val;
+    list->size++;
+```
+Dans ces cas, l'opération a un coût constant $O(1)$.
+
+En revanche, si ``size == capacity``, il nous faut allouer une nouvelle plage mémoire et copier les données sur cette nouvelle plage. Prenons temporairement comme nouvelle taille ``capacity + INIT_CAPACITY``.
+
+```C
+void realloc_list(t_list* list) {
+    unsigned int new_capacity = list->capacity + INIT_CAPACITY;
+    T *new_data = (T*) malloc(new_capacity * sizeof(T));    // allocation
+    for (unsigned int i = 0; i < list->size; i++)           // copie
+        new_data[i] = list->data[i];
+    free(list->data);                            // libération de l'ancienne plage
+    list->data = new_data;
+    list->capacity = new_capacity;
+}
+```
+
+Lorsque le tableau contient $n$ éléments, l'opération ``realloc_list`` a un coût de $n$ copies.<br>
+Notre fonction d'ajout devient donc :
+
+```C
+void push_back(t_list *list, T val) {
+    if (list->size >= list->capacity)
+        realloc_list(list);
+    list->data[list->size] = val;
+    list->size++;
+}
+```
+
+La complexité est donc linéaire en pire cas (où le tableau doit être réalloué).
+Pour calculer son coût précis, voir la section [Calcul de complexité] ci-dessous.
+
+
+### Insertion
+
+Lorsque l'on souhaite insérer un élément ``val`` en position ``i`` quelconque, il nous faut non-seulement vérifier que l'on dispose d'assez de capacité (sinon en réallouer), mais aussi décaler tous les éléments en postion supérieure ou égale à ``i`` d'une position vers la droite, pour faire de la place à notre nouvel élément.
+
+La fonction ``shift_right`` ci-dessous copie les éléments d'indices ``index_start ... size-1`` du tableau d'une position vers la droite.
+
+```C
+void shift_right(t_list* list, int index_start) {
+    for (unsigned int i = list->size; i > index_start; i--)
+        list->data[i] = list->data[i - 1];
+}
+```
+
+L'opération de décalage à partir de la position $i$ dans un tableau à $n$ éléments a un coût de $n-i$ copies, soit un coût linéaire en pire cas ($n = 0$).<br>
+La fonction d'insertion est donc :
+
+```C
+void insert(t_list *list, int index, T val) {
+    if (list->size >= list->capacity)
+        realloc_list(list);
+    shift_right(list, index);
+    list->data[index] = val;
+    list->size++;
+}
+```
+
+Son coût est donc linéaire en pire cas (insertion en position $0$).
+
+### Suppression
+
+* **Suppression du dernier élément**<br>
+    Lorsque l'on souhaite supprimer le dernier élément, il suffit de décrémenter le compteur ``size``, sans besoin de supprimer la valeur elle-même (sa case devient libre pour écriture pour les prochains ajouts).<br>
+    
+    ```C
+    void delete_last(t_list *list) {
+        if (list->size > 0)
+            list->size--;
+    }
+    ```
+    Ce cas est de complexité constante $O(1)$.
+
+* **Suppression en position quelconque**<br>
+    Pour maintenir la contiguïté des éléments en mémoire, nous devons décaler les éléments à droite de la case supprimée d'une position vers la gauche.
+
+    ```C
+    void shift_left(t_list* list, int index_start) {
+        if (index_start > 0) {
+            for (unsigned int i = index_start - 1; i < list->size - 1; i++)
+                list->data[i] = list->data[i + 1];
+        }
+    }
+    void delete_at(t_list *list, int index) {
+        shift_left(list, index + 1);
+        list->size--;
+    }
+    ```
+
+
+## Calcul de complexité
+
+Pour affiner notre calcul de complexité des ajouts en dernière position, et justifier le choix de cette approche, calculons le coût de $n$ ajouts successifs.
+
+### Première approche : nouvelle capacité $\ $=$\ $ ancienne + 10
+
+
+On note $M$ la taille initiale du tableau (``INIT_CAPACITY`` dans le code) et la division euclidienne de $n$ par $M$ comme $n = qM + r$, où $0 \leq r < M$. On note $C_n$ la complexité de $n$ ajouts, c'est-à-dire le nombre d'écritures d'éléments pour stocker $n$ éléments dans le tableau.   
+
+- Si $n \leq M$, $C_{n} = n$, car on écrit simplement les $n$ éléments dans les cases disponibles.
+- Si $n > M$ et $r = 0$, on doit d'abord remplir le tableau avec $(q-1)M$ éléments, en temps $C_{(q-1)M}$, puis on réalloue le tableau, on effectue $(q-1)M$ copies des éléments existants, et on copie les $M$ derniers dans les cases disponibles.<br>
+On a donc $C_{qM} = C_{(q-1)M} + (q-1)M + M = C_{(q-1)M} + qM$.
+- Si $n > M$ et $r \neq 0$, on procède de manière similaire : on place les $qM$ premiers éléments en temps $C_{qM}$, on réalloue, on copie ces $qM$ éléments dans la nouvelle plage, et on copie les $r$ derniers dans les cases disponibles.<br>
+    On a alors $C_{n} = C_{qM + r} = C_{qM} + qM + r = C_{qM} + n$.
+
+On peut donc calculer $C_{qM}$ :
+\begin{array}{rcl}
+C_{qM} & = & qM + C_{(q-1)M} \\
+& = & qM + (q-1)M + \dots + M \\
+& = & {\displaystyle M\sum_{i=0}^q i} \\
+& = & {\displaystyle M\frac{q(q+1)}{2}} \\
+\end{array}
+
+<!-- Donc, $\displaystyle C_{qM} = qM + C_{(q-1)M} = qM + (q-1)M + \dots + M = M\sum_{i=0}^q i = M\frac{q(q+1)}{2}$.<br> -->
+
+<!-- Ainsi, $\displaystyle C_{n} = C_{qM} + qM + r = M\frac{q(q+1)}{2} + qM + r \leq M\frac{\frac{n}{M}(\frac{n}{M}+1)}{2} = O(n^2)$. -->
+Estimons $C_n$ dans le cas général :
+\begin{array}{rcl}
+C_{n} & = & C_{qM} + qM + r\\
+& = & {\displaystyle M\frac{q(q+1)}{2} + qM + r} \\
+& \leq & {\displaystyle M\frac{\frac{n}{M}(\frac{n}{M}+3)}{2}} \\
+& = & \Theta(n^2) \\
+\end{array}
+
+On a un nombre d'écritures **quadratique** en $n$, ce qui devient rapidement prohibitif.
+
+Notre erreur était d'allouer des plages mémoires trop petites : on doit trop souvent recopier les mêmes valeurs encore et encore. Les tailles successives $u_k$ des plages mémoires, après $k$ réallocations de plages, forment une suite arithmétique : $u_k = M(k+1)$, avec $M = u_0$ la capacité initiale.
+
+### Seconde approche : nouvelle capacité $\ $=$\ $ ancienne x 2
+
+Essayons maintenant avec des tailles suivant une suite géométrique : $u_k = 2^k\times M$.
+
+
+Pour cela, on remplace la ligne de définition de la nouvelle taille physique :
+```C
+void realloc_list(t_list *list) {
+    unsigned int new_capacity = list->capacity * 2;
+    // ...
+}
+```
+
+Calculons de nouveau la complexité de $n$ ajouts.
+
+- On peut ajouter $k < M$ éléments en temps $C_k = k$.
+- Pour ajouter $2^nM$ éléments, on doit d'abord en ajouter $2^{n-1}M$, en temps $C_{2^{n-1}M}$, puis copier ces $2^{n-1}M$ valeurs dans une nouvelle plage réallouée, et copier les $2^{n-1}$ dernières valeurs dans les cases disponibles. Ainsi,
+
+\begin{array}{rcl}
+C_{2^nM} & = & C_{2^{n-1}M} + 2^{n-1}M + 2^{n-1}M \\
+ & = & C_{2^{n-1}M} + 2^nM \\
+ & = & {\displaystyle M\sum_{i=0}^n 2^i} \\
+ & = & M(2^{n+1} - 1) \\
+ & \leq & 2\times (2^nM)
+\end{array}
+
+- Pour ajouter $n = 2^kM + r$ éléments, où $1 \leq r < 2^kM$, on ajoute d'abord les $2^kM$ premiers éléments en temps $C_{2^kM}$, on copie ces valeurs à la réallocation, puis on ajoute les $r$ restantes dans les cases disponibles. On a donc :
+\begin{array}{rcl}
+C_{n} & = & C_{2^kM} + 2^kM + r \\
+& \leq & 2(2^kM) + 2^kM + r \\
+& \leq & 3\times (2^kM + r) \\
+& = & 3n \\
+& = & O(n)
+\end{array}
+
+Pour ajouter $n$ éléments, on a un nombre d'écritures compris entre environ $2n$ et $3n$, dans les deux cas si $n$ est proche d'une puissance de $2$, en étant inférieur (meilleur cas) ou supérieur (pire cas).
+
+Ainsi, le nombre d'écritures dans le tableau **par ajout** est compris entre $1$ et $3$ en moyenne. Certains ajouts seront peu coûteux, certains seront très coûteux, mais les premiers compensent les seconds. On parle ici de **complexité amortie** en $O(1)$ : après $n$ ajouts, on aura $O(n)$ écritures, donc un nombre d'écritures linéaire, asymptotiquement optimal.
+
+## Bilan
+
+On note $n$ le nombre d'éléments dans la structure.
+
+On a une complexité **linéaire** $O(n)$ en pire cas pour :
+
+- **Insertion** en position quelconque
+- **Suppression** en position quelconque
+
+<br>
+On a une complexité **constante** $O(1)$ pour :
+
+- **Accès** à un élément en position quelconque
+- Suppression du dernier élément
+- **Ajout** d'un élément en dernière position lorsque la capacité le permet
+
+Enfin, on a une complexité **amortie constante** $O(1)$ pour l'ajout d'éléments en dernière position.
+
+Cette structure est donc plutôt efficace si l'on souhaite surtout ajouter et supprimer des éléments en dernière position.

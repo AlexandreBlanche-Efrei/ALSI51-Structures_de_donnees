@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Projet - Compilation et exécution d’un mini-langage – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./projet_compilateur.html" aria-current="page"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#objectif-du-projet" id="toc-objectif-du-projet" class="nav-link" data-scroll-target="#objectif-du-projet">Objectif du projet</a></li>
+  <li><a href="#la-compilation" id="toc-la-compilation" class="nav-link" data-scroll-target="#la-compilation">La compilation</a></li>
+  </ul></li>
+  <li><a href="#aperçu-de-la-base-de-code" id="toc-aperçu-de-la-base-de-code" class="nav-link" data-scroll-target="#aperçu-de-la-base-de-code">Aperçu de la base de code</a>
+  <ul class="collapse">
+  <li><a href="#lancement" id="toc-lancement" class="nav-link" data-scroll-target="#lancement">Lancement</a></li>
+  <li><a href="#contenu-de-la-base-de-code" id="toc-contenu-de-la-base-de-code" class="nav-link" data-scroll-target="#contenu-de-la-base-de-code">Contenu de la base de code</a></li>
+  </ul></li>
+  <li><a href="#partie-1-exécution-dun-ast" id="toc-partie-1-exécution-dun-ast" class="nav-link" data-scroll-target="#partie-1-exécution-dun-ast">Partie 1 : exécution d’un AST</a></li>
+  <li><a href="#partie-2-analyse-syntaxique" id="toc-partie-2-analyse-syntaxique" class="nav-link" data-scroll-target="#partie-2-analyse-syntaxique">Partie 2 : analyse syntaxique</a></li>
+  <li><a href="#partie-3-extensions" id="toc-partie-3-extensions" class="nav-link" data-scroll-target="#partie-3-extensions">Partie 3 : extensions</a></li>
+  <li><a href="#annexe-syntaxe-du-mini-langage" id="toc-annexe-syntaxe-du-mini-langage" class="nav-link" data-scroll-target="#annexe-syntaxe-du-mini-langage">Annexe : syntaxe du mini-langage</a>
+  <ul class="collapse">
+  <li><a href="#instructions-statements" id="toc-instructions-statements" class="nav-link" data-scroll-target="#instructions-statements">Instructions (<em>statements</em>)</a></li>
+  <li><a href="#indentation" id="toc-indentation" class="nav-link" data-scroll-target="#indentation">Indentation</a></li>
+  </ul></li>
+  <li><a href="#modalités-de-rendu" id="toc-modalités-de-rendu" class="nav-link" data-scroll-target="#modalités-de-rendu">Modalités de rendu</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Projet - Compilation et exécution d’un mini-langage</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled" title="Modalités du projet">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Modalités du projet
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Projet à réaliser en trinômes</li>
+<li>Trois séances en classe : 11/12, 16/01, 27/01</li>
+<li>Soutenance au cours de la dernière séance, sur le projet en cours de complétion</li>
+<li>Rendu du code la semaine du 06/02</li>
+</ul>
+</div>
+</div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<section id="objectif-du-projet" class="level2">
+<h2 class="anchored" data-anchor-id="objectif-du-projet">Objectif du projet</h2>
+<p>L’objectif de ce projet est d’<strong>exécuter des programmes</strong> écrits dans un mini-langage, qui possède :</p>
+<ul>
+<li>26 <strong>variables globales</strong> (<strong>a</strong>, …, <strong>z</strong>) pouvant contenir des valeurs entières,</li>
+<li>des conditionnelles (<strong>if</strong>),</li>
+<li>des boucles <strong>while</strong>.</li>
+</ul>
+<p>Et qui permet :</p>
+<ul>
+<li>d’afficher le résultat d’une expression ou le contenu d’une variable,</li>
+<li>de renvoyer une valeur à la fin de l’exécution.</li>
+</ul>
+<p>Un exemple de programme en mini-langage :</p>
+<div id="fig-code" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div id="c3d4e0f9" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (a <span class="op">&lt;=</span> b)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (b <span class="op">&lt;</span> c)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (c)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> c</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (c <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span> <span class="dv">0</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Exemple de code en mini-langage
+</figcaption>
+</figure>
+</div>
+<p>Pour cela, nous allons devoir écrire un <em>compilateur</em> du mini-langage, vers un <em>langage intermédiaire</em> qui sera exécuté par une <em>machine virtuelle</em> que l’on va également écrire.</p>
+</section>
+<section id="la-compilation" class="level2">
+<h2 class="anchored" data-anchor-id="la-compilation">La compilation</h2>
+<p>La <strong>compilation</strong> d’un programme consiste à convertir le code source, écrit dans un langage de <em>haut-niveau</em> (d’abstraction, donc plutôt compréhensible par les humains) en une suite d’instructions de <em>bas-niveau</em>, directement exécutables par la machine. On parle alors de programme exécutable.</p>
+<blockquote class="blockquote">
+<p>Le langage C est un langage compilé, par opposition par exemple au Python, qui est <strong>interprété</strong>, c’est-à-dire que le code source est lu, décodé et exécuté uniquement à l’exécution.</p>
+</blockquote>
+<p>Le processus de compilation se décline généralement en trois étapes :</p>
+<ol type="1">
+<li><strong>Analyse lexicale</strong> (appelée en anglais <em>lexing</em>, réalisée par le <em>lexer</em>) :</li>
+</ol>
+<p>Le code source, sous forme de chaîne de caractères, est traduite en liste de <strong>symboles</strong>, que l’on appelle généralement <strong>tokens</strong> (mot anglais pour <em>jetons</em>). Ces tokens sont des unités lexicales, qui peuvent être des noms de variables, des nombres, ou encore des mots-clefs (if, while, return…).</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Exemple">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Exemple
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On se donne le code source suivant :</p>
+<div id="92503c43" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">3</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> a</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>La liste de tokens générée ressemblera à :<br>
+<strong>[ Var(a), Keyword(Assign), Expr(1), Keyword(If), Expr(a), Keyword(Print), Expr(2), Keyword(Else), Keyword(Print), Expr(3), Keyword(Endblock), Keyword(Return), Expr(a) ]</strong></p>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>Analyse syntaxique</strong> (<em>parsing</em>, réalisée par le <em>parser</em>) :</li>
+</ol>
+<p>La liste de tokens est lue, et un <strong>arbre de syntaxe abstraite</strong> (<em>AST</em>) est construit à partir d’elle. Un AST permet de représenter le programme en mémoire sous une forme adaptée à son exécution. Un AST est en réalité un <strong>graphe orienté</strong>, dans lequel les sommets représentent les différentes instructions à exécuter, et les arcs représentent les transitions entre instructions.</p>
+<p>L’AST du programme de la <a href="#fig-code" class="quarto-xref">Figure&nbsp;1</a> est le suivant :</p>
+<div id="fig-ast" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    [*] --&gt; A1
+    A1: a ← 0
+    A1 --&gt; A2
+    A2: b ← 1
+    A2 --&gt; A3
+    A3: c ← 0
+    A3 --&gt; A4
+    A4: If (a b &lt;=)
+    A4 --&gt; A5: then
+    A5: c ← 2
+    A5 --&gt; A6
+    A6: If (b c &lt;)
+    A6 --&gt; A7: then
+    A7: c ← 3
+    A6 --&gt; A8: else
+    A8: c ← 4
+    state A9 &lt;&lt;choice&gt;&gt;
+    A7 --&gt; A9
+    A8 --&gt; A9
+    state A10 &lt;&lt;choice&gt;&gt;
+    A9 --&gt; A10
+    A4 --&gt; A10: else
+    A10: While (c)
+    A10 --&gt; A11: then
+    A11: Print (c)
+    A11 --&gt; A12
+    A12: If (c 1 ==)
+    A12 --&gt; A13: then
+    A13: Print (0)
+    state A14 &lt;&lt;choice&gt;&gt;
+    A13 --&gt; A14
+    A12 --&gt; A14: else
+    A14: c ← c 1 -
+    A14 --&gt; A10
+    A10 --&gt; A15: next
+    A15: Return (c)
+    A15 --&gt; [*]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-ast-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Exemple">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Exemple
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La liste de tokens de l’exemple ci-dessus,<br>
+<strong>[ Var(a), Keyword(Assign), Expr(1), Keyword(If), Expr(a), Keyword(Print), Expr(2), Keyword(Else), Keyword(Print), Expr(3), Keyword(Endblock), Keyword(Return), Expr(a) ]</strong>,<br>
+sera converti en l’AST suivant :</p>
+<div id="fig-ast_ex" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ast_ex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    [*] --&gt; A1
+    A1: a ← 1
+    A1 --&gt; A2
+    A2: If (a)
+    A2 --&gt; A3: then
+    A3: Print (2)
+    A2 --&gt; A4: else
+    A4: Print (3)
+    state A5 &lt;&lt;choice&gt;&gt;
+    A3 --&gt; A5
+    A4 --&gt; A5
+    A5: Return (a)
+    A5 --&gt; [*]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-ast_ex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ol start="3" type="1">
+<li><strong>Génération de code machine</strong> :</li>
+</ol>
+<p>L’arbre de syntaxe abstraite est utilisé en tant que <strong>langage intermédiaire</strong> entre le code source et le code machine, pour réaliser diverses opérations d’<strong>optimisation</strong>. Il sert ensuite de base pour la génération du code en langage machine qui composera le programme exécutable final.</p>
+<p><strong>Alternative : compilation en bytecode</strong></p>
+<p>Dans certains langages, comme le Java, le code produit n’est pas directement du code machine, mais un code en langage intermédiaire appelé <strong>bytecode</strong>, indépendant de l’architecture de la machine, et qui est interprété et exécuté par un programme appelé <strong>machine virtuelle</strong>. Cela a pour avantage notamment d’améliorer la portabilité du code compilé.</p>
+<p>C’est cette approche que nous allons adopter pour ce projet. Nous allons écrire un programme qui prend en entrée un AST et exécute le code qu’il décrit.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Exemples">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Exemples
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’exécution de l’AST de la <a href="#fig-ast" class="quarto-xref">Figure&nbsp;2</a> produit le résultat suivant :</p>
+<div id="82e20dd4" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">-&gt;</span> <span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Les nombres sont affichés par l’instruction <code>print</code>, et la flèche finale représente la valeur renvoyée en sortie de l’exécution par l’instruction <code>return</code>.</p>
+<p>De même, l’exécution du code d’exemple :</p>
+<div id="893f651e" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> a</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">3</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> a</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>produit le résultat suivant :</p>
+<div id="6162baca" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">-&gt;</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="aperçu-de-la-base-de-code" class="level1">
+<h1>Aperçu de la base de code</h1>
+<section id="lancement" class="level2">
+<h2 class="anchored" data-anchor-id="lancement">Lancement</h2>
+<p>La base de code du projet est disponible sur <a href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees/tree/main/">la page Github du cours</a>, dans l’onglet Projet.</p>
+<ul>
+<li>Téléchargez l’archive zip ou clonez le dépôt complet sur votre machine.</li>
+<li>Vérifiez que vous arrivez à compiler le code dans CLion, en tant que projet CMake.</li>
+<li>Vérifiez qu’en exécutant le programme, vous obtenez bien le fichier <code>output/code_ex.mmd</code>.</li>
+</ul>
+<p>Il est recommandé de créer un dépôt <strong>Github</strong> pour votre groupe, afin de collaborer plus efficacement, et de me donner plus facilement accès à votre code si vous avez besoin d’aide. <a href="https://docs.github.com/fr/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository">Aide</a></p>
+<ul>
+<li>Chaque membre du groupe doit disposer d’un compte <a href="https://github.com/">Github</a>.</li>
+<li>L’un des membres crée un nouveau dépôt privé sur sa page, et lui donne le nom <code>alsi51-2526-projet-name1-name2-name3</code> avec les noms des trois membres du groupe.</li>
+<li>Dans le dépôt, cliquez sur <code>Settings</code> -&gt; <code>Collaborators</code>, puis <code>Add people</code>, et ajoutez les deux autres membres du groupe.</li>
+</ul>
+</section>
+<section id="contenu-de-la-base-de-code" class="level2">
+<h2 class="anchored" data-anchor-id="contenu-de-la-base-de-code">Contenu de la base de code</h2>
+<p>Le code est organisée de la manière suivante :</p>
+<ul>
+<li>Le dossier <code>src</code> contient les fichiers source (<code>.c</code>) et le dossier <code>include</code> les fichiers d’en-tête (<code>.h</code>).</li>
+<li>Le dossier <code>src/expressions</code> contient les fichiers en lien avec l’évaluation des expressions arithmétiques. Ils sont fortement similaires à ceux du TP2, avec quelques différences.</li>
+<li>Le dossier <code>src/structures</code> contient les implémentations des différentes structures de données, vues dans les TP précédents : listes à deux extrêmités, pile, file, et la structure qui contiendra les tokens de l’analyse lexicale <code>t_prog_token_list</code>. Vous n’avez rien à modifier dans ce dossier.</li>
+<li>Le dossier <code>file_io</code>, contient le code d’un programme de lecture dans un fichier. Vous n’avez pas à le modifier.</li>
+</ul>
+<p>Les principales fonctions à modifier, outre celles de <code>src/expressions/expr.</code>, sont présentes dans le dossier <code>src/program</code> :</p>
+<ul>
+<li>Les fichiers <code>lexical.c</code> et <code>program.c</code> contiennent diverses fonctions auxiliaires, que vous n’avez pas à modifier. <code>program.c</code> contient également le destructeur du type <code>t_ast</code> qu’il faudra compléter.</li>
+<li><code>lexer.c</code> contient les fonctions (à compléter en partie 3 du projet) de l’analyse lexicale.</li>
+<li><code>parser.c</code> contient les fonctions (à compléter en partie 2 du projet) de l’analyse syntaxique.</li>
+<li><code>run.c</code> contient les fonctions (à compléter en partie 1 du projet) d’exécution de l’AST.</li>
+</ul>
+</section>
+</section>
+<section id="partie-1-exécution-dun-ast" class="level1">
+<h1>Partie 1 : exécution d’un AST</h1>
+<p>L’objectif de la première partie du projet est d’écrire un programme qui prend en entrée un AST et exécute le programme qu’il représente.</p>
+<p>Vous devez pour cela :</p>
+<ul>
+<li>Compléter le fichier <code>src/expressions/expr.c</code> à la manière du TP2, afin de pouvoir évaluer des expressions en forme RPN (notation polonaise inversée, voir TP2). En particulier la fonction <code>eval_rpn</code>, qui doit cette fois gérer les variables dans les expressions. Vous devrez également écrire la fonction <code>apply_op</code> dans le fichier <code>src/expressions/operator.c</code>.</li>
+<li>Bien comprendre les types représentant les AST, dans le fichier <code>include/program/program.h</code>. Pour cela, observez bien l’AST donné dans la fonction <code>example</code> du fichier <code>src/main.c</code>. Il s’agit de l’AST du code d’exemple de l’introduction (<a href="#fig-ast_ex" class="quarto-xref">Figure&nbsp;3</a>). Vous pouvez vous aider de la fonction <code>export_program_ast</code> du fichier <code>program.h</code>.</li>
+<li>Ecrire la fonction <code>destroy_ast</code> dans <code>src/program/program.c</code>, avec sa fonction auxiliaire <code>destroy_statement</code>. Cette fonction libère toute la mémoire allouée dynamiquement pour représenter un AST.</li>
+<li>Ecrire la fonction <code>run</code> dans <code>src/program/run.c</code>, qui exécute le programme donné en entrée sous forme d’AST. Il est recommandé d’écrire cette fonction de manière récursive, avec une fonction auxiliaire <code>run_aux</code>.</li>
+</ul>
+</section>
+<section id="partie-2-analyse-syntaxique" class="level1">
+<h1>Partie 2 : analyse syntaxique</h1>
+<p>L’objectif de la deuxième partie du projet est d’écrire la fonction de parsing, afin de convertir une liste de tokens (de type <code>t_prog_token</code>, dans une liste de type <code>t_prog_token_list</code>) en un AST.</p>
+<p>Vous devez pour cela :</p>
+<ul>
+<li>Bien comprendre la définition des <code>t_prog_token</code> dans le fichier <code>include/program/lexical.h</code>, ainsi que la liste de tokens de la fonction <code>example</code> dans <code>src/main.c</code>.</li>
+<li>Comprendre la structure <code>t_prog_token_list</code> dans le fichier <code>prog_token_list.h</code>.</li>
+<li>Compléter les fonctions <code>parse</code> et <code>parse_aux</code> dans le fichier <code>src/program/parser.c</code>.</li>
+</ul>
+</section>
+<section id="partie-3-extensions" class="level1">
+<h1>Partie 3 : extensions</h1>
+<p>Lorsque vous aurez terminé les parties obligatoires, vous pourrez écrire une extension du projet de votre choix.<br>
+Quelques exemples d’extensions possibles :</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Facile">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Facile
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Gérer les opérateurs booléens dans les expressions (<em>AND</em>, <em>OR</em>, <em>NOT</em>, <em>XOR</em>)</li>
+<li>Traiter les chaînes de caractères dans les print (ex: <code>print "Hello world"</code>)</li>
+<li>Proposer une exécution pas à pas, avec affichage du contenu des variables</li>
+<li>Optimiser l’évaluation des expressions en pré-calculant celles qui peuvent l’être</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Moyen">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Moyen
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Détecter les erreurs de syntaxe dans le code source, proposer un message d’erreur explicite</li>
+<li>Traiter les boucles For (avec une syntaxe au choix)</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="Difficile">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Difficile
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Ecrire l’analyseur lexical (lexer)</li>
+<li>Gérer les définitions et appels de fonctions</li>
+<li>Optimiser les <em>sous</em>-expressions qui peuvent être pré-calculées</li>
+<li>Gérer les tuples en tant que valeurs de variables ou valeurs de retour</li>
+</ul>
+</div>
+</div>
+<p><br><br></p>
+<hr>
+<p><br></p>
+</section>
+<section id="annexe-syntaxe-du-mini-langage" class="level1">
+<h1>Annexe : syntaxe du mini-langage</h1>
+<section id="instructions-statements" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-statements">Instructions (<em>statements</em>)</h2>
+<ul>
+<li><p><strong>Affectation</strong> (<em>assignment</em>) : la variable <code>var</code> reçoit le résultat de l’expression <code>expr</code></p>
+<pre><code>[var] = [expr]</code></pre>
+<p>Exemple :</p></li>
+</ul>
+<div id="31a38ab2" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><p><strong>Affichage</strong> (<em>print</em>) : la valeur de l’expression <code>expr</code></p>
+<pre><code>print [expr]</code></pre>
+<p>Exemple :</p></li>
+</ul>
+<div id="6b07ffbc" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><p><strong>Conditionnelle “if”</strong> : si l’expression <code>cond</code> s’évalue à une valeur différente de 0, on exécute le programme <code>prog_if_true</code>, sinon le programme <code>prog_if_false</code>.</p>
+<pre><code>if [cond]
+    [prog_if_true]
+else
+    [prog_if_false]</code></pre>
+<p>Exemple :</p></li>
+</ul>
+<div id="79ccb5ba" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> a <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> a <span class="op">+</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><p><strong>Boucle “while”</strong> : tant que l’expression <code>cond</code> s’évalue à une valeur différente de 0, on exécute le programmme <code>block</code>.</p>
+<pre><code>while [cond]
+    [block]</code></pre>
+<p>Exemple :</p></li>
+</ul>
+<div id="1cd70889" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> x <span class="op">!=</span> <span class="dv">0</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="indentation" class="level2">
+<h2 class="anchored" data-anchor-id="indentation">Indentation</h2>
+<p>A chaque entrée dans un bloc de <code>if</code>, <code>else</code> ou <code>while</code>, on indente le code du bloc avec 4 espaces. Cette convention est importante si vous souhaitez écrire l’analyseur lexical.</p>
+</section>
+</section>
+<section id="modalités-de-rendu" class="level1">
+<h1>Modalités de rendu</h1>
+<p>Le projet est à déposer au format <strong>.zip</strong> sur <a href="https://moodle.myefrei.fr/mod/assign/view.php?id=124400">cette page Moodle</a> pour le <strong>vendredi 6 février, 23h59</strong>.</p>
+<p>Alternativement, vous pouvez m’envoyer par mail le lien vers votre dépôt Github, ou m’ajouter en collaborateur si celui-ci est privé.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

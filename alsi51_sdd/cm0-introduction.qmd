@@ -1,0 +1,223 @@
+---
+title: "Introduction"
+format:
+  html:
+    code-fold: true
+---
+
+# Structures de données
+<!--
+- Différentes structures : avantages / inconvénients, choix pertinent en fonction du cas d'application
+- Type abstrait vs implémentation
+-> Compartimentation : interface = boîte à outil pour l'utilisateur, implémentation cachée
+-> Programmation modulaire : minimise le couplage, réduit les erreurs, compartimentation des fonctionnalités
+- Réutilisation de structures pour implémenter d'autres structures
+-->
+
+## Définition
+
+Une **structure de données** est une manière d'organiser et de stocker des données (nombres, chaînes de caractères, images...) afin de permettre leur traitement efficace.
+Il existe en effet de nombreuses manières de stocker des données, plus ou moins efficaces, et il convient de choisir la bonne représentation en fonction du cas d'application.
+
+Exemples classiques :
+
+* Structures linéaires : tableaux de taille fixe, tableaux dynamiques, listes chaînées
+* Structures arborescentes : arbres binaires, arbres n-aires, arbres binaires de recherche...
+* Structures de graphes : matrice d'adjacence, liste d'adjacence
+* Structures de dictionnaires, tables de hachages
+
+Une structure de données est la spécification d'un **type abstrait**, qui spécifie uniquement les opérations autorisées sur les données stockées, sans imposer d'implémentation particulière.
+
+Exemples :
+
+* Une *pile* est une structure linéaire qui permet uniquement d'ajouter un élément en première position, d'accéder à l'élément en première position et à le retirer de la structure. Il existe de nombreuses manières d'implémenter ces opérations, et donc d'implémenter le type abstrait pile.
+
+* Un *dictionnaire* est une structure où chaque donnée est associée à une *clé*, qui peut être une valeur numérique ou une chaîne de caractère par exemple. De même, il existe de nombreuses manières d'implémenter ce type abstrait, plus ou moins efficaces.
+
+## Motivation
+
+
+### Déclaration / Implémentation
+
+L'utilisation d'une structure de donnée a pour vocation à être *abstraite*, c'est-à-dire "cachée" et accessible uniquement via un ensemble de fonction permettant accès et manipulation. On place le code de son implémentation dans un fichier séparé (au format ``.c`` en langage C), et on met à disposition des autres fichiers du projet une *interface* (au format ``.h``) qui spécifie uniquement les types d'entrée et de sortie des fonctions autorisées (les *prototypes* de ces fonctions). Dans le reste du code du projet, les seules opérations possibles sur la structure seront les appels de fonctions déclarées dans le fichier d'en-tête ``.h``.
+
+Exemple :
+
+Fichier d'en-tête ``array.h``
+```C
+#define ARRAY_SIZE 100
+typedef int T;
+
+// Définition du type
+typedef struct {
+    T data[ARRAY_SIZE];
+    int size;
+} array;
+
+// Prototypes des fonctions autorisées sur la structure
+array create_array();
+
+int get_size(array *a);
+
+T get(array *a, int index);
+
+void push(array *a, T val);
+
+void set(array *a, int index, T val);
+```
+
+Fichier implémentation ``array.c``
+```C
+// Inclusion de l'en-tête pour la définition du type
+#include "array.h"
+
+// Implémentation des fonctions
+array create_array() {
+    array a;
+    a.size = ARRAY_SIZE;
+    return a;
+}
+
+int get_size(array *a) {
+    return a->size;
+}
+
+T get(array *a, int index) {
+    return a->data[index];
+}
+
+void push(array *a, T val) {
+    if (a->size >= ARRAY_SIZE) return;
+    a->data[a->size] = val;
+    a->size++;
+}
+
+void set(array *a, int index, T val) {
+    a->data[index] = val;
+}
+```
+
+Les autres parties du code (notamment la fonction ``main``) peuvent à présent utiliser la structure ``array`` en appelant ses fonctions ``create_array``, ``get_size``, ``get`` et ``set``. On appelle *module* une telle composante d'un projet, et on appelle cette stratégie *programmation modulaire*. Elle possède plusieurs avantages :
+
+* Cela permet de **compartimenter** les fonctionnalités du code : la structure est développée par un développeur sans se soucier du reste du projet, et un développeur qui souhaite utiliser la structure pour stocker et manipuler ses données peut simplement utiliser les fonctions de la bibliothèque sans se soucier des détails de son implémentation.
+
+* On minimise ainsi le **couplage** : les informations échangées entre les différentes composantes d'un projet sont limitées au minimum, pour contrôler les points d'accès et de modifications des données. 
+
+* Cette méthode facilite la **maintenance** du code : le fait de modifier l'implémentation d'une structure (pour la débugger, l'optimiser ou pour ajouter des fonctionnalités) ne perturbe pas le reste du projet, et si les fonctions modifiées sont *sémantiquement* équivalentes aux précédentes, le projet doit avoir un résultat inchangé.
+
+* On minimise également la **redondance** : un même bloc de code n'est écrit qu'une seule fois dans le code du projet. Dans l'exemple ci-dessus, la gestion de la variable ``size`` est uniquement assurée par la fonction ``push``, sans avoir à mettre manuellement à jour la variable à chaque ajout.
+
+
+
+
+# Complexité
+
+<!-- - Complexité
+Notations de Landau
+Constant, linéaire, quasi-linéaire, quadratique, polynomial,
+exponentiel
+
+Pire cas
+En moyenne
+Amortie
+
+Complexité en temps vs espace -->
+
+## Définition
+
+La *complexité* temporelle d'un algorithme (ou d'un programme) est une mesure du nombre d'opérations effectuées par la machine pour exécuter l'algorithme. On exprime cette complexité comme une fonction de la taille de l'entrée. Le plus souvent, on note $n$ la taille de l'entrée, et on exprime la complexité en fonction de $n$. On distingue les calculs de complexité suivants :
+
+- **Complexité en pire cas** : On cherche couramment à calculer une majoration du nombre d'opérations effectuées, quelle que soit de l'entrée d'une taille $n$ donnée. On parle de *pire cas* lorsque le nombre d'opérations effectuées est maximal, et on cherche si possible à expliciter les conditions dans lesquelles survient ce pire cas.
+- **Complexité en moyenne** : Il existe parfois de larges disparités entre la complexité du pire cas et celle des autres cas, et il arrive que le pire cas soit très rare en pratique. Il est donc parfois intéressant de calculer la complexité *en moyenne* de l'algorithme, c'est-à-dire la moyenne des complexités sur toutes les entrées d'une taille $n$ donnée.
+- **Complexité amortie** : Dans certaines structures, lorsque l'on effectue un grand nombre d'opérations identiques successivement (par exemple insérer un élément dans une structure), il arrive que le pire cas de complexité survienne dans une faible proportion de ces opérations. D'une certaine manière, les opérations "peu coûteuses" compensent les opérations "coûteuses". La complexité *amortie* est donc la complexité moyenne par exécution d'une opération, parmi un grand nombre de répétitions de cette opération.
+
+
+## Notations de Landau
+
+La plupart du temps, il est difficile et peu pertinent de calculer la valeur exacte du nombre d'opérations effectuées pour une entrée de taille $n$. On cherche en général une estimation asymptotique de cette grandeur, et souvent une simple majoration.
+
+Pour cela, on utilise les notations de comparaisons asymptotiques, appelées *notations de Landau* en hommage à Edmund Landau (1877-1938) bien qu'elles aient été en partie inventées par Paul Bachmann (1837-1920), Godfrey Harold Hardy (1877-1947) et John Edensor Littlewood (1885-1977).
+
+On considère deux fonctions $f, g : \mathbb{N} \rightarrow \mathbb{R}$. On définit les notations suivantes :
+
+- **$f(n) = O(g(n))$** ("*grand O*") lorsque pour $N$ assez grand, il existe une constante $K\in \mathbb{R}$ telle que $\forall n \geq N, \vert f(n)\vert \leq K \vert g(n)\vert$.
+    
+    On dit que $g$ **domine** $f$. On peut aussi voir $K$ comme une borne sur le rapport $f(n)/g(n)$ pour $n$ assez grand : $f$ peut être négligeable devant $g$ mais ne peut pas évoluer plus vite asymptotiquement que $g$ (sauf à constante près).<br>
+    Exemple : $2 n^4 + 100n^2 = O(n^4)$, mais aussi $O(n^5), O(n^6)$...
+    <br><br>
+
+- $f(n) = o(g(n))$ ("*petit o*") lorsque pour $N$ assez grand, pour tout réel $\varepsilon > 0$, $\forall n\geq N, \vert f(n)\vert \leq \varepsilon \vert g(n)\vert$.
+
+    On dit que $f$ est **négligeable** devant $g$. Si $\forall n\in \mathbb{N}, g(n) \neq 0$, cette définition est équivalente à $\frac{\vert f(n)\vert}{\vert g(n)\vert} \xrightarrow[n \to \infty]{} 0$.<br>
+    Exemple : $100n = o(n^2)$, ou $o(n\log n)$.
+    <br><br>
+
+- $f(n) = \Omega(g(n))$ ("*oméga*") lorsque $g(n) = O(f(n))$ (selon la définition de Donald Knuth).
+
+    $f$ est minoré par $g$. <br>
+    Exemple : $n\log n = \Omega(n)$ (mais pas $O(n)$).
+    <br><br>
+
+- $f(n) = \Theta(g(n))$ ("*théta*") si $f(n) = O(g(n))$ et $f(n) = \Omega(g(n))$.
+
+    $f$ et $g$ sont du même ordre de grandeur asymptotiquement.<br>
+    Exemple : $5n^3 + 7 n^2 + 10n = \Theta(n^3)$.
+
+Ces notations consistent donc à exprimer des majorations, minorations et dominations entre fonctions, en ignorant les termes négligeables et les constantes multiplicatives. 
+
+Exemples :
+
+- $5n^3 + 2n^2 + 7n + 100 = O(n^3)$, et même $\Theta(n^3)$
+- $n^{10} = o(2^n)$
+- $n! = O(n^n)$ et $n! = \Omega((n/e)^n)$
+- Une fonction bornée est $O(1)$.
+- Une fonction qui tend vers $0$ en valeur absolue est $o(1)$.
+- $\displaystyle \frac{1}{n^2} = o \left(\frac{1}{n}\right)$
+- Somme des entiers : $\displaystyle 1 + 2 + \dots + n = \sum_{k = 1}^n k = \frac{n(n+1)}{2} = O(n^2)$
+- Le logarithme en base $b$ : $\displaystyle \log_b n = \frac{\ln n}{\ln b} = \Theta(\ln n)$. On note donc, sans distinction de base, $\Theta(\log n)$.
+- Série harmonique : $\displaystyle \sum_{k = 1}^n \frac{1}{k} = \ln n + \gamma + o(1) = \Theta(\log n)$ (où $\gamma \simeq 0.577215\dots$ est la *constante d'Euler*).
+
+
+## Familles de complexité classiques
+
+On classe généralement les algorithmes et les programmes dans les familles de complexités suivantes :
+
+- Complexité **constante** (ou **temps constant**), $O(1)$<br>
+    Le nombre d'opérations est majoré par une constante, quelle que soit la taille $n$ de l'entrée.<br>
+    Exemples : accès à un élément d'un tableau, ajout en tête d'une liste chaînée, accès à la racine d'un arbre.
+
+- Complexité **logarithmique**, en $O(\log n)$<br>
+    Exemples : recherche d'une valeur par dichotomie dans un tableau trié, algorithme d'exponentiation rapide, recherche d'un élément dans un arbre binaire de recherche équilibré (comme les arbres AVL).
+
+- Complexité **linéaire**, en $O(n)$<br>
+    Exemples : recherche dans un tableau ou une liste chaînée, recherche du maximum d'un tableau, parcours de graphe (largeur / profondeur).
+
+- Complexité **quasilinéaire**, en $O(n\log n)$<br>
+    Exemples : divers algorithmes de type *Diviser pour régner*, dont l'algorithme de *transformée de Fourier rapide* (*FFT*), et les algorithmes de tri rapides (*Quicksort*, *tri fusion*, *tri par tas*).
+
+- Complexité **quadratique**, en $O(n^2)$<br>
+    Exemples : algorithmes de tri naïfs (tri par sélection, par insertion, tri à bulles).
+
+- Complexité **polynomiale**, en $O(n^k)$ pour une certaine constante $k\in \mathbb{N}$.<br>
+    Lorsque le calcul de complexité est plus difficile, par exemple lorsque l'existence d'algorithme polynomial est obtenu par des raisonnements théoriques.<br>
+    Exemple : Le *test de primalité AKS*, de complexité $O(n^{10.5})$, où $n$ est le nombre de bits du nombre en entrée, mais l'estimation peut être affinée à $O(n^6)$ ou $O(n^3)$ si certaines conjectures sont vraies.
+
+- Complexité **exponentielle**, en $O(2^n)$, ou $O(k^n)$ pour une certaine constante $k\in \mathbb{R}$.<br>
+    Exemples : les problèmes *NP-complets* (Problèmes du *Voyageur de commerce*, *Sac à dos*, *SAT*, *Coloration de graphe*...), énumération des sous-ensembles d'un ensemble à $n$ éléments, recherche par force brute.
+
+- Complexité **factorielle**, en $O(n!)$<br>
+    Exemples : calcul naïf de déterminant d'une matrice, énumération des permutations d'un ensemble à $n$ éléments.
+
+Par extension, on définit la *complexité d'un problème* par la complexité du meilleur algorithme qui résout ce problème. En théorie de la complexité algorithmique, on définit la classe $P$ des problèmes de complexité polynomiale (en $O(n^k)$), et $EXP$ la classe des problème de complexité exponentielle (en $O(k^n)$).
+
+Une complexité exponentielle ou supérieure est souvent considérée comme inutilisable en pratique.
+
+
+## Complexité en espace
+
+On étudie parfois la quantité de mémoire requise pour exécuter un algorithme (ou un programme) sur une entrée de taille $n$. On parle alors de *complexité en espace*.
+
+Par définition, comme chaque case mémoire utilisée nécessite au moins une opération de lecture et d'écriture, la complexité en temps d'un algorithme est toujours supérieure ou égale à sa complexité en espace. De plus, dans les cas où l'entrée doit être lue en entier, la complexité en espace est nécessairement en $\Omega(n)$.
+
+Un programme de complexité quadratique en espace devient vite inutilisable en pratique.
+

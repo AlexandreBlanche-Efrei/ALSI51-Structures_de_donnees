@@ -1,0 +1,623 @@
+---
+title: "Rappels de programmation en langage C"
+format:
+  html:
+    code-fold: true
+---
+
+<!-- # Rappels de programmation en langage C -->
+
+# 1. Le langage C
+
+## Origine
+Le langage C est un langage de programmation créé en 1972 par Dennis Ritchie et Ken Thompson, pour leur permettre de développer Unix, l'ancêtre des systèmes d'exploitation Linux et MacOS. Ritchie et Thompson ont obtenu conjointement le prix Turing (souvent considéré comme l'équivalent du prix Nobel en informatique) en 1983 pour leurs travaux sur le développement d'Unix.  
+Le langage C est toujours très utilisé, car il est plutôt simple d'utilisation et procure un contrôle très fin du temps d'exécution et de l'usage mémoire du programme produit. Il a inspiré, notamment par sa syntaxe, de nombreux langages plus modernes comme le C++ (variante orienté-objet du langage C), C\#, Rust, Java ou encore Javascript.
+  
+## Langage compilé
+Le langage C est un langage *compilé* : on utilise un programme appelé *compilateur* pour traduire le code source d'un programme C en langage machine, pour produire un fichier exécutable (portant l'extension ".exe" sous Windows). Ce fichier exécutable va être lu par la machine, qui va réaliser les instructions qu'il contient. L'exécution du programme est donc très performante, d'autant que le compilateur applique en général de nombreuses optimisations au code d'entrée, tout en préservant sa sémantique. En revanche, le temps de compilation d'un projet imposant peut être élevé, jusqu'à plusieurs heures pour un projet industriel. On veille donc à réaliser une compilation fichier par fichier (voir la section sur CMake), afin de ne recompiler que les parties qui ont été modifiées.   
+
+Par opposition, certains langages comme le Python ou le Javascript sont des langages *interprétés* : un programme appelé *interpréteur* lit le code et l'exécute simultanément. Cela a l'avantage de ne pas nécessiter de recompilation à chaque modification du code, mais au prix d'une vitesse d'exécution bien moindre.
+
+Les compilateurs les plus utilisés sont GCC (GNU Compiler Collection), Clang, et MSVC (Microsoft Visual C++) qui est intégré à Visual Studio. GCC et Clang sont des logiciels libres.  
+
+
+
+## Paradigme impératif
+
+Un *paradigme* de programmation est une approche conceptuelle de la programmation, le point de vue selon lequel on va formuler les problèmes et les méthodes pour les résoudre.  
+
+Le langage C utilise un paradigme *impératif* : la résolution d'un problème est effectuée par une suite d'instructions exécutées par la machine pour modifier l'état de diverses variables. C'est le paradigme le plus courant (C++, Java, Javascript, Python...), inspiré du modèle théorique des *machines de Turing*, créées dans les années 1930 par Alan Turing pour formaliser ce que deviendront ensuite les ordinateurs.  
+
+<!-- <div style="page-break-before:always"></div> -->
+
+De nombreux autres paradigmes existent, comme la *programmation fonctionnelle*, où les programmes sont vus comme des fonctions mathématiques, où les variables ne peuvent pas être modifiées. Pour calculer le résultat renvoyé par une fonction, on combine les résultats d'appels de fonctions (éventuellement récursifs) sur d'autres paramètres. Les langages fonctionnels incluent OCaml, Haskell, Lisp, et sont inspirés par le modèle théorique du *Lambda-calcul* d'Alonzo Church, développé en parallèle des machines de Turing, dans les années 1930, et basé sur une approche mathématique du calcul.
+
+
+## Bas-niveau
+En programmation, on parle de *haut-niveau* lorsque l'on traite de concepts relativement abstraits et proches de l'intuition. Un langage de programmation de haut-niveau va donner une description abstraite des opérations à réaliser. Il est en général plutôt simple d'utilisation, et permet d'écrire du code sans se soucier des opérations précises effectuées par le processeur, du temps d'exécution précis ou de l'utilisation de la mémoire. Python en est un bon exemple : syntaxe épurée, nombreuses bibliothèques, faibles contraintes sur les types des variables, l'accent est mis sur la simplicité d'utilisation, au détriment de la vitesse d'exécution.
+
+Des considérations de *bas-niveau* concernent à l'inverse l'utilisation précise du matériel : les opérations effectuées par le processeur, l'usage de la mémoire. Le langage de plus bas-niveau est le langage machine, directement exécuté par le processeur, ou l'assembleur, qui en est une version retranscrite sous forme lisible. Ces langages étaient utilisées à l'aube de l'informatique, et sont extrêmement difficiles d'accès.
+
+Le langage C est un langage plutôt bas-niveau. Il permet d'allouer et de manipuler la mémoire et les adresses mémoires via les pointeurs. Le langage impose de libérer manuellement la mémoire allouée, car il ne dispose pas d'un *ramasse-miettes* (*garbage collector*) comme par exemple en Java. L'utilisation de la mémoire est très précisément définie : chaque variable est associée à un type, ayant une taille mémoire calculée à la compilation (un ``int`` occupe en général 4 octets, un ``long int`` 8 octets, par exemple). Très peu d'opérations sont effectuées de manière invisible ou implicite, c'est le développeur qui doit lui-même indiquer toutes les opérations à effectuer.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+# 2. Syntaxe et concepts du langage
+
+## Variables
+
+Les variables en C sont associées à un nom, un type, une adresse mémoire, et éventuellement une valeur.  
+```C
+int a = 5;
+float b;
+int *p = &a;
+b = 2.0;
+char c = 'a';
+char *s = "abcd";
+bool cond = a > 0;
+```
+
+La variable ``a`` est de type ``int`` (entier positif ou négatif, en général sur 32 bits) et contient la valeur ``5``. La variable ``b`` est de type ``float`` (nombre décimal, à virgule flottante) et ne contient initialement pas de valeur. On lui donne ensuite la valeur ``2.0``. La variable ``c`` est de type ``char`` (caractère), et ``s`` de type ``char*`` (chaîne de caractère, voir ci-dessous).    
+La variable ``p`` est de type ``int *`` (pointeur vers une variable de type ``int``, voir la sous-section sur les pointeurs) et contient l'adresse (``&a``) de la plage mémoire où est stockée la variable ``a``.  
+Le booléen ``cond`` est égal à ``true`` si la condition ``a > 0`` est vérifiée (ici oui) et ``false`` sinon.  
+
+Attribuer *statiquement* (à la compilation) un type à une variable permet de contrôler le nombre de cases-mémoire dont celle-ci a besoin pour être stockée.  
+
+Pour modifier une variable déjà déclarée, on utilise le symbole ``=``:
+```C
+a = 8;
+p = &c;
+cond = (a == 0);
+```
+
+Ici, ``a`` reçoit la valeur ``8``, ``p`` reçoit la valeur de l'adresse mémoire de la variable ``c``, et ``cond`` reçoit ``true`` si ``a`` vaut ``0``, et ``false`` sinon. Attention à ne pas confondre le ``=`` d'affectation des variables et le ``==`` de comparaison entre variables (le ``=`` des mathématiques).
+
+## Types
+
+Les types de base sont les suivants. Les tailles indiquées sont les tailles habituelles, mais elles dépendent en pratique du compilateur. On peut les obtenir avec la fonction ``sizeof(type)``. Les types entiers existent en version ``signed`` (signée) et ``unsigned`` (non-signé) : un type signé permet de stocker des nombres positifs ou négatifs, un type non-signé permet de ne stocker que des valeurs positives ou nulles.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+| Type      | Signification      | Taille (octets)    | Valeurs min/max |
+|:--    |:--    |:--    | :--    |
+| ``bool``      | Booléen      | $1$      | $2$ valeurs : ``true``, ``false``       |
+| ``char`` | Caractère | $1$ | $-128\ /\ 127$ |
+| ``unsigned char`` | Caractère | $1$ | $0\ /\ 255$ |
+| ``int``      | Entier positif ou négatif      | $4$       | $-2^{31}\ /\ 2^{31} - 1$ (2'147'483'647)      | 
+| ``unsigned int``      | Entier positif ou nul       | $4$      | $0\ /\ 2^{32} - 1$ (4'294'967'295)     |
+| ``long int`` | Entier positif ou négatif | $4$ | $-2^{31}\ /\ 2^{31} - 1$ (2'147'483'647) |
+| ``unsigned long int``      | Entier positif ou nul       | $4$      | $0\ /\ 2^{32} - 1$ (4'294'967'295)     |
+| ``long long int`` | Entier positif ou négatif | $8$ | $-2^{63}\ /\ 2^{63} - 1$ (9'223'372'036'854'775'807 ) |
+| ``unsigned long long int``      | Entier positif ou nul       | $8$      | $0\ /\ 2^{64} - 1$ (18'446'744'073'709'551'615)     |
+| ``float`` | Réel (précision simple) | $4$ | -Inf / +Inf |
+| ``double`` | Réel (précision double) | $8$ | -Inf / +Inf |
+| ``type *`` | Pointeur vers type | $4$ ou $8$ | |
+
+Les chaînes de caractères (string) ne sont pas présentes en C. Elles correspondent au type ``char *`` : elles sont représentées par un pointeur vers une suite de caractères en mémoire, terminés par un caractère '\0'.  
+Pour utiliser le type ``bool``, il faut ajouter ``#include <stdbool.h>`` au début du programme, car ce type n'était pas présent dans le langage à l'origine.
+
+## Tableaux
+
+On peut stocker plusieurs variables de même type de manière contigüe en mémoire en utilisant un tableau.  
+```C
+int array[10];
+float t[] = { 1.0, -2.0, 3.5 };
+```
+
+En C, un tableau est un pointeur, non-modifiable, qui pointe vers une plage mémoire.  
+La taille d'un tableau est définie statiquement, à la compilation : sa taille doit être une constante, qui peut être définie par un ``#define``. Ici, ``array`` est un pointeur vers 10 emplacements contigus en mémoire pouvant recevoir des valeurs de type ``int``. Le tableau ``t`` est de taille 3, et contient 3 valeurs de type ``float``.  
+
+Pour accéder à l'élément d'indice ``i`` d'un tableau ``t`` ou modifier cet élément, on écrit ``t[i]`` et on utilise cette expression comme une variable. Les indices des éléments d'un tableau vont de ``0`` à ``n-1``, où ``n`` est la taille du tableau. La taille d'un tableau doit être retenue dans une variable, car il est impossible d'obtenir cette valeur une fois le tableau créé.  
+
+On parle de *taille physique* pour désigner la taille définie à la création du tableau, et de *taille logique* pour désigner le nombre effectif d'éléments ajoutés au tableau. On part souvent d'une taille logique égale à 0, avant de remplir le tableau élément par élément.
+
+## Types structurés
+
+On peut regrouper plusieurs variables dans un même objet appelé *structure* :
+```C
+// Déclaration de la structure struct s_str, renommée en t_str
+typedef struct s_str {
+    int a; // a, b, c sont les attributs de la structure
+    int b;
+    float c;
+} t_str;
+
+// Pour déclarer une variable t de type t_str
+t_str t;
+// Pour affecter les attributs :
+t.a = 5;
+t.b = t.a + 2;
+t.c = 0.0;
+```
+
+Les variables ``t.a``, ``t.b``, ``t.c`` sont les *attributs* de la variable structurée ``t``.
+
+## Fonctions
+
+Le code d'un programme est organisé sous forme de *fonctions*. En entrée, une fonction reçoit des valeurs (appelées arguments) dans des variables (les paramètres de la fonction) d'un type fixe et défini à la déclaration de la fonction. Elle peut aussi ne prendre aucun paramètre en entrée.  
+Une fonction renvoie une valeur d'un type fixe et défini à la déclaration. Elle peut aussi ne renvoyer aucune variable : elle a le type ``void`` comme type de sortie.
+
+Exemple :
+```C
+int f(int a, int b) {
+    int c = 1;
+    return a + b + c;
+}
+```
+
+La fonction ``f`` prend en entrée deux entiers ``a`` et ``b``, et renvoie une valeur de type ``int`` avec le mot-clé ``return``. Il peut y avoir plusieurs ``return`` dans une fonction : l'exécution du code de la fonction est interrompu et la valeur est renvoyée dès qu'un ``return`` est rencontré.    
+Les variables ``a``, ``b`` et ``c`` sont des variables locales : elles sont créées au moment de l'appel de ``f``, ne sont accessibles nulle-part ailleurs dans le code, et sont détruites à la fin de l'appel.
+
+Pour appeler une fonction et capter sa valeur de sortie dans une variable, on écrit :  
+```C
+int x = 3;
+int y = 2;
+int z = f(x, y);
+// z vaut 6
+```
+ou simplement ``int z = f(3, 2);``.  
+Le contenu des variables ``x`` et ``y`` est copié dans de nouvelles variables ``a`` et ``b`` : ``x`` et ``y`` ne sont pas modifées par l'appel à la fonction ``f``.
+
+## Fonction main
+
+Le point d'entrée d'un programme C est une fonction ``main`` :
+
+```C
+#include <stdio.h>
+
+int main() {
+
+    printf("Hello world!\n");
+    return 0;
+}
+```
+
+Le programme exécutable produit par le compilateur commencera son exécution au début de la fonction ``main``.
+
+Ici, ``printf`` permet d'afficher une chaîne de caractères dans la console. On a besoin d'include la bibliothèque ``stdio.h`` pour disposer de cette fonction.
+
+La fonction ``main`` va appeler les autres fonctions contenant le reste du code. La convention des systèmes Unix et Windows veut que la fonction ``main`` renvoie la valeur ``0`` si l'exécution s'est déroulée sans erreur, et ``1`` si l'exécution a dû être interrompue à cause d'une erreur.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Instructions conditionnelles (if)
+
+Si l'on souhaite effectuer un traitement seulement si une certaine condition est vérifiée, on utilise une instruction conditionnelle ``if`` :
+
+```C
+int c;
+if (a == 1) {
+    c = 10;
+}
+
+if (b == 2) {
+    c = 20;
+}
+else if (b == 3) {
+    c = 30;
+}
+else {
+    c = 0;
+}
+```
+
+Dans le code ci-dessus, le bloc ``c = 10;`` n'est exécuté que si ``a`` vaut ``1``. La variable ``c`` sera affectée à la valeur ``20`` si ``b`` vaut ``2``, à ``30`` si ``b`` vaut ``3``, et à ``0`` sinon.
+
+
+## Boucles
+
+Pour réaliser une action un nombre défini de fois, on utilise une boucle ``for`` ("Pour") :
+
+```C
+for (int i = 0; i < 5; i++) {
+    printf("Iteration %d\n", i);
+}
+```
+Le code ci-dessus va afficher :
+```
+Iteration 0
+Iteration 1
+Iteration 2
+Iteration 3
+Iteration 4
+```
+
+La variable locale ``i`` est créée, puis on exécute le code entre accolades tant que la condition ``i < 5`` est vérifiée, et l'on incrémente ``i`` à chaque étape avec l'instruction ``i++``. Le corps de la boucle va donc s'exécuter 5 fois, avec ``i`` valant 0, puis 1, puis 2, etc. jusqu'à 4, avant de sortir de la boucle et de continuer l'exécution du reste du code. Le nombre d'itérations peut être une variable.  
+
+<!-- <div style="page-break-before:always"></div> -->
+
+Si on ne sait pas de combien d'itérations nous aurons besoin, on utilise une boucle ``while`` ("Tant que") :
+
+```C
+int a = 5;
+while (a > 0) {
+    printf("Iteration %d\n", a);
+    a = a - 1;
+}
+```
+
+
+Le code ci-dessus va afficher :
+```
+Iteration 5
+Iteration 4
+Iteration 3
+Iteration 2
+Iteration 1
+```
+
+L'instruction ``printf`` reçoit ici une chaînée formattée : le ``%d`` sera remplacé par le contenu d'une variable de type ``int`` donnée en paramètres, ici ``a``. Le caractère ``'\n'`` produit un saut de ligne à l'affichage.
+
+
+## Fichiers d'en-tête (headers)
+
+Pour organiser un projet, on sépare les fonctions en différents fichiers ``file.c``, chacun ayant un nom explicite (``vector.c``, ``material.c``, ...) et regroupant les fonctions implémentant des fonctionnalités proches, ou traitant d'objets de même type. Pour que ces fonctions puissent être appelées depuis les autres fonctions du code, on fournit un fichier ``file.h``, appelé *fichier d'en-tête*, contenant les prototypes des fonctions de ``file.c``. Toutes les fonctions de ``file.c`` ne sont pas forcément déclarées dans ``file.h``, seulement celles qui ont besoin d'être appelées depuis d'autres fichiers.  
+Dans les fichiers ``other.c`` nécessitant les fonctions de ``file.c``, on ajout l'instruction ``#include "file.h"`` en début de ``other.c``.  
+
+Exemple :  
+```C
+// file.c
+// implémentation de fonctions
+int f(int a, int b) {
+    return a + b;
+}
+
+float g(float x) {
+    return x * 2;
+}
+```
+
+<!-- <div style="page-break-before:always"></div> -->
+
+```C
+// file.h
+// prototypes des fonctions de file.c disponibles pour utilisation dans les autres fichiers
+int f(int a, int b);
+float g(float x);
+```
+
+```C
+// other.c
+
+#include "file.h"
+
+int func(t_str *obj) {
+    int x = f(5, 10);
+    /* ... */
+}
+```
+
+Séparer ses fonctions et fournir le moins de fonctions possibles dans les ``.h`` est une bonne pratique de programmation. En effet, cela permet d'éviter de nombreuses erreurs, comme modifier les mauvaises variables, et de simplifier conceptuellement le programme, chaque fichier s'occupant d'une fonctionnalité, les autres utilisant ces fonctionnalités sans se soucier de leur implémentation.
+
+
+## Compilation simple
+
+Pour compiler un projet composé des fichiers ``file1.c``, ``file2.c``, ``file3.c``, avec par exemple GCC :
+```
+gcc file1.c file2.c file3.c -o prog
+```
+L'option ``-o`` permet de spécifier le nom de l'exécutable produit. Pour compiler avec Clang, on utilise la commande ``cc`` à la place de ``gcc``.
+
+## Commentaires
+
+On peut écrire des commentaires dans le code, c'est-à-dire du texte ignoré pour l'exécution. Ces commentaires seront syntaxiquement ignorés par le compilateur, et ne produisent donc aucun coût à l'exécution.  
+
+On peut définir des commentaires de deux manières : une ligne précédée par ``//`` ou un bloc entouré par ``/*`` et ``*/``.  
+
+```C
+// This is a single-line comment
+/* This is a
+block
+comment
+*/
+```
+Les commentaires permettent de documenter le code, donner une description concise du résultat renvoyé par une fonction, décrire les différentes étapes d'un programme. On veillera toutefois à ne pas en abuser.  
+Certains commentaires peuvent être formattés d'une manière à pouvoir générer automatiquement la documentation d'une bibliothèque, sous forme de page HTML, grâce à des outils comme Doxygen (pour le C), Sphinx (Python) ou Javadoc (Java).
+
+
+## Préprocesseur
+
+On peut écrire des instructions de *preprocessing*, qui vont être traitées à la compilation.
+
+``#define TAILLE_MAX 10`` permet de définir la constante ``TAILLE_MAX``, qui sera remplacée syntaxiquement par ``10`` dans le code. C'est une bonne pratique de programmation, car elle permet d'écrire des expressions comme ``if (i < TAILLE_MAX)`` sans avoir à écrire en dur le contenu des constantes. Celles-ci sont définies une seule fois et peuvent être modifiées en une seule fois, sans coût mémoire (car ce ``10`` n'est pas stocké dans une variable, mais remplacé textuellement dans le programme) et sans coût en temps d'exécution.
+
+```C
+#if /* condition */
+    /* code */
+#else
+    /* code */
+#endif
+```
+Ces instructions permettent d'inclure ou non des sections du code, en fonction de conditions évaluables à la compilation. Exemples : si l'on se trouve sur un système Windows ou Linux, ou des conditions dépendant du compilateur : ``sizeof(int) == 4``.  
+  
+Une bonne pratique consiste à utiliser l'instruction ``#ifdef CONSTANTE ... #endif`` (ou son inverse, ``ifndef``), qui inclue le bloc si ``CONSTANTE`` a été définie avec ``#define``.
+Exemple :
+
+```C
+#define DEBUG
+
+/* ... */
+
+#ifdef DEBUG
+printf("a : %d, b : %d, i : %d\n", a, b, i);
+if (a > n) {
+    printf("Error, a too big\n");
+    exit(1);
+}
+#endif
+```
+
+Il suffit simplement de commenter la ligne ``#define DEBUG`` et recompiler pour ne plus inclure le code entre ``#ifdef`` et ``endif``, ce qui évite de devoir commenter manuellement de nombreuses sections du code.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Opérateur ternaire
+
+L'opérateur ternaire ``cond ? expr_if_true : expr_if_false`` permet de simplifier la syntaxe de certaines expressions. L'opérateur ternaire évalue la condition ``cond``, et renvoie la valeur de l'expression ``expr_if_true`` si la ``cond`` s'évalue à ``true``, et la valeur de ``expr_if_false`` sinon. Par exemple :
+```C
+int a = b > 5 ? b + 1 : b - 1;
+```
+est équivalent à :
+```C
+int a;
+if (b > 5) {
+    a = b + 1;
+}
+else {
+    a = b - 1;
+}
+```
+
+ Outre l'allègement de la syntaxe, l'opérateur ternaire a l'avantage d'être en général plus efficace qu'un ``if`` à l'exécution (pour des raisons techniques : l'opérateur permet une meilleure prédiction de branche par le processeur).
+
+## Switch
+
+On souhaite comparer une variable ``x`` avec plusieurs valeurs constantes ``CONST1``, ``CONST2``, ..., déterminées à la compilation. On peut écrire :
+```C
+if (x == CONST1) {
+    /* code1 */
+}
+else if (x == CONST2) {
+    /* code2 */
+}
+else /* ... */
+```
+
+Le bloc ``switch`` permet de simplifier cette syntaxe, et de produire un code en général plus efficace à l'exécution :
+
+```C
+switch(x) {
+    case CONST1: {
+        /* code1 */
+        break;
+    }
+    case CONST2: {
+        /* code2 */
+        break;
+    }
+    /* ... */
+    default: {
+        /* code if x != CONST1, CONST2, ... */
+    }
+}
+```
+
+Dans ce cas, ``x`` est évalué et le code va sauter au début du bloc ``case`` correspondant à la valeur de ``x``. Le ``break`` permet de quitter le bloc ``switch`` et de continuer l'exécution après celui-ci. Si le ``break`` est absent, les blocs ``case`` à la suite du bloc exécuté seront exécutés eux aussi, jusqu'au prochain ``break`` ou jusqu'à la fin du bloc ``switch``.  
+  
+Si ``x`` ne vaut aucune des constantes ``CONST1``, ``CONST2``, ..., le code du bloc ``default`` sera exécuté. Le bloc ``default`` est optionnel, de même que les accolades, autour de chaque sous-bloc.  
+  
+Les constantes ``CONST1``, ``CONST2``, ..., doivent être des constantes déterminées à la compilation: des valeurs numériques, des constantes définies avec ``#define``, des caractères, ou encore des éléments d'un type énuméré. Elles ne peuvent pas être égales au contenu d'une variable, à la manière de la taille physique d'un tableau.
+
+## Types énumérés
+
+Un type énuméré est un type dont les valeurs possibles sont définies explicitement. Par exemple :
+```C
+enum t_enum {
+    T_A, T_B, T_C
+};
+
+int main() {
+    enum t_enum e = T_A;
+}
+```
+
+Le type ``t_enum`` possède 3 valeurs possibles, et la variable ``e`` est égale à l'une d'entre elles, ``T_A``. Les types énumérés se prêtent bien aux blocs ``switch`` :
+```C
+switch (e) {
+    case T_A:
+        printf("T_A\n");
+        break;
+    case T_B:
+        printf("T_B\n");
+        break;
+    case T_C:
+        printf("T_C\n");
+        break;
+};
+```
+
+<!-- <div style="page-break-before:always"></div> -->
+
+# 3. Gestion de la mémoire
+
+## Pointeurs
+
+En langage C, on dispose de types *pointeurs*, qui stockent des adresses mémoires, de manière à pouvoir modifier directement celle-ci.  
+
+```C
+int a = 5;
+int *p = &a;
+int b = *p;
+*p = 4;
+```
+
+Ici, ``p`` est un pointeur, une variable de type ``int *``, qui contient l'adresse-mémoire de la variable ``a`` (obtenue avec l'opérateur ``&``).  
+On *déréférence* ``p`` en utilisant l'opérateur ``*`` : on accède au contenu de l'adresse-mémoire contenue dans ``p``, ici le contenu de la variable ``a``. La variable ``b`` reçoit donc la valeur ``5``.  
+En déréférençant, on peut également modifier la valeur stockée à l'adresse contenue dans ``p``. Après l'instruction ``*p = 4;``, la variable ``a`` contient la valeur ``4``.  
+
+Lorsqu'on dispose d'un pointeur ``p_t`` vers une variable ``t`` de type structuré (``struct``), on peut utiliser la syntaxe ``p_t->a`` pour accéder à la valeur de l'attribut ``a`` de la variable ``t``, ce qui est strictement équivalent à ``(*p_t).a``.
+
+## Arithmétique des pointeurs
+
+Si l'on utilise des opérations arithmétique sur des pointeurs (``p + 1``), le résultat est calculé avec l'adresse stockée dans les pointeurs. L'expression ``p + 1`` s'évalue en un pointeur qui contient l'adresse adjacente à l'adresse contenue dans ``p``. Si ``p`` est de type ``type *``, avec ``sizeof(type) == n``, alors ``p + 1`` pointe sur une case mémoire décalée de ``n`` octets.  
+
+Ainsi :
+```C
+int t[3] = { 1, 2, 3 };
+int *p = &t[0]; // p pointe vers t[0], qui contient 1
+// p + 1 vaut p + 4 octets, soit l'adresse de t[1], qui contient 2
+// p + 2 vaut p + 2 * 4 octets, soit l'adresse de t[2], qui contient 3
+```
+
+<!-- <div style="page-break-before:always"></div> -->
+
+On utilise particulièrement l'arithmétique des pointeurs pour parcours des chaînes de caractères, délimitées par un caractère ``'\0'`` :
+
+
+```C
+char *s = "Bonjour";
+// s pointe vers une plage de 8 octets, soit 8 * sizeof(char)
+// car Bonjour contient 7 lettres, et on a un caractère '\0' pour terminer la chaîne
+
+p = s;
+while (*p != '\0') {
+    *p = *p + 1; // change un caractère en son successeur dans l'alphabet
+    p = p + 1; // p avance de 1 position dans la chaîne s
+}
+printf("%s\n", s);
+```
+
+Le programme suivant parcourt la chaîne ``s`` d'élément en élément, et change chaque caractère en son successeur dans l'alphabet. Le programme affiche ``Cpokpvs``.  
+
+
+
+## Passage d'arguments aux fonctions
+
+Lorsqu'une fonction prend un paramètre de type non-pointeur en entrée, le contenu de l'argument (valeur ou variable) est copié dans une nouvelle variable, locale à la fonction, et c'est cette variable qui va être manipulée par la fonction. On dit qu'on effectue un *appel par valeur*, ou *par copie*. Il est impossible de modifier la variable d'origine depuis la fonction appelée.
+
+```C
+void f(int a) {
+    a = a + 1; // la fonction modifie sa variable locale et ne renvoie rien,
+               // elle est inutile
+}
+
+int main() {
+    int a = 2;
+    f(a); // on donne à f la valeur de a
+    printf("%d\n", a); // affiche 2, la variable a n'a pas été modifié
+    return 0;
+}
+```
+
+<!-- <div style="page-break-before:always"></div> -->
+
+Si l'on souhaite modifier la variable argument par la fonction, on réalise un *appel par pointeur*, en donnant un pointeur vers la variable à modifier.
+
+```C
+void g(int *a) {
+    *a = *a + 1; // la fonction modifie le contenu de la variable donnée en paramètre
+}
+
+int main() {
+    int a = 2;
+    g(&a); // on donne à g l'adresse de a
+    printf("%d\n", a); // affiche 3, la variable a a bien été modifiée
+    return 0;
+}
+```
+
+Un autre avantage du passage par pointeur est de ne pas avoir à copier le contenu de tous les attributs d'une variable de type structuré ("``struct``") à chaque appel de fonction. En effet, si un type structuré possède un grand nombre d'attributs, alors chaque passage par valeur d'une variable de ce type devra copier le contenu de tous les attributs dans une variable locale, ce qui causera une forte perte de performances. La bonne pratique est de passer les variables de type structuré par un pointeur lors d'un appel de fonction.
+
+
+## Allocation mémoire (pile, tas)
+
+En langage C, on distingue la *pile* (*stack*) et le *tas* (*heap*), représentant chacun une partie différente de la mémoire, utilisables lors de l'exécution d'un programme.  
+
+La pile contient le contenu des variables locales, ainsi que des informations utiles au processeur, comme des pointeurs contenant des adresses auxquelles sauter. Lorsque l'on effectue un appel de fonction, les variables locales à la fonction sont ajoutées au-dessus de la pile, à la suite des valeurs déjà stockées. L'adresse de retour dans le programme est également stockée sur la pile, ainsi que l'adresse à laquelle retrouver le contenu des variables de la fonction appelante.  
+Les données allouées sur la pile sont automatiquement libérées une fois celles-ci devenues inutiles.  
+
+Exemple :
+```C
+int f() {
+    int a = 5;
+    int b = 8;
+    return a + b;
+}
+```
+Les valeurs de ``a`` et ``b`` sont stockées sur la pile, à la suite des valeurs déjà stockées. Après le retour à la fonction appelante, ces valeurs sont "oubliées" : le pointeur indiquant la position actuelle sur la pile est déplacé pour retrouver le contenu des variables de la fonction qui a appelé ``f``.  
+On dit que les variables ``a`` et ``b`` sont allouées de manière *statique*.    
+  
+Le tas est au contraire une mémoire "permanente", plus lente d'accès, mais de taille supérieure. C'est sur le tas que l'on stocke les données volumineuses, et les données qui doivent subsister après la fin de l'appel d'une fonction. L'espace-mémoire est alloué avec la fonction ``malloc``, qui retourne un pointeur vers la plage allouée. Les données vont exister dans la mémoire jusqu'à ce qu'on les libère manuellement, avec l'instruction ``free``. On parle d'allocation *dynamique*.  
+
+Exemple :
+
+```C
+int *allocate_array() {
+    return malloc(10 * sizeof(int));
+}
+
+int main() {
+    int *t = allocate_array();
+    *(t + 5) = 4;
+    
+    /* ... */
+
+    free(t);
+
+    /* ... */
+
+    return 0;
+}
+```
+
+On a alloué une plage pouvant accueillir 10 entiers, via la fonction ``allocate_array``. On utilise le pointeur ``t`` vers cette plage pour écrire la valeur 4 dans l'une de ces cases, et enfin on libère la mémoire pour qu'elle puisse être réutilisée.  
+
+Attention, si l'on oublie de libérer la mémoire allouée, et que celle-ci n'est plus accessible (par exemple si l'on a écrit une autre adresse dans l'unique pointeur qui pointait vers la plage), celle-ci reste verrouillée jusqu'à la fin de l'exécution du programme. On appelle cela une *fuite mémoire* : la mémoire va se remplir au fur et à mesure de l'exécution du programme, l'usage de mémoire-vive (RAM) va augmenter jusqu'à dépasser la capacité de la machine, et le programme va ralentir fortement puis planter.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+Exemple de fuite mémoire :
+
+```C
+for (int i = 0; i < n; i++) {
+    int *p = malloc(sizeof(int));
+    /* ... */
+    // on oublie d'écrire free(p)
+}
+```
+Ici, ``p`` est une variable locale, qui est supprimée à la fin de chaque itération de la boucle. Chaque itération va donc allouer 4 octets (``sizeof(int)``), et le pointeur vers chacune de ces plages va être perdu : la mémoire ne peut plus être libérée jusqu'à la fin de l'exécution du programme.  
+
+
+
+Autre exemple :
+```C
+int n = 100000000;
+int *p = malloc(n * sizeof(int));
+// On remplit la plage allouée par des 0
+for (int i = 0; i < n; i++) {
+    p[i] = 0;
+}
+p = &a; // on utilise p pour autre chose
+// la plage allouée par malloc est à présent inaccessible
+```
+L'adresse de la plage allouée par ``malloc`` est perdue.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+# 4. Gestion de projet
+
+## CMake
+Pour les projets contenant plus que quelques fichiers, on va utiliser un *système de construction logicielle* (*build*), comme CMake. Ce logiciel permet de spécifier facilement les fichiers composant notre code, de spécifier diverses options de compilation, de séparer les fichiers du projet en sous-bibliothèques, et d'ajouter facilement des bibliothèques externes.  
+CMake va générer un *Makefile*, à savoir un fichier contenant toutes les instructions de compilation, permettant une compilation séparée par fichiers, et qui peut être exécuté avec la commande shell ``make``.
+
+## Gestion de versions
+
+Pour n'importe quel projet, il est impératif de disposer d'un *système de gestions de versions*, ou *versioning*. Un tel système permet d'enregistrer les modifications successives du code, de retrouver une version précédente, de collaborer à plusieurs sur un même code, ou de faire évoluer plusieurs *branches* de versions en parallèle, avant de faire éventuellement des fusions de branches, pour introduire les modifications des versions d'une branche dans une autre version.  
+Le système le plus utilisé est Git.  
+
+Pour stocker un code et ses différentes versions, il est nécessaire de disposer d'un espace de stockage, un *dépôt* (repository). Il est possible d'utiliser Github pour héberger son code, en l'utilisant en conjonction avec le système Git.  
+
+On réalise un *commit* lorsque l'on regroupe plusieurs modifications du code en un paquet, et un *push* lorsque l'on envoie ce paquet de modifications au serveur de dépôt. Le système de gestion de versions va alors garder en mémoire les modifications et mettre à jour le code dans sa base de données. Seules les modifications sont stockées, et la dernière version est recomposée à partir des différentes modifications, pour un stockage efficace. On n'envoie que du texte à un serveur de dépôt, le code source, car les fichiers volumineux seraient trop gourmands en stockage.  
+On *clone* un dépôt lorsque l'on importe un projet dans notre machine. Les fichiers que l'on modifie alors sont une copie locale du projet stocké à distance. On peut alors ajouter ou modifier du code, et envoyer nos modifications (commit, push) au dépôt distant.  
+
+Les environnements de développement (Visual Studio, Visual Studio Code, CLion, ...) disposent d'interfaces permettant d'utiliser facilement les gestionnaires de versions.

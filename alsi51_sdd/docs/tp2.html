@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>TP2 - Piles, files – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#objectif-du-tp" id="toc-objectif-du-tp" class="nav-link active" data-scroll-target="#objectif-du-tp"><strong>Objectif du TP</strong></a></li>
+  <li><a href="#partie-1-structure-de-pile" id="toc-partie-1-structure-de-pile" class="nav-link" data-scroll-target="#partie-1-structure-de-pile">Partie 1 : Structure de pile</a></li>
+  <li><a href="#partie-2-structure-de-file" id="toc-partie-2-structure-de-file" class="nav-link" data-scroll-target="#partie-2-structure-de-file">Partie 2 : Structure de file</a></li>
+  <li><a href="#partie-3-evaluation-dexpressions-en-notation-postfixée" id="toc-partie-3-evaluation-dexpressions-en-notation-postfixée" class="nav-link" data-scroll-target="#partie-3-evaluation-dexpressions-en-notation-postfixée">Partie 3 : Evaluation d’expressions en notation postfixée</a></li>
+  <li><a href="#partie-4-evaluation-dexpressions-en-notation-infixée" id="toc-partie-4-evaluation-dexpressions-en-notation-infixée" class="nav-link" data-scroll-target="#partie-4-evaluation-dexpressions-en-notation-infixée">Partie 4 : Evaluation d’expressions en notation infixée</a>
+  <ul class="collapse">
+  <li><a href="#algorithme-shunting-yard" id="toc-algorithme-shunting-yard" class="nav-link" data-scroll-target="#algorithme-shunting-yard"><strong>Algorithme Shunting-yard</strong></a></li>
+  </ul></li>
+  <li><a href="#partie-5-bonus" id="toc-partie-5-bonus" class="nav-link" data-scroll-target="#partie-5-bonus">Partie 5 : Bonus</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TP2 - Piles, files</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="objectif-du-tp" class="level2">
+<h2 class="anchored" data-anchor-id="objectif-du-tp"><strong>Objectif du TP</strong></h2>
+<p>Nous allons coder un <strong>évaluateur d’expressions arithmétiques</strong>, en notation <em>infixée</em> (la notation mathématique classique), c’est-à-dire un programme qui reçoit une chaîne de caractères représentant une expression arithmétique en entrée, et qui renvoie le résultat de son évaluation.<br>
+Exemple : pour la chaîne <code>"2 * (3 + 4) - (5 + 1)"</code> en entrée, le programme doit renvoyer <code>8</code>.</p>
+<p>Pour obtenir ce résultat, nous allons utiliser (en partie 4) l’algorithme <em>Shunting-yard</em> pour convertir l’expression vers la notation <em>postfixée</em>, et nous l’évaluons avec un algorithme spécifique (en partie 3). Les expressions en notation postfixée (présentée en partie 3) ont l’avantage d’être simples à évaluer, et ce ne pas nécessiter de parenthèses.</p>
+<p>Pour représenter les formules, nous utiliserons :</p>
+<ul>
+<li>Un type <code>operator_type</code>, représentant les opérateurs, donné dans le fichier <code>operator.h</code>.</li>
+<li>Un type <code>t_token</code>, qui représente les <em>tokens</em> (entités), à savoir les nombres, opérateurs et parenthèses. Ce type est donné dans le fichier <code>token.h</code> et déjà implémenté dans <code>token.c</code>.</li>
+<li>Un type <code>t_expr</code>, qui représente une expression avec une structure <em>file</em> contenant des tokens.</li>
+</ul>
+</section>
+<section id="partie-1-structure-de-pile" class="level2">
+<h2 class="anchored" data-anchor-id="partie-1-structure-de-pile">Partie 1 : Structure de pile</h2>
+<p>Une <em>pile</em> (<em>stack</em> en anglais) est une structure de données linéaire de type <em>Last In, First Out</em>, ou LIFO, c’est-à-dire qu’on accède aux éléments par ordre inverse de l’ordre d’ajout. On dispose de trois opérations :</p>
+<ul>
+<li>Déterminer si la pile est vide</li>
+<li><em>Empiler</em> un élément : l’ajouter à la pile, à l’avant. On appelle souvent cette opération <em>push</em>.</li>
+<li><em>Dépiler</em> un élément : obtenir le dernier élément à avoir été ajouté (celui à l’avant), et le retirer de la structure. On appelle souvent cette opération <em>pop</em>.</li>
+</ul>
+<blockquote class="blockquote">
+<p>Les piles sont utilisées dans de nombreux algorithmes. Un exemple important est l’usage d’une <em>pile d’appel</em> (<em>call stack</em>) par la machine lors de l’exécution d’un code : lors d’un appel de fonction, les variables locales à la fonction sont placées sur le haut de la pile (avec une opération push), et quand l’appel est terminé les variables de la fonction appelante sont retrouvées en dépilant (avec une opération pop). En langage C, on désigne cette pile d’appel simplement par <em>la pile</em> (<em>stack</em>), par opposition à la mémoire destinée aux allocations dynamiques, appelée <em>le tas</em> (<em>heap</em>).</p>
+</blockquote>
+<ol type="1">
+<li><p>Implémenter une structure de pile en utilisant l’implémentation du type <code>t_list</code> donnée dans le fichier <code>list_double-ended.h</code> et implémentée dans <code>list_double-ended.c</code>. Une <code>t_list</code> contient ici des valeurs de type <code>t_token</code> (ou <code>T</code>).<br>
+L’interface de la structure <code>t_stack</code> est donnée dans le fichier <code>stack.h</code>.<br>
+On veillera à n’utiliser que <strong>les fonctions de la bibliothèque</strong> <code>t_list</code> (<code>get</code>, <code>push_front</code>, <code>delete_at</code>, …) <strong>sans utiliser</strong> les attributs internes de l’objet <code>list</code> (<code>head</code>, <code>size</code>, <code>capacity</code>).</p></li>
+<li><p>Tester les fonctions de la bibliothèque dans le fichier <code>main.c</code>.</p></li>
+</ol>
+</section>
+<section id="partie-2-structure-de-file" class="level2">
+<h2 class="anchored" data-anchor-id="partie-2-structure-de-file">Partie 2 : Structure de file</h2>
+<p>Une <em>file</em> (<em>queue</em> en anglais) est une structure de données linéaire, de type <em>First, In First Out</em>, ou FIFO, c’est-à-dire qu’on accède aux éléments par ordre d’ajout. On dispose de nouveau des trois opérations :</p>
+<ul>
+<li>Déterminer si la file est vide</li>
+<li><em>Enfiler</em> un élément (<em>push</em>) : l’ajouter à la file, à l’arrière.</li>
+<li><em>Défiler</em> un élément (<em>pop</em>) : obtenir l’élément à l’avant de la file, et le retirer de la structure.</li>
+</ul>
+<ol type="1">
+<li><p>Implémenter une structure de file en utilisant l’implémentation du type <code>t_list</code> donnée dans le fichier <code>list_double-ended.h</code>. L’interface de la structure <code>t_queue</code> est donnée dans le fichier <code>queue.h</code>.<br>
+On veillera de nouveau à n’utiliser que les fonctions de la bibliothèque <code>t_list</code>, sans utiliser les attributs internes de l’objet <code>list</code>.</p></li>
+<li><p>Tester les fonctions de la bibliothèque dans le fichier <code>main.c</code>.</p></li>
+</ol>
+</section>
+<section id="partie-3-evaluation-dexpressions-en-notation-postfixée" class="level2">
+<h2 class="anchored" data-anchor-id="partie-3-evaluation-dexpressions-en-notation-postfixée">Partie 3 : Evaluation d’expressions en notation postfixée</h2>
+<p>On souhaite implémenter dans un premier temps une calculatrice d’expressions arithmétiques en notation postfixée (<em>notation polonaise inversée</em>, ou reverse Polish notation, <em>RPN</em>), qui a l’avantage de ne pas nécessiter de parenthèses.</p>
+<p>Une expression en notation <em>postfixée</em> s’écrit à la manière de :</p>
+<pre><code>3 4 5 + 6 + *</code></pre>
+<p>Cette expression s’évalue à 3 * ((4 + 5) + 6) = 45.<br>
+Pour évaluer cette expression, on avance jusqu’au premier opérateur, qui est <code>+</code>. On prend les deux entiers à sa gauche, <code>4</code> et <code>5</code>, on calcule <code>4 + 5 = 9</code>, et on remplace <code>4 5 +</code> dans l’expression par <code>9</code>.<br>
+On a à présent l’expression <code>3 9 6 + *</code>. On trouve l’opérateur <code>+</code>, on calcule donc <code>9 + 6</code>, qui vaut <code>15</code>. On a l’expression <code>3 15 *</code>, donc on calcule <code>3 * 15</code>, qui vaut <code>45</code>. L’expression ne contient plus qu’un seul entier, c’est son résultat.<br>
+Une telle expression ne contient pas de parenthèses.</p>
+<ol type="1">
+<li><p>Implémenter les fonctions <code>is_empty_expr</code>, <code>add_token</code>, <code>get_next_token</code> et <code>print_expr</code>, déclarées dans le fichier <code>expr.h</code>, dans le fichier <code>expr.c</code>.</p></li>
+<li><p>Tester les fonctions précédentes.<br>
+On dispose pour cela d’une fonction <code>parse_expr</code>, déclarée dans <code>expr.h</code>, qui prend en entrée une chaîne de caractères représentant une expression, et renvoie une valeur de type <code>t_expr</code> représentant cette expression.</p></li>
+<li><p>Ecrire la fonction <code>eval_rpn</code> dans le fichier <code>expr.c</code>. Cette fonction prend en entrée une expression en notation postfixée, l’évalue et renvoie son résultat.<br>
+La fonction doit écrire un message d’erreur si l’expression n’est pas bien formée.</p></li>
+</ol>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+<section id="partie-4-evaluation-dexpressions-en-notation-infixée" class="level2">
+<h2 class="anchored" data-anchor-id="partie-4-evaluation-dexpressions-en-notation-infixée">Partie 4 : Evaluation d’expressions en notation infixée</h2>
+<section id="algorithme-shunting-yard" class="level3">
+<h3 class="anchored" data-anchor-id="algorithme-shunting-yard"><strong>Algorithme Shunting-yard</strong></h3>
+<p>L’algorithme Shunting-yard permet de convertir une expression arithmétique écrite en notation infixée en notation postfixée.</p>
+<blockquote class="blockquote">
+<p>L’algorithme <em>Shunting-yard</em> (littéralement “de la gare de triage”) a été inventé par Edsger Dijkstra (1930-2002) en 1961. Dijkstra est un mathématicien et informaticien néerlandais et un grand nom de l’algorithmique, notamment via l’algorithme de calcul de plus court chemin dans un graphe qui porte son nom. Il a obtenu le Prix Turing (souvent considéré comme le “prix Nobel d’informatique”) en 1972 pour ses travaux sur l’algorithmique et les structures de données.</p>
+</blockquote>
+<p>Les tokens <code>(</code> et <code>)</code> (parenthèses ouvrante et fermante) sont ajoutés à l’ensemble des symboles autorisés. L’algorithme utilise une pile appelée <em>op_stack</em> qui stocke des opérateurs et des parenthèses, et une file <em>output_queue</em> qui stocke des nombres et des opérateurs (pas de parenthèses).</p>
+<p><strong>Algorithme</strong></p>
+<ul>
+<li>Pour chaque token de l’expression d’entrée :
+<ul>
+<li>Si le token est un nombre, enfiler ce nombre à <em>output_queue</em>.</li>
+<li>Si le token est une parenthèse ouvrante <code>"("</code>, empiler ce token sur <em>op_stack</em>.</li>
+<li>Si le token est une parenthèse fermante <code>")"</code>, alors dépiler les opérateurs de <em>op_stack</em> et les enfiler sur <em>output_queue</em>, jusqu’à trouver une parenthèse ouvrante <code>"("</code>. Cette parenthèse ouvrante est dépilée de <em>op_stack</em> mais pas enfilée.</li>
+<li>Si le token est un opérateur <em>op1</em>, alors tant qu’il y a un opérateur <em>op2</em> en premier élément de <em>op_stack</em> qui est <strong>prioritaire</strong> sur <em>op1</em>, dépiler <em>op2</em> de <em>op_stack</em> et l’enfiler sur <em>output_queue</em>. Ensuite, empiler <em>op1</em> sur <em>op_stack</em>.<br>
+On dit que <em>op2</em> est <em>prioritaire</em> sur <em>op1</em> si <em>op1</em> = <code>+</code> ou <code>-</code>, ou si <em>op2</em> = <code>/</code>.</li>
+</ul></li>
+<li>Une fois toute l’expression lue, dépiler tous les opérateurs restants de <em>op_stack</em> et les enfiler sur <em>output_queue</em>. Si l’on rencontre une parenthèse, c’est que l’expression était incorrectement parenthésée.</li>
+<li>On renvoie la file <em>output_queue</em>.</li>
+</ul>
+<ol start="2" type="1">
+<li><p>Implémenter la fonction <code>takes_priority</code> dans le fichier <code>operator.c</code>, qui permet de comparer la priorité de deux opérateurs.</p></li>
+<li><p>Implémenter la fonction <code>shunting_yard</code> dans le fichier <code>expr.c</code>, qui exécute l’algorithme Shunting-yard sur une expression d’entrée en notation infixée et renvoie une expression en notation postfixée.</p></li>
+<li><p>Implémenter la fonction <code>eval_expr</code> dans <code>expr.c</code>, qui prend une expression de type <code>t_expr</code> en notation infixée en entrée et renvoie le résultat de son évaluation.</p></li>
+<li><p>Implémenter la fonction <code>eval</code> dans <code>expr.c</code>, qui prend en entrée une chaîne de caractères représentant une expression arithmétique en notation infixée, et renvoie le résultat de son évaluation.</p></li>
+</ol>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+</section>
+<section id="partie-5-bonus" class="level2">
+<h2 class="anchored" data-anchor-id="partie-5-bonus">Partie 5 : Bonus</h2>
+<ol type="1">
+<li><p>Ajouter l’opérateur <code>^</code> d’exponentiation.<br>
+Lorsque vous modifierez la fonction <code>takes_priority</code>, notez que cet opérateur est prioritaire sur tous les autres, et doit être parenthésé à droite : a ^ b ^ c est égal à a ^ (b ^ c).</p></li>
+<li><p>Effacer et réécrire la fonction de parsing <code>parse_expr</code>. Cette fonction prend en entrée une chaîne de caractères (type <code>char *</code>) et renvoie l’expression qu’elle représente au type <code>t_expr</code>.<br>
+La fonction fournie dans le sujet gère le cas du <code>-</code> unaire pour représenter les nombres négatifs. Vous pouvez commencer par supposer que tous les nombres de l’expression seront positifs ou nuls.</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

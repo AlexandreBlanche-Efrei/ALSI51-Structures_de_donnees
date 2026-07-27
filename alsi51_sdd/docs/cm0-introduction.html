@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Introduction – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#structures-de-données" id="toc-structures-de-données" class="nav-link active" data-scroll-target="#structures-de-données">Structures de données</a>
+  <ul class="collapse">
+  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">Définition</a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation">Motivation</a>
+  <ul class="collapse">
+  <li><a href="#déclaration-implémentation" id="toc-déclaration-implémentation" class="nav-link" data-scroll-target="#déclaration-implémentation">Déclaration / Implémentation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#complexité" id="toc-complexité" class="nav-link" data-scroll-target="#complexité">Complexité</a>
+  <ul class="collapse">
+  <li><a href="#définition-1" id="toc-définition-1" class="nav-link" data-scroll-target="#définition-1">Définition</a></li>
+  <li><a href="#notations-de-landau" id="toc-notations-de-landau" class="nav-link" data-scroll-target="#notations-de-landau">Notations de Landau</a></li>
+  <li><a href="#familles-de-complexité-classiques" id="toc-familles-de-complexité-classiques" class="nav-link" data-scroll-target="#familles-de-complexité-classiques">Familles de complexité classiques</a></li>
+  <li><a href="#complexité-en-espace" id="toc-complexité-en-espace" class="nav-link" data-scroll-target="#complexité-en-espace">Complexité en espace</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="structures-de-données" class="level1">
+<h1>Structures de données</h1>
+<!--
+- Différentes structures : avantages / inconvénients, choix pertinent en fonction du cas d'application
+- Type abstrait vs implémentation
+-> Compartimentation : interface = boîte à outil pour l'utilisateur, implémentation cachée
+-> Programmation modulaire : minimise le couplage, réduit les erreurs, compartimentation des fonctionnalités
+- Réutilisation de structures pour implémenter d'autres structures
+-->
+<section id="définition" class="level2">
+<h2 class="anchored" data-anchor-id="définition">Définition</h2>
+<p>Une <strong>structure de données</strong> est une manière d’organiser et de stocker des données (nombres, chaînes de caractères, images…) afin de permettre leur traitement efficace. Il existe en effet de nombreuses manières de stocker des données, plus ou moins efficaces, et il convient de choisir la bonne représentation en fonction du cas d’application.</p>
+<p>Exemples classiques :</p>
+<ul>
+<li>Structures linéaires : tableaux de taille fixe, tableaux dynamiques, listes chaînées</li>
+<li>Structures arborescentes : arbres binaires, arbres n-aires, arbres binaires de recherche…</li>
+<li>Structures de graphes : matrice d’adjacence, liste d’adjacence</li>
+<li>Structures de dictionnaires, tables de hachages</li>
+</ul>
+<p>Une structure de données est la spécification d’un <strong>type abstrait</strong>, qui spécifie uniquement les opérations autorisées sur les données stockées, sans imposer d’implémentation particulière.</p>
+<p>Exemples :</p>
+<ul>
+<li><p>Une <em>pile</em> est une structure linéaire qui permet uniquement d’ajouter un élément en première position, d’accéder à l’élément en première position et à le retirer de la structure. Il existe de nombreuses manières d’implémenter ces opérations, et donc d’implémenter le type abstrait pile.</p></li>
+<li><p>Un <em>dictionnaire</em> est une structure où chaque donnée est associée à une <em>clé</em>, qui peut être une valeur numérique ou une chaîne de caractère par exemple. De même, il existe de nombreuses manières d’implémenter ce type abstrait, plus ou moins efficaces.</p></li>
+</ul>
+</section>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<section id="déclaration-implémentation" class="level3">
+<h3 class="anchored" data-anchor-id="déclaration-implémentation">Déclaration / Implémentation</h3>
+<p>L’utilisation d’une structure de donnée a pour vocation à être <em>abstraite</em>, c’est-à-dire “cachée” et accessible uniquement via un ensemble de fonction permettant accès et manipulation. On place le code de son implémentation dans un fichier séparé (au format <code>.c</code> en langage C), et on met à disposition des autres fichiers du projet une <em>interface</em> (au format <code>.h</code>) qui spécifie uniquement les types d’entrée et de sortie des fonctions autorisées (les <em>prototypes</em> de ces fonctions). Dans le reste du code du projet, les seules opérations possibles sur la structure seront les appels de fonctions déclarées dans le fichier d’en-tête <code>.h</code>.</p>
+<p>Exemple :</p>
+<p>Fichier d’en-tête <code>array.h</code></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define ARRAY_SIZE </span><span class="dv">100</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">int</span> T<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Définition du type</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    T data<span class="op">[</span>ARRAY_SIZE<span class="op">];</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> size<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> array<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Prototypes des fonctions autorisées sur la structure</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>array create_array<span class="op">();</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> get_size<span class="op">(</span>array <span class="op">*</span>a<span class="op">);</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>T get<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> <span class="dt">int</span> index<span class="op">);</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> push<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> T val<span class="op">);</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> set<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> <span class="dt">int</span> index<span class="op">,</span> T val<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fichier implémentation <code>array.c</code></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Inclusion de l'en-tête pour la définition du type</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"array.h"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Implémentation des fonctions</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>array create_array<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    array a<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    a<span class="op">.</span>size <span class="op">=</span> ARRAY_SIZE<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> get_size<span class="op">(</span>array <span class="op">*</span>a<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">-&gt;</span>size<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>T get<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> <span class="dt">int</span> index<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">-&gt;</span>data<span class="op">[</span>index<span class="op">];</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> push<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> T val<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>a<span class="op">-&gt;</span>size <span class="op">&gt;=</span> ARRAY_SIZE<span class="op">)</span> <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    a<span class="op">-&gt;</span>data<span class="op">[</span>a<span class="op">-&gt;</span>size<span class="op">]</span> <span class="op">=</span> val<span class="op">;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    a<span class="op">-&gt;</span>size<span class="op">++;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> set<span class="op">(</span>array <span class="op">*</span>a<span class="op">,</span> <span class="dt">int</span> index<span class="op">,</span> T val<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    a<span class="op">-&gt;</span>data<span class="op">[</span>index<span class="op">]</span> <span class="op">=</span> val<span class="op">;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les autres parties du code (notamment la fonction <code>main</code>) peuvent à présent utiliser la structure <code>array</code> en appelant ses fonctions <code>create_array</code>, <code>get_size</code>, <code>get</code> et <code>set</code>. On appelle <em>module</em> une telle composante d’un projet, et on appelle cette stratégie <em>programmation modulaire</em>. Elle possède plusieurs avantages :</p>
+<ul>
+<li><p>Cela permet de <strong>compartimenter</strong> les fonctionnalités du code : la structure est développée par un développeur sans se soucier du reste du projet, et un développeur qui souhaite utiliser la structure pour stocker et manipuler ses données peut simplement utiliser les fonctions de la bibliothèque sans se soucier des détails de son implémentation.</p></li>
+<li><p>On minimise ainsi le <strong>couplage</strong> : les informations échangées entre les différentes composantes d’un projet sont limitées au minimum, pour contrôler les points d’accès et de modifications des données.</p></li>
+<li><p>Cette méthode facilite la <strong>maintenance</strong> du code : le fait de modifier l’implémentation d’une structure (pour la débugger, l’optimiser ou pour ajouter des fonctionnalités) ne perturbe pas le reste du projet, et si les fonctions modifiées sont <em>sémantiquement</em> équivalentes aux précédentes, le projet doit avoir un résultat inchangé.</p></li>
+<li><p>On minimise également la <strong>redondance</strong> : un même bloc de code n’est écrit qu’une seule fois dans le code du projet. Dans l’exemple ci-dessus, la gestion de la variable <code>size</code> est uniquement assurée par la fonction <code>push</code>, sans avoir à mettre manuellement à jour la variable à chaque ajout.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="complexité" class="level1">
+<h1>Complexité</h1>
+<!-- - Complexité
+Notations de Landau
+Constant, linéaire, quasi-linéaire, quadratique, polynomial,
+exponentiel
+
+Pire cas
+En moyenne
+Amortie
+
+Complexité en temps vs espace -->
+<section id="définition-1" class="level2">
+<h2 class="anchored" data-anchor-id="définition-1">Définition</h2>
+<p>La <em>complexité</em> temporelle d’un algorithme (ou d’un programme) est une mesure du nombre d’opérations effectuées par la machine pour exécuter l’algorithme. On exprime cette complexité comme une fonction de la taille de l’entrée. Le plus souvent, on note <span class="math inline">\(n\)</span> la taille de l’entrée, et on exprime la complexité en fonction de <span class="math inline">\(n\)</span>. On distingue les calculs de complexité suivants :</p>
+<ul>
+<li><strong>Complexité en pire cas</strong> : On cherche couramment à calculer une majoration du nombre d’opérations effectuées, quelle que soit de l’entrée d’une taille <span class="math inline">\(n\)</span> donnée. On parle de <em>pire cas</em> lorsque le nombre d’opérations effectuées est maximal, et on cherche si possible à expliciter les conditions dans lesquelles survient ce pire cas.</li>
+<li><strong>Complexité en moyenne</strong> : Il existe parfois de larges disparités entre la complexité du pire cas et celle des autres cas, et il arrive que le pire cas soit très rare en pratique. Il est donc parfois intéressant de calculer la complexité <em>en moyenne</em> de l’algorithme, c’est-à-dire la moyenne des complexités sur toutes les entrées d’une taille <span class="math inline">\(n\)</span> donnée.</li>
+<li><strong>Complexité amortie</strong> : Dans certaines structures, lorsque l’on effectue un grand nombre d’opérations identiques successivement (par exemple insérer un élément dans une structure), il arrive que le pire cas de complexité survienne dans une faible proportion de ces opérations. D’une certaine manière, les opérations “peu coûteuses” compensent les opérations “coûteuses”. La complexité <em>amortie</em> est donc la complexité moyenne par exécution d’une opération, parmi un grand nombre de répétitions de cette opération.</li>
+</ul>
+</section>
+<section id="notations-de-landau" class="level2">
+<h2 class="anchored" data-anchor-id="notations-de-landau">Notations de Landau</h2>
+<p>La plupart du temps, il est difficile et peu pertinent de calculer la valeur exacte du nombre d’opérations effectuées pour une entrée de taille <span class="math inline">\(n\)</span>. On cherche en général une estimation asymptotique de cette grandeur, et souvent une simple majoration.</p>
+<p>Pour cela, on utilise les notations de comparaisons asymptotiques, appelées <em>notations de Landau</em> en hommage à Edmund Landau (1877-1938) bien qu’elles aient été en partie inventées par Paul Bachmann (1837-1920), Godfrey Harold Hardy (1877-1947) et John Edensor Littlewood (1885-1977).</p>
+<p>On considère deux fonctions <span class="math inline">\(f, g : \mathbb{N} \rightarrow \mathbb{R}\)</span>. On définit les notations suivantes :</p>
+<ul>
+<li><p><strong><span class="math inline">\(f(n) = O(g(n))\)</span></strong> (“<em>grand O</em>”) lorsque pour <span class="math inline">\(N\)</span> assez grand, il existe une constante <span class="math inline">\(K\in \mathbb{R}\)</span> telle que <span class="math inline">\(\forall n \geq N, \vert f(n)\vert \leq K \vert g(n)\vert\)</span>.</p>
+<p>On dit que <span class="math inline">\(g\)</span> <strong>domine</strong> <span class="math inline">\(f\)</span>. On peut aussi voir <span class="math inline">\(K\)</span> comme une borne sur le rapport <span class="math inline">\(f(n)/g(n)\)</span> pour <span class="math inline">\(n\)</span> assez grand : <span class="math inline">\(f\)</span> peut être négligeable devant <span class="math inline">\(g\)</span> mais ne peut pas évoluer plus vite asymptotiquement que <span class="math inline">\(g\)</span> (sauf à constante près).<br> Exemple : <span class="math inline">\(2 n^4 + 100n^2 = O(n^4)\)</span>, mais aussi <span class="math inline">\(O(n^5), O(n^6)\)</span>… <br><br></p></li>
+<li><p><span class="math inline">\(f(n) = o(g(n))\)</span> (“<em>petit o</em>”) lorsque pour <span class="math inline">\(N\)</span> assez grand, pour tout réel <span class="math inline">\(\varepsilon &gt; 0\)</span>, <span class="math inline">\(\forall n\geq N, \vert f(n)\vert \leq \varepsilon \vert g(n)\vert\)</span>.</p>
+<p>On dit que <span class="math inline">\(f\)</span> est <strong>négligeable</strong> devant <span class="math inline">\(g\)</span>. Si <span class="math inline">\(\forall n\in \mathbb{N}, g(n) \neq 0\)</span>, cette définition est équivalente à <span class="math inline">\(\frac{\vert f(n)\vert}{\vert g(n)\vert} \xrightarrow[n \to \infty]{} 0\)</span>.<br> Exemple : <span class="math inline">\(100n = o(n^2)\)</span>, ou <span class="math inline">\(o(n\log n)\)</span>. <br><br></p></li>
+<li><p><span class="math inline">\(f(n) = \Omega(g(n))\)</span> (“<em>oméga</em>”) lorsque <span class="math inline">\(g(n) = O(f(n))\)</span> (selon la définition de Donald Knuth).</p>
+<p><span class="math inline">\(f\)</span> est minoré par <span class="math inline">\(g\)</span>. <br> Exemple : <span class="math inline">\(n\log n = \Omega(n)\)</span> (mais pas <span class="math inline">\(O(n)\)</span>). <br><br></p></li>
+<li><p><span class="math inline">\(f(n) = \Theta(g(n))\)</span> (“<em>théta</em>”) si <span class="math inline">\(f(n) = O(g(n))\)</span> et <span class="math inline">\(f(n) = \Omega(g(n))\)</span>.</p>
+<p><span class="math inline">\(f\)</span> et <span class="math inline">\(g\)</span> sont du même ordre de grandeur asymptotiquement.<br> Exemple : <span class="math inline">\(5n^3 + 7 n^2 + 10n = \Theta(n^3)\)</span>.</p></li>
+</ul>
+<p>Ces notations consistent donc à exprimer des majorations, minorations et dominations entre fonctions, en ignorant les termes négligeables et les constantes multiplicatives.</p>
+<p>Exemples :</p>
+<ul>
+<li><span class="math inline">\(5n^3 + 2n^2 + 7n + 100 = O(n^3)\)</span>, et même <span class="math inline">\(\Theta(n^3)\)</span></li>
+<li><span class="math inline">\(n^{10} = o(2^n)\)</span></li>
+<li><span class="math inline">\(n! = O(n^n)\)</span> et <span class="math inline">\(n! = \Omega((n/e)^n)\)</span></li>
+<li>Une fonction bornée est <span class="math inline">\(O(1)\)</span>.</li>
+<li>Une fonction qui tend vers <span class="math inline">\(0\)</span> en valeur absolue est <span class="math inline">\(o(1)\)</span>.</li>
+<li><span class="math inline">\(\displaystyle \frac{1}{n^2} = o \left(\frac{1}{n}\right)\)</span></li>
+<li>Somme des entiers : <span class="math inline">\(\displaystyle 1 + 2 + \dots + n = \sum_{k = 1}^n k = \frac{n(n+1)}{2} = O(n^2)\)</span></li>
+<li>Le logarithme en base <span class="math inline">\(b\)</span> : <span class="math inline">\(\displaystyle \log_b n = \frac{\ln n}{\ln b} = \Theta(\ln n)\)</span>. On note donc, sans distinction de base, <span class="math inline">\(\Theta(\log n)\)</span>.</li>
+<li>Série harmonique : <span class="math inline">\(\displaystyle \sum_{k = 1}^n \frac{1}{k} = \ln n + \gamma + o(1) = \Theta(\log n)\)</span> (où <span class="math inline">\(\gamma \simeq 0.577215\dots\)</span> est la <em>constante d’Euler</em>).</li>
+</ul>
+</section>
+<section id="familles-de-complexité-classiques" class="level2">
+<h2 class="anchored" data-anchor-id="familles-de-complexité-classiques">Familles de complexité classiques</h2>
+<p>On classe généralement les algorithmes et les programmes dans les familles de complexités suivantes :</p>
+<ul>
+<li><p>Complexité <strong>constante</strong> (ou <strong>temps constant</strong>), <span class="math inline">\(O(1)\)</span><br> Le nombre d’opérations est majoré par une constante, quelle que soit la taille <span class="math inline">\(n\)</span> de l’entrée.<br> Exemples : accès à un élément d’un tableau, ajout en tête d’une liste chaînée, accès à la racine d’un arbre.</p></li>
+<li><p>Complexité <strong>logarithmique</strong>, en <span class="math inline">\(O(\log n)\)</span><br> Exemples : recherche d’une valeur par dichotomie dans un tableau trié, algorithme d’exponentiation rapide, recherche d’un élément dans un arbre binaire de recherche équilibré (comme les arbres AVL).</p></li>
+<li><p>Complexité <strong>linéaire</strong>, en <span class="math inline">\(O(n)\)</span><br> Exemples : recherche dans un tableau ou une liste chaînée, recherche du maximum d’un tableau, parcours de graphe (largeur / profondeur).</p></li>
+<li><p>Complexité <strong>quasilinéaire</strong>, en <span class="math inline">\(O(n\log n)\)</span><br> Exemples : divers algorithmes de type <em>Diviser pour régner</em>, dont l’algorithme de <em>transformée de Fourier rapide</em> (<em>FFT</em>), et les algorithmes de tri rapides (<em>Quicksort</em>, <em>tri fusion</em>, <em>tri par tas</em>).</p></li>
+<li><p>Complexité <strong>quadratique</strong>, en <span class="math inline">\(O(n^2)\)</span><br> Exemples : algorithmes de tri naïfs (tri par sélection, par insertion, tri à bulles).</p></li>
+<li><p>Complexité <strong>polynomiale</strong>, en <span class="math inline">\(O(n^k)\)</span> pour une certaine constante <span class="math inline">\(k\in \mathbb{N}\)</span>.<br> Lorsque le calcul de complexité est plus difficile, par exemple lorsque l’existence d’algorithme polynomial est obtenu par des raisonnements théoriques.<br> Exemple : Le <em>test de primalité AKS</em>, de complexité <span class="math inline">\(O(n^{10.5})\)</span>, où <span class="math inline">\(n\)</span> est le nombre de bits du nombre en entrée, mais l’estimation peut être affinée à <span class="math inline">\(O(n^6)\)</span> ou <span class="math inline">\(O(n^3)\)</span> si certaines conjectures sont vraies.</p></li>
+<li><p>Complexité <strong>exponentielle</strong>, en <span class="math inline">\(O(2^n)\)</span>, ou <span class="math inline">\(O(k^n)\)</span> pour une certaine constante <span class="math inline">\(k\in \mathbb{R}\)</span>.<br> Exemples : les problèmes <em>NP-complets</em> (Problèmes du <em>Voyageur de commerce</em>, <em>Sac à dos</em>, <em>SAT</em>, <em>Coloration de graphe</em>…), énumération des sous-ensembles d’un ensemble à <span class="math inline">\(n\)</span> éléments, recherche par force brute.</p></li>
+<li><p>Complexité <strong>factorielle</strong>, en <span class="math inline">\(O(n!)\)</span><br> Exemples : calcul naïf de déterminant d’une matrice, énumération des permutations d’un ensemble à <span class="math inline">\(n\)</span> éléments.</p></li>
+</ul>
+<p>Par extension, on définit la <em>complexité d’un problème</em> par la complexité du meilleur algorithme qui résout ce problème. En théorie de la complexité algorithmique, on définit la classe <span class="math inline">\(P\)</span> des problèmes de complexité polynomiale (en <span class="math inline">\(O(n^k)\)</span>), et <span class="math inline">\(EXP\)</span> la classe des problème de complexité exponentielle (en <span class="math inline">\(O(k^n)\)</span>).</p>
+<p>Une complexité exponentielle ou supérieure est souvent considérée comme inutilisable en pratique.</p>
+</section>
+<section id="complexité-en-espace" class="level2">
+<h2 class="anchored" data-anchor-id="complexité-en-espace">Complexité en espace</h2>
+<p>On étudie parfois la quantité de mémoire requise pour exécuter un algorithme (ou un programme) sur une entrée de taille <span class="math inline">\(n\)</span>. On parle alors de <em>complexité en espace</em>.</p>
+<p>Par définition, comme chaque case mémoire utilisée nécessite au moins une opération de lecture et d’écriture, la complexité en temps d’un algorithme est toujours supérieure ou égale à sa complexité en espace. De plus, dans les cas où l’entrée doit être lue en entier, la complexité en espace est nécessairement en <span class="math inline">\(\Omega(n)\)</span>.</p>
+<p>Un programme de complexité quadratique en espace devient vite inutilisable en pratique.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

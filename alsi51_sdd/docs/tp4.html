@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>TP4 - Structures arborescentes – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#partie-1-arbres-binaires-de-recherche" id="toc-partie-1-arbres-binaires-de-recherche" class="nav-link" data-scroll-target="#partie-1-arbres-binaires-de-recherche">Partie 1 : Arbres binaires de recherche</a></li>
+  <li><a href="#partie-2-arbres-équilibrés-avl" id="toc-partie-2-arbres-équilibrés-avl" class="nav-link" data-scroll-target="#partie-2-arbres-équilibrés-avl">Partie 2 : Arbres équilibrés AVL</a>
+  <ul class="collapse">
+  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">Définition</a>
+  <ul class="collapse">
+  <li><a href="#rotation-à-gauche" id="toc-rotation-à-gauche" class="nav-link" data-scroll-target="#rotation-à-gauche">Rotation à gauche</a></li>
+  <li><a href="#rotation-à-droite" id="toc-rotation-à-droite" class="nav-link" data-scroll-target="#rotation-à-droite">Rotation à droite</a></li>
+  <li><a href="#règles" id="toc-règles" class="nav-link" data-scroll-target="#règles">Règles</a></li>
+  </ul></li>
+  <li><a href="#implémentation" id="toc-implémentation" class="nav-link" data-scroll-target="#implémentation">Implémentation</a></li>
+  </ul></li>
+  <li><a href="#partie-3-bonus-arbres-préfixes" id="toc-partie-3-bonus-arbres-préfixes" class="nav-link" data-scroll-target="#partie-3-bonus-arbres-préfixes">Partie 3 (Bonus) : Arbres préfixes</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TP4 - Structures arborescentes</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>On souhaite implémenter une base de données contenant des chaînes de caractères. On doit se munir des trois opérations suivantes :</p>
+<ul>
+<li><strong>Recherche</strong> : pour une chaîne <span class="math inline">\(s\)</span> donnée, déterminer si <span class="math inline">\(s\)</span> appartient à la base de données</li>
+<li><strong>Insertion</strong> : pour une chaîne <span class="math inline">\(s\)</span> qui n’appartient pas à la base de données, ajouter <span class="math inline">\(s\)</span> à la base de données</li>
+<li><strong>Énumération</strong> : lister toutes les chaînes qui appartiennent à la base données</li>
+</ul>
+<p>On propose une première implémentation d’une telle base de données.</p>
+<ol type="1">
+<li>Télécharger le dépôt contenant le code de base du TP sur <a href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees/tree/main/">la page Github du module</a>.</li>
+</ol>
+<p>Dans le fichier <code>src/database/database_array.c</code>. Cette implémentation utilise un tableau dynamique, similaire à celui vu dans le TP1, dont l’implémentation est donnée dans <code>src/structures/array.c</code>.</p>
+<ol start="2" type="1">
+<li>Compiler et exécuter le programme. La fonction <code>main</code> teste d’insérer un nombre <span class="math inline">\(n\)</span> de chaînes entre 10 et 100000.</li>
+</ol>
+<p>La fonction exécutée pour chaque test est la suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> string s <span class="op">=</span> get_next_random_string<span class="op">();</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>is_in_database_array <span class="op">(&amp;</span>db<span class="op">,</span> s<span class="op">))</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        insert_in_database_array <span class="op">(&amp;</span>db<span class="op">,</span> s<span class="op">);</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        denied<span class="op">++;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="1">
+<li>Quelle est la complexité en temps de cette boucle ? Les résultats observés confirment-ils votre estimation ?</li>
+</ol>
+</section>
+<section id="partie-1-arbres-binaires-de-recherche" class="level1">
+<h1>Partie 1 : Arbres binaires de recherche</h1>
+<p>Nous allons implémenter une structure de données plus efficace pour réaliser ces opérations.</p>
+<p>Un <em>arbre binaire</em> (<em>binary tree</em>) est une structure récursive, qui peut être soit vide, soit composée d’une valeur et de deux sous-arbres binaires (possiblement vides).</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bintree" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bintree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-bintree">stateDiagram
+    A0: 4
+    A1: 5
+    A2: _
+    A3: _
+    A1 --&gt; A2: left
+    A1 --&gt; A3: right
+    A4: 1
+    A5: 9
+    A6: _
+    A7: _
+    A5 --&gt; A6: left
+    A5 --&gt; A7: right
+    A8: _
+    A4 --&gt; A5: left
+    A4 --&gt; A8: right
+    A0 --&gt; A1: left
+    A0 --&gt; A4: right
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bintree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Exemple d’arbre binaire
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ici, l’arbre est <span class="math inline">\(T = (4, T_{left}, T_{right})\)</span>. Il contient la valeur <span class="math inline">\(4\)</span> et deux sous-arbres <span class="math inline">\(T_{left} = (5, Empty, Empty)\)</span> et <span class="math inline">\(T_{right} = (1, (9, Empty, Empty), Empty)\)</span>. Les noeuds notés <span class="math inline">\(\_\)</span> indiquent des arbres vides.</p>
+<p>Pour un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span>, on appelle <span class="math inline">\(T_{left}\)</span> le <em>fils gauche</em> et <span class="math inline">\(T_{right}\)</span> le <em>fils droit</em> de <em>T</em>. Lorsque l’on voit un arbre comme un ensemble de noeuds, le noeud au sommet de l’arbre est la <em>racine</em> (<em>root</em>) de l’arbre. Les noeuds (<em>nodes</em>) dont les deux fils sont vides sont appelés des <em>feuilles</em> (<em>leaf</em> / <em>leaves</em>) et les autres des <em>noeuds internes</em>. Dans l’exemple de la figure <a href="#fig-bintree" class="quarto-xref">Figure&nbsp;1</a>, la racine est le noeud contenant <span class="math inline">\(4\)</span>, et les feuilles les noeuds contenant <span class="math inline">\(5\)</span> et <span class="math inline">\(9\)</span>.</p>
+<p>Un <em>arbre binaire de recherche</em> (<em>binary search tree</em>) est une variété d’arbre binaire avec une propriété supplémentaire. Si l’arbre est égal à <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span>, alors les valeurs contenues dans <span class="math inline">\(T_{left}\)</span> sont inférieures ou égales à <span class="math inline">\(v\)</span>, et celles contenues dans <span class="math inline">\(T_{right}\)</span> sont strictement supérieures à <span class="math inline">\(v\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bst" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bst-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-bst">stateDiagram
+    A0: 4
+    A1: 2
+    A2: 1
+    A3: _
+    A4: _
+    A2 --&gt; A3: left
+    A2 --&gt; A4: right
+    A5: 3
+    A6: _
+    A7: _
+    A5 --&gt; A6: left
+    A5 --&gt; A7: right
+    A1 --&gt; A2: left
+    A1 --&gt; A5: right
+    A8: 8
+    A9: 5
+    A10: _
+    A11: _
+    A9 --&gt; A10: left
+    A9 --&gt; A11: right
+    A12: 9
+    A13: _
+    A14: _
+    A12 --&gt; A13: left
+    A12 --&gt; A14: right
+    A8 --&gt; A9: left
+    A8 --&gt; A12: right
+    A0 --&gt; A1: left
+    A0 --&gt; A8: right
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bst-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Exemple d’arbre binaire de recherche
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Pour insérer une valeur <span class="math inline">\(val\)</span> dans un arbre binaire de recherche <span class="math inline">\(T\)</span> :</p>
+<ul>
+<li>Si <span class="math inline">\(T = Empty\)</span>, on y place un noeud <span class="math inline">\((val, Empty, Empty)\)</span>.</li>
+<li>Si <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> et <span class="math inline">\(val \leq v\)</span>, on insère <span class="math inline">\(val\)</span> dans <span class="math inline">\(T_{left}\)</span>, sinon on l’insère dans <span class="math inline">\(T_{right}\)</span>.</li>
+</ul>
+<ol type="1">
+<li><p>On trouve dans <code>include/structures/bin_tree.h</code> une définition d’une structure d’arbre binaire de recherche <code>string_tree</code> contenant des valeurs de type <code>string</code> (définies dans <code>include/structures/string_type.h</code>). Implémenter les opérations <code>create_empty_tree</code>, <code>insert_bst</code>, <code>search_in_tree</code> et <code>list_all_entries_tree</code> dans <code>src/structures/bin_tree.c</code>.</p></li>
+<li><p>Tester votre structure avec la fonction <code>test_bin_tree</code> définie dans <code>tests/test_structures.c</code>.</p></li>
+<li><p>Visualiser les arbres générés avec Mermaid. Quel est le problème avec ces arbres ?</p></li>
+<li><p>Quelle est la complexité en pire cas d’ajout et de recherche dans un arbre binaire ?</p></li>
+</ol>
+</section>
+<section id="partie-2-arbres-équilibrés-avl" class="level1">
+<h1>Partie 2 : Arbres équilibrés AVL</h1>
+<p>Nous allons améliorer notre structure, en implémentant des opérations <em>d’équilibrage</em>, afin d’obtenir une structure d’<strong>AVL</strong>.</p>
+<p>La <em>hauteur</em> d’un arbre binaire est la longueur du plus long chemin entre une feuille et la racine. Par convention, un arbre vide a une hauteur de <span class="math inline">\(-1\)</span>, un arbre <span class="math inline">\((v, Empty, Empty)\)</span> est de hauteur <span class="math inline">\(0\)</span>, et un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> a une hauteur <span class="math inline">\(h(T) = 1 + \max(h(T_{left}), h(T_{right}))\)</span>. Les arbres des figures <a href="#fig-bintree" class="quarto-xref">Figure&nbsp;1</a> et <a href="#fig-bst" class="quarto-xref">Figure&nbsp;2</a> ont une hauteur de <span class="math inline">\(2\)</span>.</p>
+<p>Le <em>facteur d’équilibrage</em> (<em>balancing factor</em>) d’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> est <span class="math inline">\(bf(T) = h(T_{left}) - h(T_{right})\)</span>. On dit qu’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> est <em>équilibré</em> si <span class="math inline">\(bf(T) \in \{-1, 0, 1\}\)</span> et <span class="math inline">\(T_{left}\)</span> et <span class="math inline">\(T_{right}\)</span> sont équilibrés.</p>
+<section id="définition" class="level2">
+<h2 class="anchored" data-anchor-id="définition">Définition</h2>
+<p>Les arbres <strong>AVL</strong> sont des arbres binaires de recherche qui appliquent des opérations de <em>rotations</em> à chaque insertion, afin de maintenir l’équilibre de l’arbre.</p>
+<section id="rotation-à-gauche" class="level3">
+<h3 class="anchored" data-anchor-id="rotation-à-gauche">Rotation à gauche</h3>
+<div id="fig-rotleft" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rotleft-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    U: u
+    A: A
+    U --&gt; A:::subtree: left
+    V: v
+    B: B
+    C: C
+    U --&gt; V: right
+    V --&gt; B:::subtree: left
+    V --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<pre class="{latex}"><code>
+
+
+
+
+       --&gt; </code></pre>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    V: v
+    U: u
+    A: A
+    U --&gt; A:::subtree: left
+    B: B
+    C: C
+    V --&gt; U: left
+    U --&gt; B:::subtree: right
+    V --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rotleft-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Rotation à gauche
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="rotation-à-droite" class="level3">
+<h3 class="anchored" data-anchor-id="rotation-à-droite">Rotation à droite</h3>
+<div id="fig-rotright" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rotright-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    U: u
+    V: v
+    U --&gt; V: left
+    A: A
+    V --&gt; A:::subtree: left
+    B: B
+    C: C
+    V --&gt; B:::subtree: right
+    U --&gt; C:::subtree: left
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<pre class="{latex}"><code>
+
+
+
+
+       --&gt; </code></pre>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    
+    V: v
+    A: A
+    V --&gt; A:::subtree: left
+    
+    B: B
+    C: C
+    U: u
+    V --&gt; U: right
+    U --&gt; B:::subtree: left
+    U --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rotright-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Rotation à droite
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="règles" class="level3">
+<h3 class="anchored" data-anchor-id="règles">Règles</h3>
+<p>Après une insertion d’une valeur dans le fils <span class="math inline">\(T_{left}\)</span> ou <span class="math inline">\(T_{right}\)</span> d’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span>, on recalcule le facteur d’équilibrage de <span class="math inline">\(T_{left}\)</span>, <span class="math inline">\(T_{right}\)</span> et <span class="math inline">\(T\)</span>, et on applique les règles suivantes :</p>
+<ul>
+<li>Si <span class="math inline">\(bf(T) = -2\)</span> :
+<ul>
+<li>Si <span class="math inline">\(bf(T_{right}) = -1\)</span>: <strong>rotation à gauche</strong> de <span class="math inline">\(T\)</span></li>
+<li>Sinon si <span class="math inline">\(bf(T_{right}) = 1\)</span>: <strong>rotation à droite</strong> de <span class="math inline">\(T_{right}\)</span> puis <strong>rotation à gauche</strong> de <span class="math inline">\(T\)</span></li>
+</ul></li>
+<li>Sinon si <span class="math inline">\(bf(T) = 2\)</span>:
+<ul>
+<li>Si <span class="math inline">\(bf(T_{right}) = -1\)</span>: <strong>rotation à gauche</strong> de <span class="math inline">\(T_{left}\)</span> puis <strong>rotation à droite</strong> de <span class="math inline">\(T\)</span></li>
+<li>Sinon si <span class="math inline">\(bf(T_{right}) = 1\)</span>: <strong>rotation à droite</strong> de <span class="math inline">\(T\)</span></li>
+</ul></li>
+<li>Sinon, on ne fait rien.</li>
+</ul>
+<p>Il faut appliquer ces opérations en remontant le long du chemin entre la racine et le noeud où a eu lieu l’insertion.</p>
+<p>L’insertion des éléments <span class="math inline">\(\{ 9, 1, 2, 4, 8, 3, 5, 0, 6, 7 \}\)</span> dans cet ordre donnera l’arbre binaire de recherche suivant :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-avl" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-avl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-avl">stateDiagram
+    A0: 9 (h = 7, bf = 7)
+    A1: 1 (h = 6, bf = -5)
+    A2: 0 (h = 0, bf = 0)
+    A3: _
+    A4: _
+    A2 --&gt; A3: left
+    A2 --&gt; A4: right
+    A5: 2 (h = 5, bf = -5)
+    A6: _
+    A7: 4 (h = 4, bf = -3)
+    A8: 3 (h = 0, bf = 0)
+    A9: _
+    A10: _
+    A8 --&gt; A9: left
+    A8 --&gt; A10: right
+    A11: 8 (h = 3, bf = 3)
+    A12: 5 (h = 2, bf = -2)
+    A13: _
+    A14: 6 (h = 1, bf = -1)
+    A15: _
+    A16: 7 (h = 0, bf = 0)
+    A17: _
+    A18: _
+    A16 --&gt; A17: left
+    A16 --&gt; A18: right
+    A14 --&gt; A15: left
+    A14 --&gt; A16: right
+    A12 --&gt; A13: left
+    A12 --&gt; A14: right
+    A19: _
+    A11 --&gt; A12: left
+    A11 --&gt; A19: right
+    A7 --&gt; A8: left
+    A7 --&gt; A11: right
+    A5 --&gt; A6: left
+    A5 --&gt; A7: right
+    A1 --&gt; A2: left
+    A1 --&gt; A5: right
+    A20: _
+    A0 --&gt; A1: left
+    A0 --&gt; A20: right
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-avl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Exemple d’arbre AVL
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>mais l’AVL suivant :</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    A0: 4 (h = 3, bf = 0)
+    A1: 2 (h = 2, bf = 1)
+    A2: 1 (h = 1, bf = 1)
+    A3: 0 (h = 0, bf = 0)
+    A4: _
+    A5: _
+    A3 --&gt; A4: left
+    A3 --&gt; A5: right
+    A6: _
+    A2 --&gt; A3: left
+    A2 --&gt; A6: right
+    A7: 3 (h = 0, bf = 0)
+    A8: _
+    A9: _
+    A7 --&gt; A8: left
+    A7 --&gt; A9: right
+    A1 --&gt; A2: left
+    A1 --&gt; A7: right
+    A10: 8 (h = 2, bf = 1)
+    A11: 6 (h = 1, bf = 0)
+    A12: 5 (h = 0, bf = 0)
+    A13: _
+    A14: _
+    A12 --&gt; A13: left
+    A12 --&gt; A14: right
+    A15: 7 (h = 0, bf = 0)
+    A16: _
+    A17: _
+    A15 --&gt; A16: left
+    A15 --&gt; A17: right
+    A11 --&gt; A12: left
+    A11 --&gt; A15: right
+    A18: 9 (h = 0, bf = 0)
+    A19: _
+    A20: _
+    A18 --&gt; A19: left
+    A18 --&gt; A20: right
+    A10 --&gt; A11: left
+    A10 --&gt; A18: right
+    A0 --&gt; A1: left
+    A0 --&gt; A10: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Les arbres AVL ont été inventés en 1962 par les chercheur soviétiques Georgy Adelson-Velsky et Evgenii Landis. Il s’agit de la première structure d’arbre binaire auto-équilibrés.</p>
+</blockquote>
+</section>
+</section>
+<section id="implémentation" class="level2">
+<h2 class="anchored" data-anchor-id="implémentation">Implémentation</h2>
+<ol type="1">
+<li><p>Modifier la définition du type <code>t_node</code> pour y ajouter deux champs de type <code>int</code>: <code>height</code> et <code>bf</code>.</p></li>
+<li><p>Copier le code de la fonction <code>insert_bst</code> dans une nouvelle fonction <code>insert_avl</code>, et ajouter le prototype de <code>insert_avl</code> dans <code>include/structures/bin_tree.h</code>. Implémenter les opérations de rotations à gauche, à droite et modifier la fonction <code>insert_avl</code> avec les règles de rotations.</p></li>
+<li><p>Tester votre structure avec la fonction <code>test_bin_tree</code> définie dans <code>tests/test_structures.c</code>.</p></li>
+<li><p>Visualiser les arbres générés avec Mermaid. Observer que les arbres générés sont à présent équilibrés.</p></li>
+<li><p>On admet que la hauteur d’un AVL contenant <span class="math inline">\(n\)</span> noeuds est en <span class="math inline">\(O(\log n)\)</span>. Quelle est alors la complexité en pire cas d’un ajout et d’une recherche d’élément dans un AVL ?</p></li>
+<li><p>Modifier le test dans la fonction <code>main</code>, en décommentant la fonction <code>measure_tree_method</code>. Observer la différence de temps d’exécution avec <code>measure_array_method</code>.</p></li>
+</ol>
+</section>
+</section>
+<section id="partie-3-bonus-arbres-préfixes" class="level1">
+<h1>Partie 3 (Bonus) : Arbres préfixes</h1>
+<p>Un <em>arbre préfixe</em> (en anglais <em>trie</em>, souvent prononcé [ˈtraɪ]) est une structure d’arbre spécialisée pour le stockage des chaînes de caractères.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    A0: _
+    A0 --&gt; A1: c
+    A1: _
+    A1 --&gt; A2: a
+    A2: _
+    A2 --&gt; A3: k
+    A3: _
+    A3 --&gt; A4: e
+    A4: cake
+    A2 --&gt; A5: r
+    A5: car
+    A5 --&gt; A6: e
+    A6: care
+    A5 --&gt; A7: r
+    A7: _
+    A7 --&gt; A8: y
+    A8: carry
+    A1 --&gt; A9: o
+    A9: _
+    A9 --&gt; A10: a
+    A10: _
+    A10 --&gt; A11: s
+    A11: _
+    A11 --&gt; A12: t
+    A12: coast
+    A9 --&gt; A13: o
+    A13: _
+    A13 --&gt; A14: k
+    A14: cook
+    A13 --&gt; A15: l
+    A15: cool
+    A9 --&gt; A16: r
+    A16: _
+    A16 --&gt; A17: e
+    A17: core
+    A9 --&gt; A18: s
+    A18: _
+    A18 --&gt; A19: t
+    A19: cost
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>On suppose que l’alphabet de base des chaînes de caractères contient <span class="math inline">\(M\)</span> lettres. Chaque noeud contient un booléen <code>is_present</code>, initialement <code>false</code>, et un tableau <code>table</code> de taille <span class="math inline">\(M\)</span> de pointeurs vers des arbres préfixes (initialement nuls).</p>
+<p>Si l’on souhaite insérer la chaîne <span class="math inline">\(s\)</span> dans l’arbre préfixe <span class="math inline">\(T\)</span>, alors :</p>
+<ul>
+<li>Si <span class="math inline">\(s\)</span> est vide, on donne <code>true</code> à <code>T.is_present</code>.</li>
+<li>Sinon, <span class="math inline">\(s = s_0s_1\dots s_n\)</span>. On insère la chaîne <span class="math inline">\(s_1\dots s_n\)</span> dans le fils <code>table[s[0]]</code> de <code>T</code>.</li>
+</ul>
+<ol type="1">
+<li><p>Implémenter la structure d’arbre préfixe dans <code>src/structures/prefix_tree.c</code>.</p></li>
+<li><p>Tester votre structure avec la fonction <code>test_prefix_tree</code> du fichier <code>src/tests/test_structures.c</code>. Visualiser l’arbre produit avec Mermaid.</p></li>
+<li><p>Décommenter l’appel à la fonction <code>measure_prefix_tree_method</code> dans la fonction <code>main</code>. Comparer le temps d’exécution des tests avec la structure d’arbre préfixe, par rapport aux tableaux et aux arbres AVL.</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

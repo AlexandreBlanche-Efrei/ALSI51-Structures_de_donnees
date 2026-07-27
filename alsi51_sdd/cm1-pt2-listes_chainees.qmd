@@ -1,0 +1,591 @@
+---
+title: "Cours 1, partie 2 : Listes chaînées"
+format:
+  html:
+    code-fold: true
+---
+
+# II - Listes chaînées
+
+Nous proposons une autre implémentation du type abstrait *liste dynamique* présenté dans la partie 1. Nous devons donc également implémenter les fonctions suivantes :
+```C
+t_list create_empty_list();
+
+T get(t_list *list, int index);
+
+void set(t_list *list, int index, T val);
+
+void push_front(t_list *list, T val);
+
+void push_back(t_list *list, T val);
+
+void insert(t_list *list, int index, T val);
+
+void delete_at(t_list *list, int index);
+```
+
+## Principe
+
+Une liste chaînée est une structure composée de **cellules** contenant chacune une valeur et un **pointeur** vers la cellule suivante. La dernière cellule contient un pointeur nul pour signifier qu'il n'y a pas de cellule suivante. Notre objet contient un pointeur *head* vers la première cellule (la *tête*).
+
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    D["x1"] -- next --> E["x2"]
+    A -- next --> D
+    E -- next --> n3["x3"]
+    n3 -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+```
+
+## Implémentation
+
+### Définition du type
+
+On définit notre type liste ``t_list`` à l'aide d'une autre structure ``t_cell`` définissant les cellules. Les cellules contiennent des données de type ``T``. Le type ``t_cell`` est un type **récursif** : une cellule contient un pointeur ``next`` de type ``t_cell *`` (``struct s_cell *`` dans la déclaration de la structure) donc vers une autre cellule.
+
+Dans ``list_linked.h``
+```C
+typedef int T;
+
+typedef struct s_cell {
+    struct s_cell *next;
+    T value;
+} t_cell;
+```
+
+Notre type ``t_list`` représentant les listes contient un pointeur ``head`` vers la première cellule, et un entier ``size`` contenant la taille de la liste.
+
+Dans ``list_linked.h``
+```C
+typedef struct {
+    t_cell *head;
+    int size;
+} t_list;
+```
+
+Dans ``list_linked.c``
+```C
+t_list create_empty_list() {
+    t_list l;
+    l.head = NULL;
+    l.size = 0;
+    return l;
+}
+```
+
+Pour les fonctions suivantes, nous allons devoir créer des cellules, en les allouant dynamiquement sur le tas. La fonction suivante renvoie l'adresse d'une cellule contenant la valeur ``val``.
+```C
+t_cell *create_cell(T val) {
+    t_cell *newcell = (t_cell*) malloc(sizeof(t_cell));
+    newcell->value = val;
+    newcell->next = NULL;
+    return newcell;
+}
+```
+
+### Accès et modification
+
+- **Accès de l'élément en première position**<br>
+    L'accès se fait simplement en accédant à la cellule pointée par le pointeur ``head``.
+
+    ```C
+    T get_first(t_list *list) {
+        return list->head->value;
+    }
+    ```
+    Cette opération a un coût constant $O(1)$.
+
+- **Accès à un élément en position quelconque**<br>
+    En revanche, pour accéder à l'élément d'indice ``index``, il faut parcourir successivement les cellules de la première à celle que l'on recherche, en sautant de ``next`` en ``next``. On se munit d'une fonction ``get_cell`` qui renvoie un pointeur vers la cellule d'indice ``index``.
+
+    ```C
+    t_cell* get_cell(t_list *list, int index) {
+        t_cell *cell = list->head;
+        int i = 0;
+        while (i < index && cell != NULL) {
+            cell = cell->next;
+            i++;
+        }
+        return cell;
+    }
+    ```
+
+    On peut ainsi facilement écrire notre fonction ``get``.
+
+    ```C
+    T get(t_list *list, int index) {
+        t_cell *cell = get_cell(list, index);
+        return cell->value;
+    }
+    ```
+    
+    Cette fonction a un coût linéaire $O(n)$ itérations en pire cas, où l'on veut accéder à l'élément d'indice $n-1$.<br>
+    <br>
+
+    **Remarque** : les listes chaînées se prêtent particulièrement bien à la **récursivité**.<br>
+    Par exemple, la fonction ``get_cell`` réécrite de manière récursive.
+
+    ```C
+    t_cell* get_cell_aux(t_cell *cell, int i) {
+        if (i == 0)
+            return cell;
+        return get_cell_aux(cell->next, i-1);
+    }
+
+    t_cell* get_cell(t_list *list, int index) {
+        return get_cell_aux(list->head, index);
+    }
+    ```
+
+### Ajout en première position
+
+La structure de liste chaînée permet un ajout rapide en première position, similairement à l'accès. Il suffit de rediriger le pointeur ``head`` vers la nouvelle cellule, et de relier cette cellule à l'ancienne tête de la liste.
+
+1. Liste avant ajout
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+```
+2. Création de la cellule contenant la valeur ``x3``, dont le pointeur ``next`` pointe vers la cellule ``head``.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    newcell["x3"] == next ==> A
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+3. Le pointeur ``head`` pointe à présent vers la nouvelle cellule.
+
+```{mermaid}
+flowchart LR
+    n1(["list"]) -.head.-> A["x0"]
+    linkStyle 0 stroke:#D50000
+
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    newcell["x3"] -- next --> A
+    n1 == head ==> newcell
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+
+4. Liste après ajout
+
+```{mermaid}
+flowchart LR
+    A["x0"] -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    newcell["x3"] -- next --> A
+    n1(["list"]) -- head --> newcell
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+
+La fonction ``push_front`` s'écrit donc simplement :
+
+```C
+void push_front(t_list *list, T val) {
+    t_cell *newcell = create_cell(val);
+    newcell->next = list->head;
+    list->head = newcell;
+    list->size++;
+}
+```
+
+### Insertion
+
+L'insertion à une position quelconque s'écrit tout aussi simplement.
+
+1. Liste avant ajout. On souhaite insérer à l'indice $2$. On note ``prev`` la cellule en rouge, d'indice $1$.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+    style D stroke:#DA0000
+```
+
+2. Création de la nouvelle cellule contenant la valeur ``x3``. Elle pointe vers le successeur de ``prev``.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    style D stroke:#DA0000
+    newcell["x3"] == next ==> E
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+
+3. Le pointeur ``next`` de ``prev`` pointe maintenant vers la nouvelle cellule.
+
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -.next.-> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+    linkStyle 2 stroke:#D50000
+
+    style D stroke:#DA0000
+    D == next ==> newcell["x3"] -- next --> E
+
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+
+
+4. Liste après ajout.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> newcell["x3"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    style D stroke:#DA0000
+    style newcell stroke-width:4px,stroke-dasharray: 0
+```
+
+Si l'on souhaite insérer une cellule à l'indice ``index``, le coeur de la complexité se situe dans l'accès à la cellule d'indice ``index - 1``.
+
+```C
+void insert(t_list *list, int index, T val) {
+    if (index == 0) {
+        push_front(list, val);
+        return;
+    }
+    t_cell *prev = get_cell(list, index - 1);
+    t_cell *newcell = create_cell(val);
+    newcell->next = prev->next;
+    prev->next = newcell;
+    list->size++;
+}
+```
+
+Le coût de l'opération est donc linéaire $O(n)$ en pire cas, lorsque l'on souhaite insérer en dernière position.
+
+### Suppression
+
+La suppression est très proche de l'insertion. L'insertion en première position est de coût constant, en redirigeant le pointeur ``head`` vers le successeur de la première cellule. Il ne faut pas oublier de **libérer** la cellule que l'on souhaite supprimer.
+
+```C
+void delete_first(t_list *list) {
+    t_cell *first = list->head;
+    list->head = first->next;
+    free(first);
+    list->size--;
+}
+```
+
+Pour supprimer la cellule ``cell`` à l'indice ``index``, on accède à la cellule ``prev`` d'indice ``index - 1``. On redirige le pointeur ``next`` de ``prev`` vers le successeur de ``cell``, puis on libère ``cell``.
+
+```C
+void delete_at(t_list *list, int index) {
+    if (index == 0)
+        delete_first(list);
+    else {
+        t_cell *prev = get_cell(list, index - 1);
+        t_cell *cell = prev->next;
+        prev->next = cell->next;
+        free(cell);
+        list->size--;
+    }
+}
+```
+
+Comme pour l'insertion, le coût de la suppression est constant en première position, et linéaire en pire cas (en dernière position).
+
+## Listes avancées
+
+Il existe des variantes de listes chaînées qui peuvent être utiles pour certaines applications.
+
+### Listes à deux extrêmités
+
+Si l'on souhaite pouvoir accéder rapidement à la dernière cellule de la liste chaînée, il est facile de conserver un pointeur ``tail`` pointant vers la dernière cellule. Il convient alors de mettre à jour ce pointeur lors des ajouts et suppressions autour de la dernière cellule, à la manière du pointeur ``head``.
+
+L'un des avantages est de pouvoir réaliser l'opération ``push_back`` d'ajout en dernière position en temps constant $O(1)$, au lieu de $O(n)$ pour la liste chaînée classique.
+
+```C
+void push_back(t_list *list, int val) {
+    t_cell *newcell = create_cell(val);
+    list->tail->next = newcell;
+    list->tail = newcell;
+    list->size++;
+}
+```
+
+
+1. Liste avant ajout
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+    n1 -- tail --> E
+```
+
+2. La nouvelle cellule est créée, son pointeur ``next`` est nul.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    newcell["x3"] -- next --> n4
+    style newcell stroke-width:4px,stroke-dasharray: 0
+    n1 -- tail --> E
+```
+
+3. On redirige le pointeur de la dernière cellule (pointée par ``tail``) vers la nouvelle cellule, et on met à jour le pointeur ``tail``.
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] == next ==> newcell["x3"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    style newcell stroke-width:4px,stroke-dasharray: 0
+
+    E -.next.-> n4
+    linkStyle 5 stroke:#D50000
+
+    n1 -.tail.-> E
+    linkStyle 6 stroke:#D50000
+    n1 == tail ==> newcell
+```
+
+4. Liste après ajout
+
+```{mermaid}
+flowchart LR
+    n1(["list"]) -- head --> A["x0"]
+    A -- next --> D["x1"] -- next --> E["x2"] -- next --> newcell["x3"] -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+    style newcell stroke-width:4px,stroke-dasharray: 0
+    n1 -- tail --> newcell
+```
+
+### Listes doublement chaînées
+
+Il est également possible de définir des **listes doublement chaînées**, où chaque cellule possède un pointeur vers la cellule précédente et un pointeur vers la suivante.
+
+```{mermaid}
+flowchart LR
+    %% n1(["list"]) -- head -->
+    A -- next --> B -- next --> C -- next --> D
+    D -- next --> n4@{ shape: f-circ }
+    style n4 fill:#555555
+
+    D -- prev --> C -- prev --> B -- prev --> A
+    A -- prev --> n5@{ shape: f-circ }
+    style n5 fill:#555555
+
+    %% n1 -- tail --> D
+```
+
+L'un des avantages des listes doublement chaînées est de pouvoir parcours la liste dans les deux sens, en sautant de pointeur ``prev`` en ``prev``. On peut même implémenter cette structure en donnant à chaque cellule deux pointeurs ``next_1`` et ``next_2``, sans distinction de ``next`` et ``prev``. On compare la cellule parcourue précédemment avec les adresses de ``next_1`` et de ``next_2`` pour en déduire la cellule suivante.
+
+Une telle implémentation permet d'écrire une fonction d'**inversion de la liste** (inversion de l'ordre des cellules) en **temps constant**, contre temps linéaire pour une liste classique. Il suffit pour cela d'inverser les pointeurs ``head`` et ``tail``.
+
+```{mermaid}
+flowchart LR
+    n1(["list"])
+    A ----> B ----> C ----> D
+    %% D ----> n4@{ shape: f-circ }
+    %% style n4 fill:#555555
+
+    D ----> C ----> B ----> A
+    %% A ----> n5@{ shape: f-circ }
+    %% style n5 fill:#555555
+
+    n1 -- head --> A
+    n1 -- tail --> D
+```
+```{mermaid}
+flowchart LR
+    n1(["list"]) == tail ==>
+    A ----> B ----> C ----> D
+    %% D ----> n4@{ shape: f-circ }
+    %% style n4 fill:#555555
+
+    D ----> C ----> B ----> A
+    %% A ----> n5@{ shape: f-circ }
+    %% style n5 fill:#555555
+
+    n1 == head ==> D
+
+    n1 -. head .-> A
+    linkStyle 8 stroke:#D50000
+    n1 -. tail .-> D
+    linkStyle 9 stroke:#D50000
+```
+
+```{mermaid}
+flowchart LR
+
+    n1(["list"]) -- head --> D
+    D ----> C ----> B ----> A
+    %% D ----> n4@{ shape: f-circ }
+    %% style n4 fill:#555555
+
+    A ----> B ----> C ----> D
+    %% A ----> n5@{ shape: f-circ }
+    %% style n5 fill:#555555
+
+    n1 -- tail --> A
+```
+
+Avec une liste classique :
+
+```C
+void reverse(t_list *list) {
+    int size = list->size;
+    t_list rev = create_empty_list();
+    for (int i = 0; i < size; i++) {
+        T val = get_first(list);
+        delete_first(list);
+        push_front(&rev, val);
+    }
+    list->head = rev->head;
+}
+```
+
+On ajoute toutes les cellules en tête d'une autre liste, le coût est **linéaire** (dans tous les cas).
+
+Avec une liste doublement chaînée :
+```C
+void reverse(t_dl_list *list) {
+    t_cell *head = list->head;
+    list->head = list->tail;
+    list->tail = head;
+}
+```
+
+On inverse seulement deux pointeurs, le coût est **constant**.
+
+
+
+# III - Bilan
+### Comparaison des implémentations
+
+Comparons nos deux implémentations du type abstrait liste dynamique : tableaux dynamiques et listes chaînées (possiblement à deux extrêmités).
+
+\begin{array}{|l|l|l|l|}
+\hline
+\text{Opération} & \text{\textbf{Tableaux}} & \text{\textbf{Listes chaînées}} & \text{\textbf{Listes à deux extrêmités}} \\
+\hline
+\text{\textbf{Ajout}}\\
+\text{- première position} & \text{O(n)} & \textbf{O(1)} & \text{-}\\
+\text{- dernière position} & \textbf{O(1)} \text{\ amorti} & \text{O(n)} & \textbf{O(1)}\\
+\text{- position quelconque} & \text{O(n)} & \text{O(n)} & \text{-}\\
+\hline
+\text{\textbf{Suppression}}\\
+\text{- première position} & \text{O(n)} & \textbf{O(1)} & \text{-}\\
+\text{- dernière position} & \textbf{O(1)} & \text{O(n)} & \text{-}\\
+\text{- position quelconque} & \text{O(n)} & \text{O(n)} & \text{-}\\
+\hline
+\text{\textbf{Accès et modification}}\\
+\text{- première position} & \textbf{O(1)} & \textbf{O(1)} & \text{-}\\
+\text{- dernière position} & \textbf{O(1)} & \text{O(n)} & \textbf{O(1)}\\
+\text{- position quelconque} & \textbf{O(1)} & \text{O(n)} & \text{-}\\
+\hline
+\end{array}
+
+Il convient donc de choisir la bonne structure en fonction du cas d'application.
+
+- Un tableau dynamique lorsque l'on souhaite :
+    * Ajouter des éléments sans craindre une opération longue de réallocation de temps en temps
+    * Un parcours rapide (grâce à la contiguïté des éléments) dans un ordre quelconque
+    * Ajouter et supprimer essentiellement en dernière position
+    * Pouvoir accéder rapidement à un élément quelconque
+- Une liste chaînée lorsque l'on souhaite :
+    * Ajouter et supprimer essentiellement en première position, ou ajouter en dernière position et supprimer en première position (avec une liste à deux extrêmités)
+    * Ajouter et supprimer des éléments lors d'un parcours de la liste (le coût est alors constant, car il n'y a plus besoin de reparcourir la liste jusqu'à la cellule courante)
+    * Concaténer des listes (le coût est constant avec une liste à deux extrêmités, car il suffit de relier le dernier ``next`` de la dernière cellule de la première liste au ``head`` de la deuxième liste)
+
+        ```C
+        void concat(t_list *l1, t_list *l2) {
+            if (l1->size == 0) {
+                *l1 = *l2; // copie de tous les attributs
+            }
+            else {
+                l1->tail->next = l2->head;
+                l1->tail = l2->tail;
+                l1->size += l2->size;
+            }
+        }
+        ```
+
+- Une liste doublement chaînée lorsque l'on souhaite :
+    * Bénéficier des mêmes avantages que les listes chaînées
+    * Parcourir la liste dans les deux sens
+    * Inverser rapidement la liste ou une sous-séquence d'éléments (en temps constant)
+
+Il existe d'autres structures inspirées des listes chaînées et qui permettent de réaliser les actions d'ajouts, suppressions et accès de manière plus efficace. Par exemple les *arbres binaires de recherche équilibrés (AVL)*, qui permettent de réaliser ces opérations en temps $O(\log n)$.
+
+
+### Application
+
+Nos deux implémentations ont été placées dans deux fichiers différents, ``list_array.c`` et ``list_linked.c``, accompagnés de leurs fichiers d'en-tête ``list_array.h`` et ``list_linked.h``. L'avantage de cette approche est de favoriser la **compartimentation**, comme présenté dans le cours d'introduction.
+Si un utilisateur souhaite utiliser une structure de liste dynamique, par exemple pour implémenter un algorithme complexe sans avoir à se préoccuper de l'implémentation de la liste, il peut utiliser notre bibliothèque, avec l'implémentation de son choix. Ici, l'utilisateur utilise l'implémentation par des tableaux dynamiques.
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include "list_array.h"
+
+int main() {
+
+    t_list list = create_empty_list();
+    print_list(&list);
+
+    push_back(&list, 5);
+    push_back(&list, 2);
+    print_list(&list);
+
+    push_back(&list, -3);
+    push_back(&list, 4);
+    print_list(&list);
+
+    delete_at(&list, 2);
+    print_list(&list);
+
+    insert(&list, 1, 0);
+    print_list(&list);
+
+    push_front(&list, 8);
+    print_list(&list);
+
+    set(&list, 3, 10);
+    print_list(&list);
+
+    printf("list[%d] = %d\n", 1, get(&list, 1));
+    return 0;
+}
+```
+
+Ce programme affiche :
+
+```
+[ ]
+[ 5, 2 ]
+[ 5, 2, -3, 4 ]
+[ 5, 2, -3, 4 ]
+[ 5, 2, 4 ]
+[ 5, 0, 2, 4 ]
+[ 8, 5, 0, 2, 4 ]
+[ 8, 5, 0, 10, 4 ]
+list[1] = 5
+```
+
+Cette approche permet également de favoriser la **modularité** : si l'on souhaite changer d'implémentation pour utiliser une liste chaînée, il suffit de *débrancher* une implémentation et d'en *rebrancher* une autre, donc de remplacer la ligne ``#include`` par celle du fichier d'en-tête correspondant.
+
+```C
+//#include "list_array.h"
+#include "list_linked.h"
+```
+
+On constate alors que l'affichage produit est inchangé. Tout se passe comme si la bibliothèque avait été mise à jour, sans impacter le résultat pour l'utilisateur. Seules les performances du code peuvent varier.

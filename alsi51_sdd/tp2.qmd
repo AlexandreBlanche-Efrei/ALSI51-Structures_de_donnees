@@ -1,0 +1,112 @@
+---
+title: "TP2 - Piles, files"
+format:
+  html:
+    code-fold: true
+---
+
+## **Objectif du TP**  
+Nous allons coder un **évaluateur d'expressions arithmétiques**, en notation *infixée* (la notation mathématique classique), c'est-à-dire un programme qui reçoit une chaîne de caractères représentant une expression arithmétique en entrée, et qui renvoie le résultat de son évaluation.  
+Exemple : pour la chaîne ``"2 * (3 + 4) - (5 + 1)"`` en entrée, le programme doit renvoyer ``8``.
+
+Pour obtenir ce résultat, nous allons utiliser (en partie 4) l'algorithme *Shunting-yard* pour convertir l'expression vers la notation *postfixée*, et nous l'évaluons avec un algorithme spécifique (en partie 3). Les expressions en notation postfixée (présentée en partie 3) ont l'avantage d'être simples à évaluer, et ce ne pas nécessiter de parenthèses.  
+
+Pour représenter les formules, nous utiliserons :
+
+* Un type ``operator_type``, représentant les opérateurs, donné dans le fichier ``operator.h``.
+* Un type ``t_token``, qui représente les *tokens* (entités), à savoir les nombres, opérateurs et parenthèses. Ce type est donné dans le fichier ``token.h`` et déjà implémenté dans ``token.c``.
+* Un type ``t_expr``, qui représente une expression avec une structure *file* contenant des tokens.
+
+
+## Partie 1 : Structure de pile
+
+Une *pile* (*stack* en anglais) est une structure de données linéaire de type *Last In, First Out*, ou LIFO, c'est-à-dire qu'on accède aux éléments par ordre inverse de l'ordre d'ajout. On dispose de trois opérations :
+
+* Déterminer si la pile est vide
+* *Empiler* un élément : l'ajouter à la pile, à l'avant. On appelle souvent cette opération *push*.
+* *Dépiler* un élément : obtenir le dernier élément à avoir été ajouté (celui à l'avant), et le retirer de la structure. On appelle souvent cette opération *pop*.
+
+> Les piles sont utilisées dans de nombreux algorithmes. Un exemple important est l'usage d'une *pile d'appel* (*call stack*) par la machine lors de l'exécution d'un code : lors d'un appel de fonction, les variables locales à la fonction sont placées sur le haut de la pile (avec une opération push), et quand l'appel est terminé les variables de la fonction appelante sont retrouvées en dépilant (avec une opération pop). En langage C, on désigne cette pile d'appel simplement par *la pile* (*stack*), par opposition à la mémoire destinée aux allocations dynamiques, appelée *le tas* (*heap*).
+
+1. Implémenter une structure de pile en utilisant l'implémentation du type ``t_list`` donnée dans le fichier ``list_double-ended.h`` et implémentée dans ``list_double-ended.c``. Une ``t_list`` contient ici des valeurs de type ``t_token`` (ou ``T``).  
+L'interface de la structure ``t_stack`` est donnée dans le fichier ``stack.h``.  
+On veillera à n'utiliser que **les fonctions de la bibliothèque** ``t_list`` (``get``, ``push_front``, ``delete_at``, ...) **sans utiliser** les attributs internes de l'objet ``list`` (``head``, ``size``, ``capacity``).
+
+2. Tester les fonctions de la bibliothèque dans le fichier ``main.c``.
+
+## Partie 2 : Structure de file
+
+Une *file* (*queue* en anglais) est une structure de données linéaire, de type *First, In First Out*, ou FIFO, c'est-à-dire qu'on accède aux éléments par ordre d'ajout.
+On dispose de nouveau des trois opérations :
+
+* Déterminer si la file est vide
+* *Enfiler* un élément (*push*) : l'ajouter à la file, à l'arrière.
+* *Défiler* un élément (*pop*) : obtenir l'élément à l'avant de la file, et le retirer de la structure.
+
+1. Implémenter une structure de file en utilisant l'implémentation du type ``t_list`` donnée dans le fichier ``list_double-ended.h``.
+L'interface de la structure ``t_queue`` est donnée dans le fichier ``queue.h``.  
+On veillera de nouveau à n'utiliser que les fonctions de la bibliothèque ``t_list``, sans utiliser les attributs internes de l'objet ``list``.
+
+2. Tester les fonctions de la bibliothèque dans le fichier ``main.c``.
+
+## Partie 3 : Evaluation d'expressions en notation postfixée
+  
+On souhaite implémenter dans un premier temps une calculatrice d'expressions arithmétiques en notation postfixée (*notation polonaise inversée*, ou reverse Polish notation, *RPN*), qui a l'avantage de ne pas nécessiter de parenthèses.  
+
+Une expression en notation *postfixée* s'écrit à la manière de :  
+```
+3 4 5 + 6 + *
+```
+Cette expression s'évalue à 3 * ((4 + 5) + 6) = 45.  
+Pour évaluer cette expression, on avance jusqu'au premier opérateur, qui est ``+``. On prend les deux entiers à sa gauche, ``4`` et ``5``, on calcule ``4 + 5 = 9``, et on remplace ``4 5 +`` dans l'expression par ``9``.  
+On a à présent l'expression ``3 9 6 + *``. On trouve l'opérateur ``+``, on calcule donc ``9 + 6``, qui vaut ``15``. On a l'expression ``3 15 *``, donc on calcule ``3 * 15``, qui vaut ``45``. L'expression ne contient plus qu'un seul entier, c'est son résultat.  
+Une telle expression ne contient pas de parenthèses.
+
+1. Implémenter les fonctions ``is_empty_expr``, ``add_token``, ``get_next_token`` et ``print_expr``, déclarées dans le fichier ``expr.h``, dans le fichier ``expr.c``.
+
+2. Tester les fonctions précédentes.  
+On dispose pour cela d'une fonction ``parse_expr``, déclarée dans ``expr.h``, qui prend en entrée une chaîne de caractères représentant une expression, et renvoie une valeur de type ``t_expr`` représentant cette expression.
+
+3. Ecrire la fonction ``eval_rpn`` dans le fichier ``expr.c``. Cette fonction prend en entrée une expression en notation postfixée, l'évalue et renvoie son résultat.  
+La fonction doit écrire un message d'erreur si l'expression n'est pas bien formée.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Partie 4 : Evaluation d'expressions en notation infixée
+
+### **Algorithme Shunting-yard**
+L'algorithme Shunting-yard permet de convertir une expression arithmétique écrite en notation infixée en notation postfixée.
+
+> L'algorithme *Shunting-yard* (littéralement "de la gare de triage") a été inventé par Edsger Dijkstra (1930-2002) en 1961. Dijkstra est un mathématicien et informaticien néerlandais et un grand nom de l'algorithmique, notamment via l'algorithme de calcul de plus court chemin dans un graphe qui porte son nom. Il a obtenu le Prix Turing (souvent considéré comme le "prix Nobel d'informatique") en 1972 pour ses travaux sur l'algorithmique et les structures de données.  
+
+Les tokens ``(`` et ``)`` (parenthèses ouvrante et fermante) sont ajoutés à l'ensemble des symboles autorisés.
+L'algorithme utilise une pile appelée *op_stack* qui stocke des opérateurs et des parenthèses, et une file *output_queue* qui stocke des nombres et des opérateurs (pas de parenthèses).  
+
+**Algorithme**
+
+* Pour chaque token de l'expression d'entrée :
+    + Si le token est un nombre, enfiler ce nombre à *output_queue*.
+    + Si le token est une parenthèse ouvrante ``"("``, empiler ce token sur *op_stack*.
+    + Si le token est une parenthèse fermante ``")"``, alors dépiler les opérateurs de *op_stack* et les enfiler sur *output_queue*, jusqu'à trouver une parenthèse ouvrante ``"("``. Cette parenthèse ouvrante est dépilée de *op_stack* mais pas enfilée.
+    + Si le token est un opérateur *op1*, alors tant qu'il y a un opérateur *op2* en premier élément de *op_stack* qui est **prioritaire** sur *op1*, dépiler *op2* de *op_stack* et l'enfiler sur *output_queue*. Ensuite, empiler *op1* sur *op_stack*.  
+On dit que *op2* est *prioritaire* sur *op1* si *op1* = ``+`` ou ``-``, ou si *op2* = ``/``.
+* Une fois toute l'expression lue, dépiler tous les opérateurs restants de *op_stack* et les enfiler sur *output_queue*.
+Si l'on rencontre une parenthèse, c'est que l'expression était incorrectement parenthésée.
+* On renvoie la file *output_queue*.
+
+2. Implémenter la fonction ``takes_priority`` dans le fichier ``operator.c``, qui permet de comparer la priorité de deux opérateurs.
+
+3. Implémenter la fonction ``shunting_yard`` dans le fichier ``expr.c``, qui exécute l'algorithme Shunting-yard sur une expression d'entrée en notation infixée et renvoie une expression en notation postfixée.
+
+4. Implémenter la fonction ``eval_expr`` dans ``expr.c``, qui prend une expression de type ``t_expr`` en notation infixée en entrée et renvoie le résultat de son évaluation.
+
+5. Implémenter la fonction ``eval`` dans ``expr.c``, qui prend en entrée une chaîne de caractères représentant une expression arithmétique en notation infixée, et renvoie le résultat de son évaluation.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Partie 5 : Bonus
+1. Ajouter l'opérateur ``^`` d'exponentiation.  
+Lorsque vous modifierez la fonction ``takes_priority``, notez que cet opérateur est prioritaire sur tous les autres, et doit être parenthésé à droite : a ^ b ^ c est égal à a ^ (b ^ c).
+
+2. Effacer et réécrire la fonction de parsing ``parse_expr``. Cette fonction prend en entrée une chaîne de caractères (type ``char *``) et renvoie l'expression qu'elle représente au type ``t_expr``.  
+La fonction fournie dans le sujet gère le cas du ``-`` unaire pour représenter les nombres négatifs. Vous pouvez commencer par supposer que tous les nombres de l'expression seront positifs ou nuls.

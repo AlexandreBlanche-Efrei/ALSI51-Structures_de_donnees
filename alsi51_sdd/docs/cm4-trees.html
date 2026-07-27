@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cours 4 : Structures arborescentes – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction-arbres-binaires" id="toc-introduction-arbres-binaires" class="nav-link active" data-scroll-target="#introduction-arbres-binaires">Introduction : arbres binaires</a>
+  <ul class="collapse">
+  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">Définition</a></li>
+  <li><a href="#implémentations" id="toc-implémentations" class="nav-link" data-scroll-target="#implémentations">Implémentations</a>
+  <ul class="collapse">
+  <li><a href="#implémentation-par-pointeurs" id="toc-implémentation-par-pointeurs" class="nav-link" data-scroll-target="#implémentation-par-pointeurs">Implémentation par pointeurs</a></li>
+  <li><a href="#implémentation-par-tableau" id="toc-implémentation-par-tableau" class="nav-link" data-scroll-target="#implémentation-par-tableau">Implémentation par tableau</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#arbres-binaires-de-recherche" id="toc-arbres-binaires-de-recherche" class="nav-link" data-scroll-target="#arbres-binaires-de-recherche">Arbres binaires de recherche</a>
+  <ul class="collapse">
+  <li><a href="#définition-1" id="toc-définition-1" class="nav-link" data-scroll-target="#définition-1">Définition</a></li>
+  <li><a href="#opérations" id="toc-opérations" class="nav-link" data-scroll-target="#opérations">Opérations</a>
+  <ul class="collapse">
+  <li><a href="#ajout-dune-valeur" id="toc-ajout-dune-valeur" class="nav-link" data-scroll-target="#ajout-dune-valeur">Ajout d’une valeur</a></li>
+  <li><a href="#recherche-dune-valeur" id="toc-recherche-dune-valeur" class="nav-link" data-scroll-target="#recherche-dune-valeur">Recherche d’une valeur</a></li>
+  </ul></li>
+  <li><a href="#complexité" id="toc-complexité" class="nav-link" data-scroll-target="#complexité">Complexité</a></li>
+  </ul></li>
+  <li><a href="#arbres-binaires-de-recherche-équilibrés-arbres-avl" id="toc-arbres-binaires-de-recherche-équilibrés-arbres-avl" class="nav-link" data-scroll-target="#arbres-binaires-de-recherche-équilibrés-arbres-avl">Arbres binaires de recherche équilibrés : arbres AVL</a>
+  <ul class="collapse">
+  <li><a href="#définition-2" id="toc-définition-2" class="nav-link" data-scroll-target="#définition-2">Définition</a>
+  <ul class="collapse">
+  <li><a href="#rotation-à-gauche" id="toc-rotation-à-gauche" class="nav-link" data-scroll-target="#rotation-à-gauche">Rotation à gauche</a></li>
+  <li><a href="#rotation-à-droite" id="toc-rotation-à-droite" class="nav-link" data-scroll-target="#rotation-à-droite">Rotation à droite</a></li>
+  <li><a href="#règles" id="toc-règles" class="nav-link" data-scroll-target="#règles">Règles</a></li>
+  </ul></li>
+  <li><a href="#opérations-1" id="toc-opérations-1" class="nav-link" data-scroll-target="#opérations-1">Opérations</a></li>
+  <li><a href="#complexité-1" id="toc-complexité-1" class="nav-link" data-scroll-target="#complexité-1">Complexité</a></li>
+  <li><a href="#autres-arbres-de-la-littérature" id="toc-autres-arbres-de-la-littérature" class="nav-link" data-scroll-target="#autres-arbres-de-la-littérature">Autres arbres de la littérature</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Cours 4 : Structures arborescentes</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction-arbres-binaires" class="level1">
+<h1>Introduction : arbres binaires</h1>
+<p>En informatique, un <em>graphe</em> est composé d’un ensemble fini de <em>sommets</em>, et d’un ensemble d’arêtes qui relient deux sommets.</p>
+<blockquote class="blockquote">
+<p>Il s’agit d’une famille d’objets fondamentaux en informatique, et en sciences plus généralement, car leurs applications sont innombrables : modélisation de réseaux physiques (routes, labyrinthes), de réseaux sociaux, systèmes de contraintes, structure de molécules, bases de données…</p>
+</blockquote>
+<p>Un <em>arbre</em> est un graphe <em>connexe</em> (en un seul morceau) ne contenant pas de cycle d’arêtes. En algorithmique, une des structures de données les plus utilisées est <em>l’arbre binaire</em>, c’est-à-dire un arbre dont chaque sommet a au plus <span class="math inline">\(3\)</span> voisins. Cette structure possède de nombreux avantages en termes de complexité, que nous allons voir.</p>
+<section id="définition" class="level2">
+<h2 class="anchored" data-anchor-id="définition">Définition</h2>
+<p>En algorithmique, un <strong>arbre binaire</strong> (<em>binary tree</em>) est défini comme suit :</p>
+<ul>
+<li>Il est composé de <strong>noeuds</strong> (<em>node</em>) contenant des valeurs.</li>
+<li>L’un des noeuds est appelé la <strong>racine</strong> (<em>root</em>) de l’arbre. On la représente généralement en haut de l’arbre.</li>
+<li>Chaque noeud peut être relié à deux noeuds que l’on appelle <strong>fils gauche</strong> et <strong>fils droit</strong> (<em>left</em> et <em>right child</em>).</li>
+<li>Si un noeud n’est pas la racine, il est le fils gauche ou droit d’un autre noeud, son <strong>parent</strong>.</li>
+<li>Un noeud qui n’a pas de fils gauche ni de fils droit est appelé <strong>feuille</strong> (<em>leaf</em>, <em>leaves</em> au pluriel) de l’arbre. Elles sont généralement représentées en bas de l’arbre. Les noeuds qui ne sont pas des feuilles sont appelés <strong>noeud interne</strong> de l’arbre.</li>
+</ul>
+<p>Exemple d’arbre binaire :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-bintree" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bintree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-bintree">stateDiagram
+    A0: 4
+    A1: 5
+    A2: 3
+    A3: 2
+    A1 --&gt; A2: left
+    A1 --&gt; A3: right
+    A4: 1
+    A5: 9
+    A6: 8
+    A7: 6
+    A5 --&gt; A6: left
+    A5 --&gt; A7: right
+    A8: 7
+    A4 --&gt; A5: left
+    A4 --&gt; A8: right
+    A0 --&gt; A1: left
+    A0 --&gt; A4: right
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bintree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Exemple d’arbre binaire
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Dans la <a href="#fig-bintree" class="quarto-xref">Figure&nbsp;1</a>, la racine contient la valeur <span class="math inline">\(4\)</span>. L’arbre contient <span class="math inline">\(5\)</span> feuilles, contenant les valeurs <span class="math inline">\(3\)</span>, <span class="math inline">\(2\)</span>, <span class="math inline">\(8\)</span>, <span class="math inline">\(6\)</span>, <span class="math inline">\(7\)</span>.</p>
+</section>
+<section id="implémentations" class="level2">
+<h2 class="anchored" data-anchor-id="implémentations">Implémentations</h2>
+<p>Nous proposons deux implémentations des arbres binaires en C. La première est une implémentation proche des listes chaînées, avec des noeuds reliés entre eux par des pointeurs, et la seconde utilise un tableau contenant les valeurs, et les liaisons sont définies implicitement par l’ordre dans le tableau.</p>
+<section id="implémentation-par-pointeurs" class="level3">
+<h3 class="anchored" data-anchor-id="implémentation-par-pointeurs">Implémentation par pointeurs</h3>
+<p>L’implémentation proposée dans le TP4 est la suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">int</span> T<span class="op">;</span> <span class="co">// Type des données</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> s_node <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> s_node <span class="op">*</span>left<span class="op">;</span>  <span class="co">// Fils gauche</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> s_node <span class="op">*</span>right<span class="op">;</span> <span class="co">// Fils droit</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    T value<span class="op">;</span>              <span class="co">// Valeur</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_node<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>root<span class="op">;</span> <span class="co">// Pointeur vers la racine</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_tree<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un noeud contient deux pointeurs vers ses fils gauche et droit (éventuellement <code>NULL</code>) et une valeur de type <code>T</code>, ici un alias de <code>int</code>. L’objet arbre contient un pointeur vers le noeud racine.</p>
+<p>On se dote d’une fonction qui crée un noeud contenant une valeur <code>value</code> donnée, de la même manière que pour les cellules des listes chaînées.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Renvoie l'adresse d'un noeud alloué dynamiquement</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>t_node <span class="op">*</span>create_node<span class="op">(</span>T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>node <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span>t_node<span class="op">));</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    node<span class="op">-&gt;</span>left  <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    node<span class="op">-&gt;</span>right <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    node<span class="op">-&gt;</span>value <span class="op">=</span> value<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> node<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Nous verrons la fonction d’insertion d’une valeur dans la partie sur les arbres binaires de recherche ci-dessous.</p>
+<p>Un arbre binaire peut être parcouru avec la fonction récursive suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Affichage des valeurs contenues dans l'arbre</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction auxiliaire récursive : prend un noeud en paramètre</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> print_tree_aux<span class="op">(</span>t_node <span class="op">*</span>node<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>left <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        print_tree_aux<span class="op">(</span>node<span class="op">-&gt;</span>left<span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> "</span><span class="op">,</span> node<span class="op">-&gt;</span>value<span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>right <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        print_tree_aux<span class="op">(</span>node<span class="op">-&gt;</span>right<span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction prinicpale : appelle simplement la fonction auxiliaire</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> print_tree_values<span class="op">(</span>t_tree <span class="op">*</span>tree<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>tree<span class="op">-&gt;</span>root <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        print_tree_aux<span class="op">(</span>tree<span class="op">-&gt;</span>root<span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cette fonction va parcourir tous les noeuds du fils gauche du noeud actuel, puis afficher la valeur du noeud, et enfin parcourir tous les noeuds du fils droit. Ce parcours est un <strong>parcours en profondeur</strong> : il consiste à descendre en ligne droite jusqu’à un cul-de-sac, puis de remonter (<em>backtrack</em>), et de redescendre à nouveau, et ainsi de suite.</p>
+<p>Le parcours tel qu’implémenté ici affiche les valeurs dans <strong>l’ordre infixe</strong>. Pour l’arbre de la <a href="#fig-bintree" class="quarto-xref">Figure&nbsp;1</a>, la fonction affiche <code>3 5 2 4 8 9 6 1 7</code>.</p>
+<blockquote class="blockquote">
+<p>L’ordre infixe des valeurs d’un arbre binaire est analogue à la <em>notation infixe</em> des expressions arithmétiques, comme vu dans le TP2. En effet, si un arbre binaire contient des opérandes (nombres) sur les feuilles et des opérateurs sur les noeuds internes, alors l’affichage dans l’ordre infixe produira une expression en notation infixe. Par exemple, l’arbre ci-dessous :</p>
+</blockquote>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-expr" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-expr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-expr">stateDiagram
+    A0: \+
+    A1: \*
+    A2: 2
+    A3: 3
+    A1 --&gt; A2
+    A1 --&gt; A3
+    A4: \/
+    A5: \*
+    A6: 4
+    A7: 5
+    A5 --&gt; A6
+    A5 --&gt; A7
+    A8: 2
+    A4 --&gt; A5
+    A4 --&gt; A8
+    A0 --&gt; A1
+    A0 --&gt; A4
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-expr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Produit l’affichage <code>2 * 3 + 4 * 5 / 2</code>. Il s’agit bien de la notation infixe usuelle. Si l’on choisit d’afficher le fils gauche, puis le fils droit, puis la valeur du noeud courant (l’instruction <code>printf</code> est située après les deux appels récursifs), alors la notation affichée est la notation <em>postfixée</em> de la même expression, donc la fameuse <em>notation polonaise inversée</em> (RPN) vue dans le TP2 : <code>2 3 * 4 5 * 2 / +</code>.</p>
+</blockquote>
+</section>
+<section id="implémentation-par-tableau" class="level3">
+<h3 class="anchored" data-anchor-id="implémentation-par-tableau">Implémentation par tableau</h3>
+<p>Une autre implémentation possible utilise des tableaux. L’arbre représenté est forcément <em>presque complet</em>, c’est-à-dire que tous les niveaux de l’arbre sont complets, sauf éventuellement le dernier, et dans ce cas le dernier niveau est rempli de gauche à droite.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-tree2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-tree2">stateDiagram
+    A0: 0
+    A1: 1
+    A2: 3
+    A3: 4
+    A1 --&gt; A2
+    A1 --&gt; A3
+    A4: 2
+    A5: 5
+    A6: 7
+    A7: 8
+    A2 --&gt; A6
+    A2 --&gt; A7
+    A8: 6
+    A9: 9
+    A10: 10
+    A4 --&gt; A5
+    A4 --&gt; A8
+    A0 --&gt; A1
+    A0 --&gt; A4
+    A3 --&gt; A9
+    A3 --&gt; A10
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Exemple d’arbre binaire presque complet
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Lorsque l’on implémente un arbre binaire avec un tableau, il est commode de placer les noeuds comme dans la <a href="#fig-tree2" class="quarto-xref">Figure&nbsp;3</a> :</p>
+<ul>
+<li>la racine en position <span class="math inline">\(0\)</span>.</li>
+<li>Le noeud en position <span class="math inline">\(i\)</span> a son fils gauche en position <span class="math inline">\(2i+1\)</span> et son fils droit en position <span class="math inline">\(2i+2\)</span>.</li>
+<li>Le parent du noeud en position <span class="math inline">\(i\)</span> est en position <span class="math inline">\((i - 1)/2\)</span>.</li>
+</ul>
+<p>Dans certains cas, cette implémentation est plus pratique que la précédente, par exemple, pour implémenter la structure de <em>tas binaire</em>, un type d’arbre presque complet.</p>
+<p>Un exemple d’implémentation en C de cette représentation.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    T <span class="op">*</span>values<span class="op">;</span>    <span class="co">// Valeurs présentes dans l'arbre</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_nodes<span class="op">;</span> <span class="co">// Nombre de noeuds</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_tree_alt<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// max = nombre maximum de noeuds</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>t_tree_alt create_tree<span class="op">(</span><span class="dt">int</span> max<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    t_tree_alt tree<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span>values <span class="op">=</span> malloc<span class="op">(</span>max <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span>T<span class="op">));</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span>nb_nodes <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tree<span class="op">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> parent_index<span class="op">(</span><span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">(</span>i <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> left_child_index<span class="op">(</span><span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> right_child_index<span class="op">(</span><span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">2</span> <span class="op">*</span> i <span class="op">+</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le parcours en profondeur de l’arbre peut se réaliser de la même manière que précédemment :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Affichage des valeurs contenues dans l'arbre en ordre infixe</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction auxiliaire récursive : prend un indice (noeud) en paramètre</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> print_tree_alt_aux<span class="op">(</span>t_tree_alt <span class="op">*</span>tree<span class="op">,</span> <span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> i_left <span class="op">=</span> left_child_index<span class="op">(</span>i<span class="op">);</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> i_right <span class="op">=</span> right_child_index<span class="op">(</span>i<span class="op">);</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Le fils gauche est vide si son indice dépasse nb_nodes</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>i_left <span class="op">&lt;</span> tree<span class="op">-&gt;</span>nb_nodes<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        print_tree_alt_aux<span class="op">(</span>tree<span class="op">,</span> i_left<span class="op">);</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> "</span><span class="op">,</span> tree<span class="op">-&gt;</span>values<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Idem pour le fils droit</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>i_right <span class="op">&lt;</span> tree<span class="op">-&gt;</span>nb_nodes<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        print_tree_alt_aux<span class="op">(</span>tree<span class="op">,</span> i_right<span class="op">);</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction prinicpale : appelle simplement la fonction auxiliaire</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> print_tree_alt_values<span class="op">(</span>t_tree_alt <span class="op">*</span>tree<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>tree<span class="op">-&gt;</span>nb_nodes <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        print_tree_alt_aux<span class="op">(</span>tree<span class="op">-&gt;</span>root<span class="op">);</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En revanche, le <strong>parcours en largeur</strong> de l’arbre est immédiat avec cette représentation.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Parcours en largeur (Breadth-first search)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> print_bfs<span class="op">(</span>t_tree_alt <span class="op">*</span>tree<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> tree<span class="op">-&gt;</span>nb_nodes<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> "</span><span class="op">,</span> tree<span class="op">-&gt;</span>values<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le parcours en largeur consiste à partir de la racine, parcourir ses voisins, puis les voisins de ces noeuds, puis leurs voisins, etc. en terminant par les feuilles. Dans la représentation par tableaux, les valeurs sont déjà stockées dans le tableau dans l’ordre de parcours en largeur, il suffit donc de les afficher dans l’ordre.</p>
+</section>
+</section>
+</section>
+<section id="arbres-binaires-de-recherche" class="level1">
+<h1>Arbres binaires de recherche</h1>
+<section id="définition-1" class="level2">
+<h2 class="anchored" data-anchor-id="définition-1">Définition</h2>
+<p>Un <strong>arbre binaire de recherche</strong> (<em>binary search tree</em>, BST) est un arbre binaire dans lequel, pour chaque noeud contenant une valeur (numérique) <span class="math inline">\(v\)</span> :</p>
+<ul>
+<li>Toutes les valeurs contenues dans le fils gauche du noeud sont inférieures ou égales à <span class="math inline">\(v\)</span>.</li>
+<li>Toutes les valeurs contenues dans le fils droit du noeud sont supérieures strictement à <span class="math inline">\(v\)</span>.</li>
+</ul>
+<p>Cette structure très simple permet d’ajouter et de rechercher une valeur plus efficacement, à la manière d’une recherche dichotomique.</p>
+</section>
+<section id="opérations" class="level2">
+<h2 class="anchored" data-anchor-id="opérations">Opérations</h2>
+<p>Pour implémenter les opérations, nous allons utiliser la première représentation en mémoire des arbres binaires, avec des <code>t_node</code> reliés entre eux par des pointeurs.</p>
+<section id="ajout-dune-valeur" class="level3">
+<h3 class="anchored" data-anchor-id="ajout-dune-valeur">Ajout d’une valeur</h3>
+<p>L’ajout d’une valeur à l’arbre doit préserver la propriété d’être un arbre binaire de recherche.</p>
+<ul>
+<li>On insère (récursivement) dans le fils gauche si la valeur du noeud courant est supérieure à la valeur à insérer, sinon on insère dans le fils droit.</li>
+<li>On descend jusqu’à trouver un emplacement vide.</li>
+</ul>
+<p>On peut écrire la fonction de manière récursive :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction auxiliaire</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> add_value_aux<span class="op">(</span>t_node <span class="op">*</span>node<span class="op">,</span> T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>value <span class="op">&lt;=</span> node<span class="op">-&gt;</span>value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// insérer à gauche</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>left <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="co">// insertion possible ici</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            node<span class="op">-&gt;</span>left <span class="op">=</span> create_node<span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            <span class="co">// appel récursif dans le fils gauche</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            add_value_aux<span class="op">(</span>node<span class="op">-&gt;</span>left<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="co">// insérer à droite</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>right <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="co">// insertion possible ici</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            node<span class="op">-&gt;</span>right <span class="op">=</span> create_node<span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            <span class="co">// appel récursif dans le fils droit</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            add_value_aux<span class="op">(</span>node<span class="op">-&gt;</span>right<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">// Fonction principale</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> add_value<span class="op">(</span>t_tree <span class="op">*</span>tree<span class="op">,</span> T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>tree<span class="op">-&gt;</span>root <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        tree<span class="op">-&gt;</span>root <span class="op">=</span> create_node<span class="op">(</span>value<span class="op">);</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        add_value_aux<span class="op">(</span>tree<span class="op">-&gt;</span>root<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">-&gt;</span>nb_nodes<span class="op">++;</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="recherche-dune-valeur" class="level3">
+<h3 class="anchored" data-anchor-id="recherche-dune-valeur">Recherche d’une valeur</h3>
+<p>L’avantage des arbres binaires de recherche est de pouvoir effectuer… des recherches d’éléments efficacement.</p>
+<p>Comme pour l’insertion, on cherche à gauche ou à droite en fonction du résultat de la comparaison de la valeur recherchée et de la valeur du noeud courant.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_present_aux<span class="op">(</span>t_node <span class="op">*</span>node<span class="op">,</span> T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>node <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>node<span class="op">-&gt;</span>value <span class="op">==</span> value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>value <span class="op">&lt;</span> node<span class="op">-&gt;</span>value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> is_present_aux<span class="op">(</span>node<span class="op">-&gt;</span>left<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> is_present_aux<span class="op">(</span>node<span class="op">-&gt;</span>right<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_present<span class="op">(</span>t_tree <span class="op">*</span>tree<span class="op">,</span> T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> is_present_aux<span class="op">(</span>tree<span class="op">-&gt;</span>root<span class="op">,</span> value<span class="op">);</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ou de manière plus concise :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_present_aux<span class="op">(</span>t_node <span class="op">*</span>node<span class="op">,</span> T value<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> node <span class="op">!=</span> NULL <span class="co">// cas d'arrêt négatif</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&amp;&amp;</span> <span class="op">(</span>node<span class="op">-&gt;</span>value <span class="op">==</span> value <span class="co">// cas d'arrêt positif</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">||</span> is_present<span class="op">(</span>value <span class="op">&lt;</span> node<span class="op">-&gt;</span>value <span class="op">?</span> node<span class="op">-&gt;</span>left <span class="op">:</span> node<span class="op">-&gt;</span>right<span class="op">,</span> value<span class="op">));</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// appel récursif à gauche ou à droite</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</section>
+<section id="complexité" class="level2">
+<h2 class="anchored" data-anchor-id="complexité">Complexité</h2>
+<p>Les opérations de recherche et d’ajout dans un arbre binaire de recherche s’effectuent en descendant de fils en fils jusqu’à trouver la valeur recherchée ou un emplacement vide.</p>
+<p>Il est donc naturel de considérer la <strong>hauteur</strong> d’un arbre binaire : la longueur (en nombre d’arêtes) du plus long chemin entre la racine est une feuille. Par exemple, tous les arbres illustrés dans ce cours ont une hauteur de <span class="math inline">\(3\)</span>.</p>
+<p><strong>La complexité</strong> des opérations d’ajout et de recherche est donc <strong>proportionnelle à la hauteur de l’arbre.</strong></p>
+<p>Donnons un encadrement de la hauteur <span class="math inline">\(h\)</span> d’un arbre lorsque celui-ci possède <span class="math inline">\(n\)</span> sommets.</p>
+<p>Dans le meilleur cas, l’arbre est <em>complet</em>, c’est-à-dire que tous ses niveaux sont remplis : l’arbre possède <span class="math inline">\(2^i\)</span> noeuds à chaque niveau, donc possède <span class="math inline">\(\displaystyle n = \sum_{i = 0}^h 2^i = 2^{h + 1} - 1\)</span> noeuds. On a donc <span class="math inline">\(\displaystyle h = \left\lfloor \log_2(n + 1)\right\rfloor - 1 = O(\log n)\)</span>. La hauteur est <strong>logarithmique</strong> en le nombre de noeuds.</p>
+<p>En revanche, en pire cas, chaque noeud possède un fils droit et pas de fils gauche, par exemple :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-peigne" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-peigne-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-peigne">stateDiagram
+    A0: 0
+    A0l: _
+    A1: 1
+    A1l: _
+    A2: 2
+    A2l: _
+    Anm1: n - 1
+    Anm1l: _
+    An: n
+    A0 --&gt; A0l
+    A0 --&gt; A1
+    A1 --&gt; A1l
+    A1 --&gt; A2
+    A2 --&gt; A2l
+    A2 --&gt; Anm1: ...
+    Anm1 --&gt; Anm1l
+    Anm1 --&gt; An
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-peigne-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Exemple de <em>peigne</em>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>L’arbre de la <a href="#fig-peigne" class="quarto-xref">Figure&nbsp;4</a> possède <span class="math inline">\(n+1\)</span> noeuds et est de hauteur <span class="math inline">\(n\)</span>. On a donc une hauteur <strong>linéaire</strong> en le nombre de noeuds en pire cas.</p>
+<p>Nos fonctions d’ajout et de recherche sont donc <strong>linéaires</strong> ($O(n)) en pire cas. Cette complexité n’est donc pour le moment pas meilleure qu’une simple liste chaînée.</p>
+</section>
+</section>
+<section id="arbres-binaires-de-recherche-équilibrés-arbres-avl" class="level1">
+<h1>Arbres binaires de recherche équilibrés : arbres AVL</h1>
+<p>Les deux arbres suivants sont des arbres binaires de recherche contenant les mêmes valeurs :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-unbalanced" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-unbalanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-unbalanced">stateDiagram
+    A0: 0
+    A0l: _
+    A1: 1
+    A1l: _
+    A2: 2
+    A2l: _
+    Anm1: 98
+    Anm1l: _
+    An: 99
+    A0 --&gt; A0l
+    A0 --&gt; A1
+    A1 --&gt; A1l
+    A1 --&gt; A2
+    A2 --&gt; A2l
+    A2 --&gt; Anm1: ...
+    Anm1 --&gt; Anm1l
+    Anm1 --&gt; An
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-unbalanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-balanced" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-balanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-balanced">stateDiagram
+    A0: 50
+    A1: 25
+    A2: 13
+    A3: 38
+    A1 --&gt; A2
+    A1 --&gt; A3
+    A4: 75
+    A5: 63
+    A6: 0
+    A7: 24
+    A2 --&gt; A6: ...
+    A2 --&gt; A7: ...
+    A8: 88
+    A9: 26
+    A10: 49
+    A4 --&gt; A5
+    A4 --&gt; A8
+    A0 --&gt; A1
+    A0 --&gt; A4
+    A3 --&gt; A9: ...
+    A3 --&gt; A10: ...
+    A11: 51
+    A12: 74
+    A13: 76
+    A14: 99
+    A5 --&gt; A11: ...
+    A5 --&gt; A12: ...
+    A8 --&gt; A13: ...
+    A8 --&gt; A14: ...
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-balanced-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>En revanche, le premier a une hauteur linéaire en le nombre de noeuds, alors que le second a une hauteur logarithmique. On dit qu’il est <strong>équilibré</strong>.</p>
+<p>Nous avons tout intérêt à considérer des arbres équilibrés, afin de garantir des opérations d’ajout et de recherche de complexité logarithmique. Malheureusement, cet équilibrage dépend de l’ordre d’insertion des éléments. Il nous faut donc considérer une opération d’insertion plus complexe, afin de maintenir la propriété d’équilibrage de l’arbre.</p>
+<section id="définition-2" class="level2">
+<h2 class="anchored" data-anchor-id="définition-2">Définition</h2>
+<p>La <em>hauteur</em> d’un arbre binaire est la longueur du plus long chemin entre une feuille et la racine. Par convention, un arbre vide a une hauteur de <span class="math inline">\(-1\)</span>, un arbre <span class="math inline">\((v, Empty, Empty)\)</span> est de hauteur <span class="math inline">\(0\)</span>, et un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> a une hauteur <span class="math inline">\(h(T) = 1 + \max(h(T_{left}), h(T_{right}))\)</span>.</p>
+<p>Le <em>facteur d’équilibrage</em> (<em>balancing factor</em>) d’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> est <span class="math inline">\(bf(T) = h(T_{left}) - h(T_{right})\)</span>. On dit qu’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span> est <em>équilibré</em> si <span class="math inline">\(bf(T) \in \{-1, 0, 1\}\)</span> et <span class="math inline">\(T_{left}\)</span> et <span class="math inline">\(T_{right}\)</span> sont équilibrés.</p>
+<p>Les arbres <strong>AVL</strong> sont des arbres binaires de recherche qui appliquent des opérations de <em>rotations</em> à chaque insertion, afin de maintenir l’équilibre de l’arbre. Ces opérations s’appliquent à n’importe quel noeud interne de l’arbre.</p>
+<section id="rotation-à-gauche" class="level3">
+<h3 class="anchored" data-anchor-id="rotation-à-gauche">Rotation à gauche</h3>
+<p>Dans une opération à <strong>gauche</strong>, la racine du sous-arbre (ici <span class="math inline">\(u\)</span>) devient le <strong>fils gauche</strong> du sommet qui est initialement son fils droit (ici <span class="math inline">\(v\)</span>).</p>
+<div id="fig-rotleft" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rotleft-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    U: u
+    A: A
+    U --&gt; A:::subtree: left
+    V: v
+    B: B
+    C: C
+    U --&gt; V: right
+    V --&gt; B:::subtree: left
+    V --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<pre class="{latex}"><code>
+
+
+
+
+       --&gt; </code></pre>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    V: v
+    U: u
+    A: A
+    U --&gt; A:::subtree: left
+    B: B
+    C: C
+    V --&gt; U: left
+    U --&gt; B:::subtree: right
+    V --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rotleft-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Rotation à gauche
+</figcaption>
+</figure>
+</div>
+<p>Cette opération préserve la propriété d’être un arbre binaire de recherche. En effet, on a bien préservé l’ordre des valeurs : celles du sous-arbre <span class="math inline">\(A\)</span> sont inférieures à <span class="math inline">\(u\)</span>, qui est inférieur à <span class="math inline">\(v\)</span>, qui est inférieur aux valeurs du sous-arbre <span class="math inline">\(C\)</span>. Les valeurs du sous-arbre <span class="math inline">\(B\)</span> sont comprises entre <span class="math inline">\(u\)</span> et <span class="math inline">\(v\)</span>.</p>
+</section>
+<section id="rotation-à-droite" class="level3">
+<h3 class="anchored" data-anchor-id="rotation-à-droite">Rotation à droite</h3>
+<p>Dans une opération à <strong>droite</strong>, la racine du sous-arbre (ici <span class="math inline">\(u\)</span>) devient le <strong>fils droit</strong> du sommet qui est initialement son fils gauche (ici <span class="math inline">\(v\)</span>).</p>
+<div id="fig-rotright" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rotright-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    U: u
+    V: v
+    U --&gt; V: left
+    A: A
+    V --&gt; A:::subtree: left
+    B: B
+    C: C
+    V --&gt; B:::subtree: right
+    U --&gt; C:::subtree: left
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<pre class="{latex}"><code>
+
+
+
+
+       --&gt; </code></pre>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+    
+    V: v
+    A: A
+    V --&gt; A:::subtree: left
+    
+    B: B
+    C: C
+    U: u
+    V --&gt; U: right
+    U --&gt; B:::subtree: left
+    U --&gt; C:::subtree: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rotright-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Rotation à droite
+</figcaption>
+</figure>
+</div>
+<p>De même, cette opération préserve la propriété que l’arbre est une arbre binaire de recherche.</p>
+</section>
+<section id="règles" class="level3">
+<h3 class="anchored" data-anchor-id="règles">Règles</h3>
+<p>Après une insertion d’une valeur dans le fils <span class="math inline">\(T_{left}\)</span> ou <span class="math inline">\(T_{right}\)</span> d’un arbre <span class="math inline">\(T = (v, T_{left}, T_{right})\)</span>, on recalcule le facteur d’équilibrage de <span class="math inline">\(T_{left}\)</span>, <span class="math inline">\(T_{right}\)</span> et <span class="math inline">\(T\)</span>, et on applique les règles suivantes :</p>
+<ul>
+<li>Si <span class="math inline">\(bf(T) = -2\)</span> :
+<ul>
+<li>Si <span class="math inline">\(bf(T_{right}) = -1\)</span>: <strong>rotation à gauche</strong> de <span class="math inline">\(T\)</span></li>
+<li>Sinon si <span class="math inline">\(bf(T_{right}) = 1\)</span>: <strong>rotation à droite</strong> de <span class="math inline">\(T_{right}\)</span> puis <strong>rotation à gauche</strong> de <span class="math inline">\(T\)</span></li>
+</ul></li>
+<li>Sinon si <span class="math inline">\(bf(T) = 2\)</span>:
+<ul>
+<li>Si <span class="math inline">\(bf(T_{right}) = -1\)</span>: <strong>rotation à gauche</strong> de <span class="math inline">\(T_{left}\)</span> puis <strong>rotation à droite</strong> de <span class="math inline">\(T\)</span></li>
+<li>Sinon si <span class="math inline">\(bf(T_{right}) = 1\)</span>: <strong>rotation à droite</strong> de <span class="math inline">\(T\)</span></li>
+</ul></li>
+<li>Sinon, on ne fait rien.</li>
+</ul>
+<p>Il faut appliquer ces opérations en remontant le long du chemin entre la racine et le noeud où a eu lieu l’insertion.</p>
+<p>L’insertion des éléments <span class="math inline">\(\{ 9, 1, 2, 4, 8, 3, 5, 0, 6, 7 \}\)</span> dans cet ordre donnera l’arbre binaire de recherche suivant :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-avl" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-avl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-avl">stateDiagram
+    A0: 9 (h = 7, bf = 7)
+    A1: 1 (h = 6, bf = -5)
+    A2: 0 (h = 0, bf = 0)
+    A3: _
+    A4: _
+    A2 --&gt; A3: left
+    A2 --&gt; A4: right
+    A5: 2 (h = 5, bf = -5)
+    A6: _
+    A7: 4 (h = 4, bf = -3)
+    A8: 3 (h = 0, bf = 0)
+    A9: _
+    A10: _
+    A8 --&gt; A9: left
+    A8 --&gt; A10: right
+    A11: 8 (h = 3, bf = 3)
+    A12: 5 (h = 2, bf = -2)
+    A13: _
+    A14: 6 (h = 1, bf = -1)
+    A15: _
+    A16: 7 (h = 0, bf = 0)
+    A17: _
+    A18: _
+    A16 --&gt; A17: left
+    A16 --&gt; A18: right
+    A14 --&gt; A15: left
+    A14 --&gt; A16: right
+    A12 --&gt; A13: left
+    A12 --&gt; A14: right
+    A19: _
+    A11 --&gt; A12: left
+    A11 --&gt; A19: right
+    A7 --&gt; A8: left
+    A7 --&gt; A11: right
+    A5 --&gt; A6: left
+    A5 --&gt; A7: right
+    A1 --&gt; A2: left
+    A1 --&gt; A5: right
+    A20: _
+    A0 --&gt; A1: left
+    A0 --&gt; A20: right
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-avl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Exemple d’arbre AVL
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>mais l’AVL suivant :</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    A0: 4 (h = 3, bf = 0)
+    A1: 2 (h = 2, bf = 1)
+    A2: 1 (h = 1, bf = 1)
+    A3: 0 (h = 0, bf = 0)
+    A4: _
+    A5: _
+    A3 --&gt; A4: left
+    A3 --&gt; A5: right
+    A6: _
+    A2 --&gt; A3: left
+    A2 --&gt; A6: right
+    A7: 3 (h = 0, bf = 0)
+    A8: _
+    A9: _
+    A7 --&gt; A8: left
+    A7 --&gt; A9: right
+    A1 --&gt; A2: left
+    A1 --&gt; A7: right
+    A10: 8 (h = 2, bf = 1)
+    A11: 6 (h = 1, bf = 0)
+    A12: 5 (h = 0, bf = 0)
+    A13: _
+    A14: _
+    A12 --&gt; A13: left
+    A12 --&gt; A14: right
+    A15: 7 (h = 0, bf = 0)
+    A16: _
+    A17: _
+    A15 --&gt; A16: left
+    A15 --&gt; A17: right
+    A11 --&gt; A12: left
+    A11 --&gt; A15: right
+    A18: 9 (h = 0, bf = 0)
+    A19: _
+    A20: _
+    A18 --&gt; A19: left
+    A18 --&gt; A20: right
+    A10 --&gt; A11: left
+    A10 --&gt; A18: right
+    A0 --&gt; A1: left
+    A0 --&gt; A10: right
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="opérations-1" class="level2">
+<h2 class="anchored" data-anchor-id="opérations-1">Opérations</h2>
+<p>Nous devons modifier légèrement la définition de nos noeuds :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> s_node <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> s_node <span class="op">*</span>left<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> s_node <span class="op">*</span>right<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    T value<span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> height<span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> bf<span class="op">;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_node<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Nous ne coderons pas la fonction d’insertion ici. A noter que pour garantir une bonne complexité, cette fonction doit calculer la hauteur et le facteur d’équilibrage récursivement en un seul parcours.</p>
+<p>L’opération de rotation à gauche peut s’implémenter ainsi :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Renvoie la nouvelle racine du sous-arbre auquel on applique la rotation</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>t_node <span class="op">*</span>rotate_left<span class="op">(</span>t_node <span class="op">*</span>root<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Nommage des noeuds et du sous-arbre B</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>u <span class="op">=</span> root<span class="op">;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>v <span class="op">=</span> u<span class="op">-&gt;</span>right<span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>b <span class="op">=</span> v<span class="op">-&gt;</span>left<span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Mise à jour des pointeurs</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    u<span class="op">-&gt;</span>right <span class="op">=</span> b<span class="op">;</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    v<span class="op">-&gt;</span>left <span class="op">=</span> u<span class="op">;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Renvoi de la nouvelle racine</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    t_node <span class="op">*</span>new_root <span class="op">=</span> v<span class="op">;</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> new_root<span class="op">;</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="complexité-1" class="level2">
+<h2 class="anchored" data-anchor-id="complexité-1">Complexité</h2>
+<p>Dans un arbre à <span class="math inline">\(n\)</span> sommets et de hauteur <span class="math inline">\(h\)</span> (que l’on suppose en <span class="math inline">\(O(\log n)\)</span>) :</p>
+<ul>
+<li>les opérations de rotation à gauche et à droite s’effectuent en temps constant <span class="math inline">\(O(1)\)</span>.</li>
+<li>Il faut faire au plus <span class="math inline">\(h\)</span> rotations de l’arbre pour réaliser une insertion (en plus du coût <span class="math inline">\(O(h)\)</span> d’une insertion classique dans un arbre binaire de recherche).</li>
+<li>La recherche d’une valeur dans un AVL est identique à la recherche dans un arbre binaire de recherche classique.</li>
+</ul>
+<p>On peut montrer que l’insertion dans un AVL préserve la propriété que <span class="math inline">\(h = O(n)\)</span> après chaque insertion. <strong>Les opérations d’insertion et de recherche sont donc de complexité logarithmique</strong> <span class="math inline">\(O(\log n)\)</span> en le nombre de noeuds de l’arbre.</p>
+<p>Ces opérations sont cette fois exponentiellement plus efficaces que l’opération de recherche dans une liste chaînée.</p>
+</section>
+<section id="autres-arbres-de-la-littérature" class="level2">
+<h2 class="anchored" data-anchor-id="autres-arbres-de-la-littérature">Autres arbres de la littérature</h2>
+<p>Les arbres AVL ont été inventés en 1962 par les chercheur soviétiques Georgy Adelson-Velsky et Evgenii Landis. Il s’agit de la première structure d’arbre binaire auto-équilibrés.</p>
+<p>Parmi les autres structures d’arbre auto-équilibrés, on peut mentionner les <em>B-trees</em> ou les <em>arbres rouges-noirs</em>.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

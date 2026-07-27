@@ -1,0 +1,417 @@
+---
+title: "TP4 - Structures arborescentes"
+format:
+  html:
+    code-fold: true
+---
+
+# Introduction
+
+On souhaite implémenter une base de données contenant des chaînes de caractères. On doit se munir des trois opérations suivantes :
+
+- **Recherche** : pour une chaîne $s$ donnée, déterminer si $s$ appartient à la base de données
+- **Insertion** : pour une chaîne $s$ qui n'appartient pas à la base de données, ajouter $s$ à la base de données
+- **Énumération** : lister toutes les chaînes qui appartiennent à la base données
+
+On propose une première implémentation d'une telle base de données.
+
+1. Télécharger le dépôt contenant le code de base du TP sur [la page Github du module](https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees/tree/main/).
+
+Dans le fichier ``src/database/database_array.c``. Cette implémentation utilise un tableau dynamique, similaire à celui vu dans le TP1, dont l'implémentation est donnée dans ``src/structures/array.c``.
+
+2. Compiler et exécuter le programme. La fonction ``main`` teste d'insérer un nombre $n$ de chaînes entre 10 et 100000.
+
+La fonction exécutée pour chaque test est la suivante :
+
+```C
+for (unsigned int i = 0; i < n; i++) {
+	const string s = get_next_random_string();
+	if (!is_in_database_array (&db, s))
+		insert_in_database_array (&db, s);
+	else
+		denied++;
+}
+```
+
+3. Quelle est la complexité en temps de cette boucle ? Les résultats observés confirment-ils votre estimation ?
+
+# Partie 1 : Arbres binaires de recherche
+
+Nous allons implémenter une structure de données plus efficace pour réaliser ces opérations.
+
+Un *arbre binaire* (*binary tree*) est une structure récursive, qui peut être soit vide, soit composée d'une valeur et de deux sous-arbres binaires (possiblement vides).
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-bintree
+%%| fig-cap: Exemple d'arbre binaire
+stateDiagram
+	A0: 4
+	A1: 5
+	A2: _
+	A3: _
+	A1 --> A2: left
+	A1 --> A3: right
+	A4: 1
+	A5: 9
+	A6: _
+	A7: _
+	A5 --> A6: left
+	A5 --> A7: right
+	A8: _
+	A4 --> A5: left
+	A4 --> A8: right
+	A0 --> A1: left
+	A0 --> A4: right
+```
+
+Ici, l'arbre est $T = (4, T_{left}, T_{right})$. Il contient la valeur $4$ et deux sous-arbres $T_{left} = (5, Empty, Empty)$ et $T_{right} = (1, (9, Empty, Empty), Empty)$. Les noeuds notés $\_$ indiquent des arbres vides.
+
+Pour un arbre $T = (v, T_{left}, T_{right})$, on appelle $T_{left}$ le *fils gauche* et $T_{right}$ le *fils droit* de *T*. Lorsque l'on voit un arbre comme un ensemble de noeuds, le noeud au sommet de l'arbre est la *racine* (*root*) de l'arbre. Les noeuds (*nodes*) dont les deux fils sont vides sont appelés des *feuilles* (*leaf* / *leaves*) et les autres des *noeuds internes*. Dans l'exemple de la figure @fig-bintree, la racine est le noeud contenant $4$, et les feuilles les noeuds contenant $5$ et $9$.
+
+Un *arbre binaire de recherche* (*binary search tree*) est une variété d'arbre binaire avec une propriété supplémentaire. Si l'arbre est égal à $T = (v, T_{left}, T_{right})$, alors les valeurs contenues dans $T_{left}$ sont inférieures ou égales à $v$, et celles contenues dans $T_{right}$ sont strictement supérieures à $v$.
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-bst
+%%| fig-cap: Exemple d'arbre binaire de recherche
+stateDiagram
+	A0: 4
+	A1: 2
+	A2: 1
+	A3: _
+	A4: _
+	A2 --> A3: left
+	A2 --> A4: right
+	A5: 3
+	A6: _
+	A7: _
+	A5 --> A6: left
+	A5 --> A7: right
+	A1 --> A2: left
+	A1 --> A5: right
+	A8: 8
+	A9: 5
+	A10: _
+	A11: _
+	A9 --> A10: left
+	A9 --> A11: right
+	A12: 9
+	A13: _
+	A14: _
+	A12 --> A13: left
+	A12 --> A14: right
+	A8 --> A9: left
+	A8 --> A12: right
+	A0 --> A1: left
+	A0 --> A8: right
+```
+
+Pour insérer une valeur $val$ dans un arbre binaire de recherche $T$ :
+
+- Si $T = Empty$, on y place un noeud $(val, Empty, Empty)$.
+- Si $T = (v, T_{left}, T_{right})$ et $val \leq v$, on insère $val$ dans $T_{left}$, sinon on l'insère dans $T_{right}$.
+
+1. On trouve dans ``include/structures/bin_tree.h`` une définition d'une structure d'arbre binaire de recherche ``string_tree`` contenant des valeurs de type ``string`` (définies dans ``include/structures/string_type.h``). Implémenter les opérations ``create_empty_tree``, ``insert_bst``, ``search_in_tree`` et ``list_all_entries_tree`` dans ``src/structures/bin_tree.c``.
+
+2. Tester votre structure avec la fonction ``test_bin_tree`` définie dans ``tests/test_structures.c``.
+
+3. Visualiser les arbres générés avec Mermaid. Quel est le problème avec ces arbres ?
+
+4. Quelle est la complexité en pire cas d'ajout et de recherche dans un arbre binaire ?
+
+# Partie 2 : Arbres équilibrés AVL
+
+Nous allons améliorer notre structure, en implémentant des opérations *d'équilibrage*, afin d'obtenir une structure d'**AVL**.
+
+La *hauteur* d'un arbre binaire est la longueur du plus long chemin entre une feuille et la racine. Par convention, un arbre vide a une hauteur de $-1$, un arbre $(v, Empty, Empty)$ est de hauteur $0$, et un arbre $T = (v, T_{left}, T_{right})$ a une hauteur $h(T) = 1 + \max(h(T_{left}), h(T_{right}))$. Les arbres des figures @fig-bintree et @fig-bst ont une hauteur de $2$.
+
+Le *facteur d'équilibrage* (*balancing factor*) d'un arbre $T = (v, T_{left}, T_{right})$ est $bf(T) = h(T_{left}) - h(T_{right})$. On dit qu'un arbre $T = (v, T_{left}, T_{right})$ est *équilibré* si $bf(T) \in \{-1, 0, 1\}$ et $T_{left}$ et $T_{right}$ sont équilibrés.
+
+## Définition
+
+Les arbres **AVL** sont des arbres binaires de recherche qui appliquent des opérations de *rotations* à chaque insertion, afin de maintenir l'équilibre de l'arbre.
+
+### Rotation à gauche
+
+
+::: {#fig-rotleft layout-ncol=3}
+
+```{mermaid}
+%%| fig-align: center
+stateDiagram
+	classDef subtree font-style:italic,font-weight:bold,fill:white
+	U: u
+	A: A
+	U --> A:::subtree: left
+	V: v
+	B: B
+	C: C
+	U --> V: right
+	V --> B:::subtree: left
+	V --> C:::subtree: right
+```
+
+```{latex}
+
+
+
+
+
+	   --> 
+```
+
+```{mermaid}
+%%| fig-align: center
+stateDiagram
+    classDef subtree font-style:italic,font-weight:bold,fill:white
+	V: v
+	U: u
+	A: A
+	U --> A:::subtree: left
+	B: B
+	C: C
+	V --> U: left
+	U --> B:::subtree: right
+	V --> C:::subtree: right
+```
+
+Rotation à gauche
+:::
+
+### Rotation à droite
+::: {#fig-rotright layout-ncol=3}
+
+```{mermaid}
+%%| fig-align: center
+stateDiagram
+	classDef subtree font-style:italic,font-weight:bold,fill:white
+	U: u
+	V: v
+	U --> V: left
+	A: A
+	V --> A:::subtree: left
+	B: B
+	C: C
+	V --> B:::subtree: right
+	U --> C:::subtree: left
+```
+
+```{latex}
+
+
+
+
+
+	   --> 
+```
+
+```{mermaid}
+%%| fig-align: center
+stateDiagram
+	classDef subtree font-style:italic,font-weight:bold,fill:white
+	
+	V: v
+	A: A
+	V --> A:::subtree: left
+	
+	B: B
+	C: C
+	U: u
+	V --> U: right
+	U --> B:::subtree: left
+	U --> C:::subtree: right
+```
+
+Rotation à droite
+:::
+
+### Règles
+
+Après une insertion d'une valeur dans le fils $T_{left}$ ou $T_{right}$ d'un arbre $T = (v, T_{left}, T_{right})$, on recalcule le facteur d'équilibrage de $T_{left}$, $T_{right}$ et $T$, et on applique les règles suivantes :
+
+- Si $bf(T) = -2$ :
+	- Si $bf(T_{right}) = -1$: **rotation à gauche** de $T$
+	- Sinon si $bf(T_{right}) = 1$: **rotation à droite** de $T_{right}$ puis **rotation à gauche** de $T$
+- Sinon si $bf(T) = 2$:
+	- Si $bf(T_{right}) = -1$: **rotation à gauche** de $T_{left}$ puis **rotation à droite** de $T$
+	- Sinon si $bf(T_{right}) = 1$: **rotation à droite** de $T$
+- Sinon, on ne fait rien.
+
+Il faut appliquer ces opérations en remontant le long du chemin entre la racine et le noeud où a eu lieu l'insertion.
+
+L'insertion des éléments $\{ 9, 1, 2, 4, 8, 3, 5, 0, 6, 7 \}$ dans cet ordre donnera l'arbre binaire de recherche suivant : 
+
+```{mermaid}
+%%| fig-align: center
+%%| label: fig-avl
+%%| fig-cap: Exemple d'arbre AVL
+stateDiagram
+	A0: 9 (h = 7, bf = 7)
+	A1: 1 (h = 6, bf = -5)
+	A2: 0 (h = 0, bf = 0)
+	A3: _
+	A4: _
+	A2 --> A3: left
+	A2 --> A4: right
+	A5: 2 (h = 5, bf = -5)
+	A6: _
+	A7: 4 (h = 4, bf = -3)
+	A8: 3 (h = 0, bf = 0)
+	A9: _
+	A10: _
+	A8 --> A9: left
+	A8 --> A10: right
+	A11: 8 (h = 3, bf = 3)
+	A12: 5 (h = 2, bf = -2)
+	A13: _
+	A14: 6 (h = 1, bf = -1)
+	A15: _
+	A16: 7 (h = 0, bf = 0)
+	A17: _
+	A18: _
+	A16 --> A17: left
+	A16 --> A18: right
+	A14 --> A15: left
+	A14 --> A16: right
+	A12 --> A13: left
+	A12 --> A14: right
+	A19: _
+	A11 --> A12: left
+	A11 --> A19: right
+	A7 --> A8: left
+	A7 --> A11: right
+	A5 --> A6: left
+	A5 --> A7: right
+	A1 --> A2: left
+	A1 --> A5: right
+	A20: _
+	A0 --> A1: left
+	A0 --> A20: right
+```
+
+mais l'AVL suivant :
+
+```{mermaid}
+stateDiagram
+	A0: 4 (h = 3, bf = 0)
+	A1: 2 (h = 2, bf = 1)
+	A2: 1 (h = 1, bf = 1)
+	A3: 0 (h = 0, bf = 0)
+	A4: _
+	A5: _
+	A3 --> A4: left
+	A3 --> A5: right
+	A6: _
+	A2 --> A3: left
+	A2 --> A6: right
+	A7: 3 (h = 0, bf = 0)
+	A8: _
+	A9: _
+	A7 --> A8: left
+	A7 --> A9: right
+	A1 --> A2: left
+	A1 --> A7: right
+	A10: 8 (h = 2, bf = 1)
+	A11: 6 (h = 1, bf = 0)
+	A12: 5 (h = 0, bf = 0)
+	A13: _
+	A14: _
+	A12 --> A13: left
+	A12 --> A14: right
+	A15: 7 (h = 0, bf = 0)
+	A16: _
+	A17: _
+	A15 --> A16: left
+	A15 --> A17: right
+	A11 --> A12: left
+	A11 --> A15: right
+	A18: 9 (h = 0, bf = 0)
+	A19: _
+	A20: _
+	A18 --> A19: left
+	A18 --> A20: right
+	A10 --> A11: left
+	A10 --> A18: right
+	A0 --> A1: left
+	A0 --> A10: right
+```
+
+> Les arbres AVL ont été inventés en 1962 par les chercheur soviétiques Georgy Adelson-Velsky et Evgenii Landis. Il s'agit de la première structure d'arbre binaire auto-équilibrés.
+
+## Implémentation
+
+1. Modifier la définition du type ``t_node`` pour y ajouter deux champs de type ``int``: ``height`` et ``bf``.
+
+2. Copier le code de la fonction ``insert_bst`` dans une nouvelle fonction ``insert_avl``, et ajouter le prototype de ``insert_avl`` dans ``include/structures/bin_tree.h``. Implémenter les opérations de rotations à gauche, à droite et modifier la fonction ``insert_avl`` avec les règles de rotations.
+
+3. Tester votre structure avec la fonction ``test_bin_tree`` définie dans ``tests/test_structures.c``.
+
+4. Visualiser les arbres générés avec Mermaid. Observer que les arbres générés sont à présent équilibrés.
+
+5. On admet que la hauteur d'un AVL contenant $n$ noeuds est en $O(\log n)$. Quelle est alors la complexité en pire cas d'un ajout et d'une recherche d'élément dans un AVL ?
+
+6. Modifier le test dans la fonction ``main``, en décommentant la fonction ``measure_tree_method``. Observer la différence de temps d'exécution avec ``measure_array_method``.
+
+
+# Partie 3 (Bonus) : Arbres préfixes
+
+Un *arbre préfixe* (en anglais *trie*, souvent prononcé [ˈtraɪ]) est une structure d'arbre spécialisée pour le stockage des chaînes de caractères.
+
+```{mermaid}
+stateDiagram
+	A0: _
+	A0 --> A1: c
+	A1: _
+	A1 --> A2: a
+	A2: _
+	A2 --> A3: k
+	A3: _
+	A3 --> A4: e
+	A4: cake
+	A2 --> A5: r
+	A5: car
+	A5 --> A6: e
+	A6: care
+	A5 --> A7: r
+	A7: _
+	A7 --> A8: y
+	A8: carry
+	A1 --> A9: o
+	A9: _
+	A9 --> A10: a
+	A10: _
+	A10 --> A11: s
+	A11: _
+	A11 --> A12: t
+	A12: coast
+	A9 --> A13: o
+	A13: _
+	A13 --> A14: k
+	A14: cook
+	A13 --> A15: l
+	A15: cool
+	A9 --> A16: r
+	A16: _
+	A16 --> A17: e
+	A17: core
+	A9 --> A18: s
+	A18: _
+	A18 --> A19: t
+	A19: cost
+```
+
+On suppose que l'alphabet de base des chaînes de caractères contient $M$ lettres.
+Chaque noeud contient un booléen ``is_present``, initialement ``false``, et un tableau ``table`` de taille $M$ de pointeurs vers des arbres préfixes (initialement nuls).
+
+Si l'on souhaite insérer la chaîne $s$ dans l'arbre préfixe $T$, alors :
+
+- Si $s$ est vide, on donne ``true`` à ``T.is_present``.
+- Sinon, $s = s_0s_1\dots s_n$. On insère la chaîne $s_1\dots s_n$ dans le fils ``table[s[0]]`` de ``T``.
+
+1. Implémenter la structure d'arbre préfixe dans ``src/structures/prefix_tree.c``.
+
+2. Tester votre structure avec la fonction ``test_prefix_tree`` du fichier ``src/tests/test_structures.c``. Visualiser l'arbre produit avec Mermaid.
+
+3. Décommenter l'appel à la fonction ``measure_prefix_tree_method`` dans la fonction ``main``. Comparer le temps d'exécution des tests avec la structure d'arbre préfixe, par rapport aux tableaux et aux arbres AVL.
+

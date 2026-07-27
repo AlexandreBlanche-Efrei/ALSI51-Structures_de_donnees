@@ -1,0 +1,69 @@
+---
+title: "ALSI51 Structures de données"
+---
+
+# Projet de fin de module
+
+Le sujet de projet est publié [ici](projet_compilateur.qmd).
+
+Le projet est à déposer au format **.zip** sur [cette page Moodle](https://moodle.myefrei.fr/mod/assign/view.php?id=124400) pour le **vendredi 6 février, 23h59**.
+
+Alternativement, vous pouvez m'envoyer par mail le lien vers votre dépôt Github, ou m'ajouter en collaborateur si celui-ci est privé.
+
+
+<!-- # Prochaine séance (16/01) :
+
+Nous commencerons la séance par un **CC** d'une heure, qui portera sur les arbres binaires, à la manière du TP4.
+
+Lisez bien le [cours 4](cm4-trees.qmd) que je viens de publier.
+Il n'y a encore une fois rien à retenir par coeur, mais il faut avoir compris le principe des arbres binaires, comment les implémenter, et savoir coder des fonctions de parcours récursives.
+
+Vous pouvez vous entraîner au CC en reprenant les parties 1 et 3 du TP4.
+
+N'hésitez pas à me contacter si vous avez des questions. -->
+
+# Dépôt Github du cours
+
+La base de code pour chaque TP et pour le projet est disponible sur la page Github du cours :
+
+[https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees](https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees)
+
+Pour travailler sur un TP, téléchargez ou clonez l'ensemble du dépôt, et ouvrez le dossier correspondant dans CLion.
+
+
+# A lire :
+> - Cours : [Introduction aux structures de données](cm0-introduction.qmd), et introduction à la complexité algorithmique
+> <br><br>
+> - Cours 1, partie 1 : [Tableaux dynamiques](cm1-pt1-tableaux_dynamiques.qmd) et explication de l'implémentation
+> <br><br>
+> - Cours 1, partie 2 : [Listes chaînées](cm1-pt2-listes_chainees.qmd), illustration, implémentation et comparaison
+> <br><br>
+> - Cours 2 : [Piles, files](cm2-piles_files.qmd), illustration, implémentation et applications
+> <br><br>
+> - Cours 3 : [Algorithmes de tri](cm3-algorithmes_de_tri.qmd), implémentation, calcul des complexités, comparaison
+> <br><br>
+> - Cours 4 : [Arbres binaires](cm4-trees.qmd), arbres binaires de recherche, arbres équilibrés
+>
+
+# Devoir maison d'entraînement
+
+[Sujet du devoir maison](documents/DM_entrainement.pdf)
+
+Ce devoir est facultatif, mais c'est une bonne manière de réviser pour les CC. Les CC seront bien sûr plus courts.
+
+N'hésitez pas à me contacter si vous avez besoin d'aide pour le devoir maison, ou envie d'un retour sur votre travail.
+
+
+## Organisation du cours
+- Enseignant : Alexandre Blanché
+- [Syllabus](documents/CV_CU_Syllabus_ALSI51-6.pdf)
+- 5x CTP 3.5h
+- 3x PRJ 3.5h suivi de projet
+- Evaluation
+    - 50% Evaluations TP
+      - 20% Evaluation 1
+      - 30% Evaluation 2
+    - 50% Projet
+
+
+

@@ -1,0 +1,140 @@
+---
+title: "TP1 - Tableaux dynamiques, listes chaînées"
+format:
+  html:
+    code-fold: true
+---
+
+On souhaite se doter d'une structure de liste dynamique, où l'on peut stocker des éléments, indexés de ``0`` à ``size - 1``, les insérer ou supprimer à une position arbitraire. On se donne l'interface suivante :  
+```C
+#ifndef LIST_ARRAY_H
+#define LIST_ARRAY_H
+
+typedef int T;
+
+typedef struct {
+    T *data;
+    int size;
+    int capacity;
+} t_list;
+
+// Returns an empty list
+t_list create_empty_list();
+
+// Returns the element at given index
+T get(t_list *list, int index);
+
+// Sets the element at given index to value val
+void set(t_list *list, int index, T val);
+
+// Adds an element to list at index 0
+void push_front(t_list *list, T val);
+
+// Adds an element to list at the last index
+void push_back(t_list *list, T val);
+
+// Inserts an element with value val at given index
+void insert(t_list *list, int index, T val);
+
+// Deletes the element at given index
+void delete_at(t_list *list, int index);
+
+// Prints the elements of the list in order
+void print_list(t_list *list);
+
+// Frees the memory reserved to store the elements
+void destroy_list(t_list *list);
+
+#endif
+```
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Partie 1 : Implémentation d'une liste dynamique avec un tableau
+
+La structure abstraite de liste dynamique (de type ``t_list``) est dans un premier temps implémentée avec un tableau.  
+La variable ``size`` représente la taille logique de la liste, c'est-à-dire le nombre d'éléments présents dans la liste.  
+La variable ``capacity`` représente le nombre d'éléments que l'on peut ajouter dans la liste sans qu'il y ait de dépassement de mémoire. Si l'on souhaite ajouter un élément à une liste lorsque ``size`` = ``capacity``, il faut allouer un nouveau tableau et recopier les éléments de l'ancien tableau dans le nouveau.
+
+1. Créer trois fichiers ``main.c``, ``list_array.c`` et ``list_array.h``. Ecrire le code ci-dessus dans le fichier ``list_array.h``, et écrire son implémentation dans ``list_array.c``. Le conteneur utilisé est un tableau de ``int`` (ici renommé ``T``).  
+Dans ``main.c``, utiliser la bibliothèque pour tester vos fonctions.  
+  
+On pourra se munir des fonctions :
+
+* ``void realloc_list(t_list *list)``, qui alloue un nouveau tableau de taille supérieure, et recopie les éléments du tableau initial dans le nouveau.
+* ``void shift_left(t_list *list, int index_start)`` qui décale les éléments d'indices ``index_start``, ..., ``list->size - 1`` d'une position vers la gauche.
+* ``void shift_right(t_list *list, int index_start)`` qui décale les éléments d'indices ``index_start``, ..., ``list->size - 1`` d'une position vers la droite.
+
+2. Quel est la complexité en pire cas de chacune de vos fonctions ?  
+Combien de copie d'éléments va-t-on faire après ``n`` ajouts d'éléments avec ``push_back`` ?
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Partie 2 : Listes chaînées
+
+On se propose de remplacer l'implémentation de la structure abstraite liste dynamique. Le code présent dans ``main.c`` ne doit pas être modifié, et le résultat doit être le même.  
+La structure de données que nous allons utiliser est la structure de *liste chaînée* : les éléments sont stockés dans des cellules, qui contiennent chacune un pointeur vers la cellule suivante dans la liste. La dernière cellule contient un pointeur nul. Le type ``t_list`` est cette fois-ci défini comme un ``struct`` contenant un pointeur vers la première cellule de la liste.
+
+3. Créer deux fichiers ``list_linked.h`` et ``list_linked.c``. Dans le ``.h``, copier le contenu de ``list_array.h``, et remplacer les ``#define`` et la structure par :
+```C
+#ifndef LIST_LINKED_H
+#define LIST_LINKED_H
+
+typedef int T;
+
+typedef struct s_cell {
+    struct s_cell *next;
+    T value;
+} t_cell;
+
+typedef struct {
+    t_cell *head;
+    int size;
+} t_list;
+```
+
+
+4. Implémenter toutes les fonctions de la bibliothèque avec la structure de liste chaînée.  
+On pourra se munir d'une fonction ``t_cell *get_cell(t_list *list, int index)`` qui renvoie le pointeur vers la cellule d'indice ``index``, ainsi qu'une fonction ``t_cell *create_cell(T val)`` qui renvoie l'adresse d'une nouvelle cellule allouée sur le tas et contenant ``val``.
+
+
+
+## Partie 3 : Listes chaînées spécifiques
+
+5. On souhaite pouvoir ajouter un grand nombre d'éléments à la fin de la liste (avec ``push_back``). Quelles modifications faut-il apporter à votre type ``t_list`` et à votre implémentation ``list_linked.c`` pour s'assurer que l'opération ``push_back`` ait un coût en temps minime ?
+
+6. On souhaite pouvoir parcourir la liste dans les deux sens : du premier au dernier élément, ou du dernier au premier. Cette opération est coûteuse avec nos listes simplement chaînées.  
+Créer des fichiers ``list_double_linked.h`` et ``list_double_linked.c`` pour implémenter le type "liste doublement-chaînée" : chaque cellule contiendra un pointeur vers la cellule suivante et vers la cellule précédente.  
+Implémenter la fonction ``print_list_backward``, qui affiche les éléments de la liste du dernier au premier.
+
+<!-- <div style="page-break-before:always"></div> -->
+
+## Partie 4 (Bonus) : Fonctionnalités avancées
+
+7. Ecrire une fonction ``t_list map(int (*pf)(int), t_list *list)``, qui prend en paramètre un *pointeur de fonction* ``pf``, et un pointeur vers une liste. La fonction renvoie une **nouvelle liste**, sans modifier celle passée en paramètre. Si ``list`` contient les éléments ``{ a0, a1, a2, ...}``, la nouvelle liste contient ``{ f(a0), f(a1), f(a2), ... }``, où ``f`` est la fonction pointée par ``pf``.  
+  
+Pour définir et appeler un pointeur de fonction :
+```C
+// Définition de la fonction f
+int f(int a) {
+    ...
+    return ...;
+}
+
+int main() {
+    ...
+    int (*pf)(int) = &f; // pf contient un pointeur vers la fonction f
+    int a = 5;
+    int b = (*pf)(a); // b contient f(a)
+    ...
+}
+```
+
+8. Ecrire une fonction ``t_list filter(bool (*pf)(T), t_list *list)`` qui renvoie une nouvelle liste contenant tous les éléments ``a`` de ``list`` qui vérifient ``f(a) == true``, dans le même ordre.
+
+9. Ecrire une fonction ``t_list square_even(t_list *list)`` qui renvoie la liste des carrés des éléments pairs de ``list``, à l'aide des fonctions ``map`` et ``filter``.
+
+10. Ecrire une fonction ``int reduce(T (*pf)(T, T), t_list *list, T a0)`` qui prend en paramètre un pointeur vers une fonction ``f`` (qui prend en entrée deux entiers et renvoie un entier), une liste contenant les éléments ``{ x0, x1, ..., xn-1 }`` et renvoie la valeur  
+``f( ... f( f( f(a0, x0), x1), x2), ... , xn-1)``.
+
+11. Ecrire une fonction ``T sum_list(t_list *list)`` qui renvoie la somme des éléments d'une liste. Utiliser la bonne fonction parmi les 3 précédentes.

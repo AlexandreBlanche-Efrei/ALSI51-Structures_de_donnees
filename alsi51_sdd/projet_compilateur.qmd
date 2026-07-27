@@ -1,0 +1,366 @@
+---
+title: "Projet - Compilation et exécution d'un mini-langage"
+format:
+  html:
+    code-fold: false
+---
+
+::: {.callout-note title="Modalités du projet"}
+- Projet à réaliser en trinômes
+- Trois séances en classe : 11/12, 16/01, 27/01
+- Soutenance au cours de la dernière séance, sur le projet en cours de complétion
+- Rendu du code la semaine du 06/02
+:::
+
+# Introduction
+
+## Objectif du projet
+
+L'objectif de ce projet est d'**exécuter des programmes** écrits dans un mini-langage, qui possède :
+
+- 26 **variables globales** (**a**, ..., **z**) pouvant contenir des valeurs entières,
+- des conditionnelles (**if**),
+- des boucles **while**.
+
+Et qui permet :
+
+- d'afficher le résultat d'une expression ou le contenu d'une variable,
+- de renvoyer une valeur à la fin de l'exécution.
+
+Un exemple de programme en mini-langage :
+
+::: {#fig-code}
+```{python}
+#| eval: false
+#| echo: true
+a = 0
+b = 1
+c = 0
+if (a <= b)
+    c = 2
+    if (b < c)
+        c = 3
+    else
+        c = 4
+while (c)
+    print c
+    if (c == 1)
+        print 0
+    c = c - 1
+return 0
+```
+Exemple de code en mini-langage
+:::
+
+Pour cela, nous allons devoir écrire un *compilateur* du mini-langage, vers un *langage intermédiaire* qui sera exécuté par une *machine virtuelle* que l'on va également écrire.
+
+## La compilation
+
+La **compilation** d'un programme consiste à convertir le code source, écrit dans un langage de *haut-niveau* (d'abstraction, donc plutôt compréhensible par les humains) en une suite d'instructions de *bas-niveau*, directement exécutables par la machine. On parle alors de programme exécutable.
+
+> Le langage C est un langage compilé, par opposition par exemple au Python, qui est **interprété**, c'est-à-dire que le code source est lu, décodé et exécuté uniquement à l'exécution.
+
+Le processus de compilation se décline généralement en trois étapes :
+
+1. **Analyse lexicale** (appelée en anglais *lexing*, réalisée par le *lexer*) :
+
+Le code source, sous forme de chaîne de caractères, est traduite en liste de **symboles**, que l'on appelle généralement **tokens** (mot anglais pour *jetons*). Ces tokens sont des unités lexicales, qui peuvent être des noms de variables, des nombres, ou encore des mots-clefs (if, while, return...).
+
+::: {.callout-note title="Exemple"}
+On se donne le code source suivant :
+```{python}
+#| eval: false
+#| echo: true
+a = 1
+if a
+    print 2
+else
+    print 3
+return a
+```
+
+La liste de tokens générée ressemblera à :  
+**[ Var(a), Keyword(Assign), Expr(1), Keyword(If), Expr(a), Keyword(Print), Expr(2), Keyword(Else), Keyword(Print), Expr(3), Keyword(Endblock), Keyword(Return), Expr(a) ]**
+:::
+
+2. **Analyse syntaxique** (*parsing*, réalisée par le *parser*) :
+
+La liste de tokens est lue, et un **arbre de syntaxe abstraite** (*AST*) est construit à partir d'elle. Un AST permet de représenter le programme en mémoire sous une forme adaptée à son exécution. Un AST est en réalité un **graphe orienté**, dans lequel les sommets représentent les différentes instructions à exécuter, et les arcs représentent les transitions entre instructions.
+
+L'AST du programme de la @fig-code est le suivant :
+
+::: {#fig-ast}
+```{mermaid}
+stateDiagram
+	[*] --> A1
+	A1: a ← 0
+	A1 --> A2
+	A2: b ← 1
+	A2 --> A3
+	A3: c ← 0
+	A3 --> A4
+	A4: If (a b <=)
+	A4 --> A5: then
+	A5: c ← 2
+	A5 --> A6
+	A6: If (b c <)
+	A6 --> A7: then
+	A7: c ← 3
+	A6 --> A8: else
+	A8: c ← 4
+	state A9 <<choice>>
+	A7 --> A9
+	A8 --> A9
+	state A10 <<choice>>
+	A9 --> A10
+	A4 --> A10: else
+	A10: While (c)
+	A10 --> A11: then
+	A11: Print (c)
+	A11 --> A12
+	A12: If (c 1 ==)
+	A12 --> A13: then
+	A13: Print (0)
+	state A14 <<choice>>
+	A13 --> A14
+	A12 --> A14: else
+	A14: c ← c 1 -
+	A14 --> A10
+	A10 --> A15: next
+	A15: Return (c)
+	A15 --> [*]
+```
+:::
+
+
+::: {.callout-note title="Exemple"}
+La liste de tokens de l'exemple ci-dessus,  
+**[ Var(a), Keyword(Assign), Expr(1), Keyword(If), Expr(a), Keyword(Print), Expr(2), Keyword(Else), Keyword(Print), Expr(3), Keyword(Endblock), Keyword(Return), Expr(a) ]**,  
+sera converti en l'AST suivant :
+
+::: {#fig-ast_ex}
+```{mermaid}
+stateDiagram
+	[*] --> A1
+	A1: a ← 1
+	A1 --> A2
+	A2: If (a)
+	A2 --> A3: then
+	A3: Print (2)
+	A2 --> A4: else
+	A4: Print (3)
+	state A5 <<choice>>
+	A3 --> A5
+	A4 --> A5
+	A5: Return (a)
+	A5 --> [*]
+```
+:::
+:::
+
+3. **Génération de code machine** :
+
+L'arbre de syntaxe abstraite est utilisé en tant que **langage intermédiaire** entre le code source et le code machine, pour réaliser diverses opérations d'**optimisation**. Il sert ensuite de base pour la génération du code en langage machine qui composera le programme exécutable final.
+
+**Alternative : compilation en bytecode**
+
+Dans certains langages, comme le Java, le code produit n'est pas directement du code machine, mais un code en langage intermédiaire appelé **bytecode**, indépendant de l'architecture de la machine, et qui est interprété et exécuté par un programme appelé **machine virtuelle**. Cela a pour avantage notamment d'améliorer la portabilité du code compilé.
+
+C'est cette approche que nous allons adopter pour ce projet. Nous allons écrire un programme qui prend en entrée un AST et exécute le code qu'il décrit.
+
+::: {.callout-note title="Exemples"}
+L'exécution de l'AST de la @fig-ast produit le résultat suivant :
+
+```{python}
+#| eval: false
+#| echo: true
+3
+2
+1
+0
+-> 0
+```
+
+Les nombres sont affichés par l'instruction ``print``, et la flèche finale représente la valeur renvoyée en sortie de l'exécution par l'instruction ``return``.
+
+De même, l'exécution du code d'exemple :
+```{python}
+#| eval: false
+#| echo: true
+a = 1
+if a
+    print 2
+else
+    print 3
+return a
+```
+
+produit le résultat suivant :
+```{python}
+#| eval: false
+#| echo: true
+2
+-> 1
+```
+:::
+
+# Aperçu de la base de code
+
+## Lancement
+
+La base de code du projet est disponible sur [la page Github du cours](https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees/tree/main/), dans l'onglet Projet.
+
+- Téléchargez l'archive zip ou clonez le dépôt complet sur votre machine.
+- Vérifiez que vous arrivez à compiler le code dans CLion, en tant que projet CMake.
+- Vérifiez qu'en exécutant le programme, vous obtenez bien le fichier ``output/code_ex.mmd``.
+
+Il est recommandé de créer un dépôt **Github** pour votre groupe, afin de collaborer plus efficacement, et de me donner plus facilement accès à votre code si vous avez besoin d'aide. [Aide](https://docs.github.com/fr/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository)
+
+- Chaque membre du groupe doit disposer d'un compte [Github](https://github.com/).
+- L'un des membres crée un nouveau dépôt privé sur sa page, et lui donne le nom ``alsi51-2526-projet-name1-name2-name3`` avec les noms des trois membres du groupe.
+- Dans le dépôt, cliquez sur ``Settings`` -> ``Collaborators``, puis ``Add people``, et ajoutez les deux autres membres du groupe.
+
+## Contenu de la base de code
+
+Le code est organisée de la manière suivante :
+
+- Le dossier ``src`` contient les fichiers source (``.c``) et le dossier ``include`` les fichiers d'en-tête (``.h``).
+- Le dossier ``src/expressions`` contient les fichiers en lien avec l'évaluation des expressions arithmétiques. Ils sont fortement similaires à ceux du TP2, avec quelques différences.
+- Le dossier ``src/structures`` contient les implémentations des différentes structures de données, vues dans les TP précédents : listes à deux extrêmités, pile, file, et la structure qui contiendra les tokens de l'analyse lexicale ``t_prog_token_list``. Vous n'avez rien à modifier dans ce dossier.
+- Le dossier ``file_io``, contient le code d'un programme de lecture dans un fichier. Vous n'avez pas à le modifier.
+
+Les principales fonctions à modifier, outre celles de ``src/expressions/expr.``, sont présentes dans le dossier ``src/program`` :
+
+- Les fichiers ``lexical.c`` et ``program.c`` contiennent diverses fonctions auxiliaires, que vous n'avez pas à modifier. ``program.c`` contient également le destructeur du type ``t_ast`` qu'il faudra compléter.
+- ``lexer.c`` contient les fonctions (à compléter en partie 3 du projet) de l'analyse lexicale.
+- ``parser.c`` contient les fonctions (à compléter en partie 2 du projet) de l'analyse syntaxique.
+- ``run.c`` contient les fonctions (à compléter en partie 1 du projet) d'exécution de l'AST.
+
+# Partie 1 : exécution d'un AST
+
+L'objectif de la première partie du projet est d'écrire un programme qui prend en entrée un AST et exécute le programme qu'il représente.
+
+Vous devez pour cela :
+
+- Compléter le fichier ``src/expressions/expr.c`` à la manière du TP2, afin de pouvoir évaluer des expressions en forme RPN (notation polonaise inversée, voir TP2). En particulier la fonction ``eval_rpn``, qui doit cette fois gérer les variables dans les expressions. Vous devrez également écrire la fonction ``apply_op`` dans le fichier ``src/expressions/operator.c``.
+- Bien comprendre les types représentant les AST, dans le fichier ``include/program/program.h``. Pour cela, observez bien l'AST donné dans la fonction ``example`` du fichier ``src/main.c``. Il s'agit de l'AST du code d'exemple de l'introduction (@fig-ast_ex). Vous pouvez vous aider de la fonction ``export_program_ast`` du fichier ``program.h``.
+- Ecrire la fonction ``destroy_ast`` dans ``src/program/program.c``, avec sa fonction auxiliaire ``destroy_statement``. Cette fonction libère toute la mémoire allouée dynamiquement pour représenter un AST.
+- Ecrire la fonction ``run`` dans ``src/program/run.c``, qui exécute le programme donné en entrée sous forme d'AST. Il est recommandé d'écrire cette fonction de manière récursive, avec une fonction auxiliaire ``run_aux``.
+
+
+# Partie 2 : analyse syntaxique
+
+L'objectif de la deuxième partie du projet est d'écrire la fonction de parsing, afin de convertir une liste de tokens (de type ``t_prog_token``, dans une liste de type ``t_prog_token_list``) en un AST.
+
+Vous devez pour cela :
+
+- Bien comprendre la définition des ``t_prog_token`` dans le fichier ``include/program/lexical.h``, ainsi que la liste de tokens de la fonction ``example`` dans ``src/main.c``.
+- Comprendre la structure ``t_prog_token_list`` dans le fichier ``prog_token_list.h``.
+- Compléter les fonctions ``parse`` et ``parse_aux`` dans le fichier ``src/program/parser.c``.
+
+# Partie 3 : extensions
+
+Lorsque vous aurez terminé les parties obligatoires, vous pourrez écrire une extension du projet de votre choix.  
+Quelques exemples d'extensions possibles :
+
+::: {.callout-tip title="Facile"}
+- Gérer les opérateurs booléens dans les expressions (*AND*, *OR*, *NOT*, *XOR*)
+- Traiter les chaînes de caractères dans les print (ex: ``print "Hello world"``)
+- Proposer une exécution pas à pas, avec affichage du contenu des variables
+- Optimiser l'évaluation des expressions en pré-calculant celles qui peuvent l'être
+:::
+
+::: {.callout-warning title="Moyen"}
+- Détecter les erreurs de syntaxe dans le code source, proposer un message d'erreur explicite
+- Traiter les boucles For (avec une syntaxe au choix)
+:::
+
+::: {.callout-important title="Difficile"}
+- Ecrire l'analyseur lexical (lexer)
+- Gérer les définitions et appels de fonctions
+- Optimiser les *sous*-expressions qui peuvent être pré-calculées
+- Gérer les tuples en tant que valeurs de variables ou valeurs de retour
+:::
+
+<br><br>
+
+---
+
+<br>
+
+# Annexe : syntaxe du mini-langage
+
+## Instructions (*statements*)
+
+- **Affectation** (*assignment*) : la variable ``var`` reçoit le résultat de l'expression ``expr``  
+
+    ```
+    [var] = [expr]
+    ```
+
+    Exemple :
+```{python}
+#| eval: false
+#| echo: true
+    a = 3
+```
+
+- **Affichage** (*print*) : la valeur de l'expression ``expr``  
+
+    ```
+    print [expr]
+    ```
+
+    Exemple :
+
+```{python}
+#| eval: false
+#| echo: true
+    print 2 * x + 3 * y
+```
+
+- **Conditionnelle "if"** : si l'expression ``cond`` s'évalue à une valeur différente de 0, on exécute le programme ``prog_if_true``, sinon le programme ``prog_if_false``.
+
+    ```
+    if [cond]
+        [prog_if_true]
+    else
+        [prog_if_false]
+    ```
+    Exemple :
+```{python}
+#| eval: false
+#| echo: true
+    if a == 0
+        return 0
+    else
+        a = a + 1
+```
+
+- **Boucle "while"** : tant que l'expression ``cond`` s'évalue à une valeur différente de 0, on exécute le programmme ``block``.  
+
+    ```
+    while [cond]
+        [block]
+    ```
+
+    Exemple :
+
+```{python}
+#| eval: false
+#| echo: true
+    while x != 0
+        x = x - 1
+        print x
+```
+
+## Indentation
+
+A chaque entrée dans un bloc de ``if``, ``else`` ou ``while``, on indente le code du bloc avec 4 espaces. Cette convention est importante si vous souhaitez écrire l'analyseur lexical.
+
+
+# Modalités de rendu
+
+Le projet est à déposer au format **.zip** sur [cette page Moodle](https://moodle.myefrei.fr/mod/assign/view.php?id=124400) pour le **vendredi 6 février, 23h59**.
+
+Alternativement, vous pouvez m'envoyer par mail le lien vers votre dépôt Github, ou m'ajouter en collaborateur si celui-ci est privé.

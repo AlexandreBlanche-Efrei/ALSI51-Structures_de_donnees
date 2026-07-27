@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 01961847-c4ea-4811-888b-55b5c6f1bed2
+      url: https://ablanche.quarto.pub/alsi51-structures-de-donnees

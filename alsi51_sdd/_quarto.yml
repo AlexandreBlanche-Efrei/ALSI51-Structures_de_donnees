@@ -1,0 +1,47 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "ALSI51 Structures de données"
+  navbar:
+    search: true
+    left:
+      - text: Cours
+        menu:
+        - href: cm0-introduction.qmd
+        - href: cm1-pt1-tableaux_dynamiques.qmd
+        - href: cm1-pt2-listes_chainees.qmd
+        - href: cm2-piles_files.qmd
+        - href: cm3-algorithmes_de_tri.qmd
+        - href: cm4-trees.qmd
+      - text: TP
+        menu:
+          - href: tp1.qmd
+          - href: tp2.qmd
+          - href: tp3.qmd
+          - href: tp4.qmd
+      - text: Rappels de langage C
+        href: rappels_C.qmd
+      - text: Sujet du projet
+        href: projet_compilateur.qmd
+      - text: Page Github du cours
+        href: https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees
+  favicon: figures/efrei_pantheon.png
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+    margin-header: |
+      ![](/figures/logo-efrei.svg)
+  # revealjs:
+  #   logo: "figures/logo-efrei.svg"
+  #   toc-depth: 1
+  #   output-ext: pres.html
+  #   scrollable: true
+
+

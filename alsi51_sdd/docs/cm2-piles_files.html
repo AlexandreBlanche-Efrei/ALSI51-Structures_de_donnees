@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cours 2 : Piles, files – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#tp2-piles-files" id="toc-tp2-piles-files" class="nav-link active" data-scroll-target="#tp2-piles-files">TP2 : Piles, files</a></li>
+  <li><a href="#i---structure-de-pile" id="toc-i---structure-de-pile" class="nav-link" data-scroll-target="#i---structure-de-pile">I - Structure de pile</a>
+  <ul class="collapse">
+  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">1) Définition</a></li>
+  <li><a href="#applications" id="toc-applications" class="nav-link" data-scroll-target="#applications">2) Applications</a>
+  <ul class="collapse">
+  <li><a href="#annulation-dune-action-ctrl-z" id="toc-annulation-dune-action-ctrl-z" class="nav-link" data-scroll-target="#annulation-dune-action-ctrl-z">Annulation d’une action: Ctrl-Z</a></li>
+  <li><a href="#evaluation-dexpression-en-notation-polonaise-inversée-postfixée" id="toc-evaluation-dexpression-en-notation-polonaise-inversée-postfixée" class="nav-link" data-scroll-target="#evaluation-dexpression-en-notation-polonaise-inversée-postfixée">Evaluation d’expression en notation polonaise inversée (postfixée)</a></li>
+  <li><a href="#pile-dappel-lors-de-lexécution-dun-programme" id="toc-pile-dappel-lors-de-lexécution-dun-programme" class="nav-link" data-scroll-target="#pile-dappel-lors-de-lexécution-dun-programme">Pile d’appel lors de l’exécution d’un programme</a></li>
+  </ul></li>
+  <li><a href="#implémentation" id="toc-implémentation" class="nav-link" data-scroll-target="#implémentation">3) Implémentation</a></li>
+  </ul></li>
+  <li><a href="#ii---structure-de-file" id="toc-ii---structure-de-file" class="nav-link" data-scroll-target="#ii---structure-de-file">II - Structure de file</a>
+  <ul class="collapse">
+  <li><a href="#définition-1" id="toc-définition-1" class="nav-link" data-scroll-target="#définition-1">1) Définition</a></li>
+  <li><a href="#applications-1" id="toc-applications-1" class="nav-link" data-scroll-target="#applications-1">2) Applications</a>
+  <ul class="collapse">
+  <li><a href="#mise-en-attente-dobjets-par-ordre-darrivée" id="toc-mise-en-attente-dobjets-par-ordre-darrivée" class="nav-link" data-scroll-target="#mise-en-attente-dobjets-par-ordre-darrivée">Mise en attente d’objets par ordre d’arrivée</a></li>
+  <li><a href="#ordonnancement-des-processus-par-le-système-dexploitation" id="toc-ordonnancement-des-processus-par-le-système-dexploitation" class="nav-link" data-scroll-target="#ordonnancement-des-processus-par-le-système-dexploitation">Ordonnancement des processus par le système d’exploitation</a></li>
+  <li><a href="#file-dattente-de-message" id="toc-file-dattente-de-message" class="nav-link" data-scroll-target="#file-dattente-de-message">File d’attente de message</a></li>
+  <li><a href="#parcours-en-largeur-et-parcours-en-profondeur" id="toc-parcours-en-largeur-et-parcours-en-profondeur" class="nav-link" data-scroll-target="#parcours-en-largeur-et-parcours-en-profondeur">Parcours en largeur et parcours en profondeur</a></li>
+  </ul></li>
+  <li><a href="#implémentation-1" id="toc-implémentation-1" class="nav-link" data-scroll-target="#implémentation-1">3) Implémentation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Cours 2 : Piles, files</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="tp2-piles-files" class="level1">
+<h1>TP2 : Piles, files</h1>
+<p>Dans le TP nous avons spécialisé le type liste dynamique en implémentant les structures de piles et de files, permettant <strong>moins</strong> d’opérations. Limiter le nombre d’opérations disponibles nous permet de simplifier l’objet conceptuel utilisé par nos algorithmes, et ainsi simplifier leur écriture. Dans les piles et les files, nous n’avons plus d’indices à considérer, mais simplement le <em>sommet</em> de la pile ou l’<em>avant</em> et l’<em>arrière</em> de la file.</p>
+</section>
+<section id="i---structure-de-pile" class="level1">
+<h1>I - Structure de pile</h1>
+<section id="définition" class="level2">
+<h2 class="anchored" data-anchor-id="définition">1) Définition</h2>
+<p>Une <em>pile</em> (<em>stack</em> en anglais) est un type abstrait de structure de données linéaire de type <em>Last In, First Out</em>, ou <em>LIFO</em>, c’est-à-dire qu’on accède à ses éléments par ordre inverse de l’ordre d’ajout.</p>
+<p>Une pile permet les trois opérations suivantes :</p>
+<ul>
+<li>Déterminer si la pile est vide</li>
+<li><em>Empiler</em> un élément : l’ajouter à la pile, à l’avant. On appelle souvent cette opération <em>push</em>.</li>
+<li><em>Dépiler</em> un élément : obtenir le dernier élément à avoir été ajouté (celui à l’avant), et le retirer de la structure. On appelle souvent cette opération <em>pop</em>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-stack" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-stack">block-beta
+
+    columns 27
+    
+    space:4     pushed["3"]:3 space pushed2["4"]:3 space:5 popped["4"]:3 space pushed3["5"]:3 space:4
+    space:27
+    space:27
+
+    space:12                                        D4["4"]:3 space:9                               G4["5"]:3 space:4
+    space:4                         C3["3"]:3 space D3["3"]:3 space E3["3"]:3 space F3["3"]:3 space G3["3"]:3    
+    A2["2"]:3 space B2["2"]:3 space C2["2"]:3 space D2["2"]:3 space E2["2"]:3 space F2["2"]:3 space G2["2"]:3
+    A1["1"]:3 space B1["1"]:3 space C1["1"]:3 space D1["1"]:3 space E1["1"]:3 space F1["1"]:3 space G1["1"]:3
+
+    pushed -- "push" --&gt; B2
+    pushed2 -- "push" --&gt; C3
+    E3 -- "pop" --&gt; popped
+    pushed3 -- "push" --&gt; F3
+
+    style pushed  fill:#bbf,color:#000
+    style pushed2 fill:#bbf,color:#000
+    style pushed3 fill:#bbf,color:#000
+    style popped  fill:#bbf,color:#000
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stack-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Opérations d’empilement et de dépilement
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ce type abstrait est restreint à ces trois opérations uniquement, car elles sont suffisantes dans de nombreuses utilisations.</p>
+</section>
+<section id="applications" class="level2">
+<h2 class="anchored" data-anchor-id="applications">2) Applications</h2>
+<p>On peut trouver des piles dans de nombreuses applications.</p>
+<section id="annulation-dune-action-ctrl-z" class="level3">
+<h3 class="anchored" data-anchor-id="annulation-dune-action-ctrl-z">Annulation d’une action: Ctrl-Z</h3>
+<p>Dans un éditeur de texte, les opérations successives sur le fichier sont placées dans une pile. Appelons cette pile <span class="math inline">\(Stack_{ops}\)</span>. En appuyant sur Ctrl + Z (<em>undo</em>) on dépile les opérations une à une. Les opérations dépilées ne sont pas supprimées, car on peut vouloir les rétablir avec Ctrl + Y (<em>redo</em>). On empile alors les opérations annulées dans une deuxième pile, <span class="math inline">\(Stack_{undone}\)</span>. Ces opérations seront elles-mêmes dépilées à chaque rétablissement, et réempilées sur <span class="math inline">\(Stack_{ops}\)</span>. Lorsque l’on annule plusieurs opérations <span class="math inline">\(op_1\)</span>, <span class="math inline">\(op_2\)</span>, …, <span class="math inline">\(op_k\)</span> et qu’on applique une nouvelle opération <span class="math inline">\(new\_op\)</span>, les opérations <span class="math inline">\(op_1\)</span>, <span class="math inline">\(op_2\)</span>, …, <span class="math inline">\(op_k\)</span> empilées sur <span class="math inline">\(Stack_{undone}\)</span> sont supprimées : on vide <span class="math inline">\(Stack_{undone}\)</span> et on empile <span class="math inline">\(new\_op\)</span> sur <span class="math inline">\(Stack_{ops}\)</span>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Opération</th>
+<th>Texte</th>
+<th>Stack_ops</th>
+<th>Stack_undone</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&nbsp;<code>'A'</code></td>
+<td>&nbsp;<code>A</code></td>
+<td>&nbsp;<code>[ 'A' ]</code></td>
+<td><code>[ ]</code></td>
+</tr>
+<tr class="even">
+<td>&nbsp;<code>'B'</code></td>
+<td>&nbsp;<code>AB</code></td>
+<td>&nbsp;<code>[ 'B', 'A' ]</code></td>
+<td><code>[ ]</code></td>
+</tr>
+<tr class="odd">
+<td>&nbsp;<code>'C'</code></td>
+<td>&nbsp;<code>ABC</code></td>
+<td>&nbsp;<code>[ 'C', 'B', 'A' ]</code></td>
+<td><code>[ ]</code></td>
+</tr>
+<tr class="even">
+<td>&nbsp;<strong>Ctrl + Z</strong> (undo)</td>
+<td>&nbsp;<code>AB</code></td>
+<td>&nbsp;<code>[ 'B', 'A' ]</code></td>
+<td><code>[ 'C' ]</code></td>
+</tr>
+<tr class="odd">
+<td>&nbsp;<strong>Ctrl + Z</strong> (undo)</td>
+<td>&nbsp;<code>A</code></td>
+<td>&nbsp;<code>[ 'A' ]</code></td>
+<td><code>[ 'B', 'C' ]</code></td>
+</tr>
+<tr class="even">
+<td><strong>Ctrl + Y</strong> (redo)</td>
+<td><code>AB</code></td>
+<td><code>[ 'B', 'A' ]</code></td>
+<td><code>[ 'C' ]</code></td>
+</tr>
+<tr class="odd">
+<td><code>'D'</code></td>
+<td><code>ABD</code></td>
+<td><code>[ 'D', 'B', 'A' ]</code></td>
+<td><code>[ ]</code></td>
+</tr>
+</tbody>
+</table>
+<p>De même, dans un navigateur web, les options “Page précédente” et “Page suivante” sont implémentées de la même manière, avec deux piles : <span class="math inline">\(Stack_{visited}\)</span> stockant les dernières pages visitées, et <span class="math inline">\(Stack_{backtracked}\)</span> sur laquelle on empile la page actuelle lorsque l’on clique sur “Page précédente”. Si l’on clique plusieurs fois sur “Page précédente” puis sur un lien, la pile <span class="math inline">\(Stack_{backtracked}\)</span> est vidée, et l’on recommence à empiler les pages sur <span class="math inline">\(Stack_{visited}\)</span>.</p>
+</section>
+<section id="evaluation-dexpression-en-notation-polonaise-inversée-postfixée" class="level3">
+<h3 class="anchored" data-anchor-id="evaluation-dexpression-en-notation-polonaise-inversée-postfixée">Evaluation d’expression en notation polonaise inversée (postfixée)</h3>
+<p>Une expression arithmétique est dite notée en <em>notation polonaise inversée</em>, ou <em>notation postfixée</em>, si les opérateurs sont situés immédiatement après les opérandes. Par exemple, dans l’expression suivante :</p>
+<pre><code>1 2 + 3 *</code></pre>
+<p>L’opération d’addition est appliquée à 1 et 2, avant que le résultat ne soit utilisé par l’opérateur * pour appliquer l’opération 3 * 3. L’expression s’évalue donc à 9, elle est équivalente à</p>
+<pre><code>(1 + 2) * 3</code></pre>
+<p>(en <em>notation infixe</em>, la notation usuelle).</p>
+<p>L’objet de la partie 1 du TP2 est d’implémenter un évaluateur d’expressions en notation polonaise inversée, à l’aide d’une pile. On parcourt l’expression élément par élément.</p>
+<ul>
+<li>Lorsque le premier élément (<em>token</em>) de l’expression est un nombre, l’empiler sur la pile.</li>
+<li>Lorsque le premier élément de l’expression est un opérateur <code>op</code>, dépiler deux éléments de la pile.
+<ul>
+<li>S’il ne s’agit pas de deux nombres, l’expression est mal formée. Renvoyer une erreur.</li>
+<li>Sinon, pour les deux nombres <code>b</code> et <code>a</code>, appliquer l’opération <code>a op b</code> pour obtenir le résultat <code>c</code>. Empiler <code>c</code>sur la pile.</li>
+</ul></li>
+<li>Une fois l’expression entièrement parcourue, la pile doit contenir exactement un élément, qui est un nombre. C’est le résultat de l’évaluation de la formule.</li>
+</ul>
+<p><strong>Exemple</strong> :</p>
+<p>La formule est <code>3 4 5 + * 2 -</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Élément de l’expression</th>
+<th>Action</th>
+<th>État de la pile</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>3</code></td>
+<td>Empiler <code>3</code></td>
+<td><code>[ 3 ]</code></td>
+</tr>
+<tr class="even">
+<td><code>4</code></td>
+<td>Empiler <code>4</code></td>
+<td><code>[ 4, 3 ]</code></td>
+</tr>
+<tr class="odd">
+<td><code>5</code></td>
+<td>Empiler <code>5</code></td>
+<td><code>[ 5, 4, 3 ]</code></td>
+</tr>
+<tr class="even">
+<td><code>+</code></td>
+<td>Dépiler <code>5</code> puis <code>4</code>, empiler <code>4 + 5 = 9</code></td>
+<td><code>[ 9, 3 ]</code></td>
+</tr>
+<tr class="odd">
+<td><code>*</code></td>
+<td>Dépiler <code>9</code>puis <code>3</code>, empiler <code>3 * 9 = 27</code></td>
+<td><code>[ 27 ]</code></td>
+</tr>
+<tr class="even">
+<td><code>2</code></td>
+<td>Empiler <code>2</code></td>
+<td><code>[ 2, 27 ]</code></td>
+</tr>
+<tr class="odd">
+<td><code>-</code></td>
+<td>Dépiler <code>2</code> puis <code>27</code>, empiler <code>27 - 2 = 25</code></td>
+<td><code>[ 25 ]</code></td>
+</tr>
+</tbody>
+</table>
+<p>La pile ne contient qu’un seul élément, <code>25</code>, c’est donc le résultat de l’évaluation.</p>
+<p>L’expression est donc équivalente à <code>(3 * (4 + 5)) - 2</code>, mais a l’avantage de <strong>ne pas nécessiter de parenthèses</strong>.</p>
+<p>En outre, les expression en forme infixe nécessitent de tenir compte de l’ordre de précédence des opérateurs : <code>3 + 2 * 5</code> s’évalue à <code>3 + (2 * 5)</code> à cause de la priorité de <code>*</code> sur <code>+</code>. L’évaluation de formules en notation polonaise inversée permet de ne pas avoir à tenir compte de la précédence des opérateurs.</p>
+</section>
+<section id="pile-dappel-lors-de-lexécution-dun-programme" class="level3">
+<h3 class="anchored" data-anchor-id="pile-dappel-lors-de-lexécution-dun-programme">Pile d’appel lors de l’exécution d’un programme</h3>
+<p>Lors de l’exécution d’un programme, la machine dispose d’une <em>pile d’appel</em> pour stocker les informations utiles lorsqu’elle doit procéder à un appel de fonction.</p>
+<p>Par exemple, pour le code suivant :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> f<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> g<span class="op">(</span><span class="dt">int</span> a<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> b <span class="op">=</span> f<span class="op">(</span>a<span class="op">,</span> a <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> b<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> c <span class="op">=</span> g<span class="op">(</span><span class="dv">2</span><span class="op">);</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"a = </span><span class="sc">%d</span><span class="st">, c = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">,</span> c<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le processeur va dans un premier temps exécuter la fonction <code>main</code>, en stockant sur la <em>pile</em> (<em>stack</em>) ses variables locales.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Main : (main) a = 1, c = ?
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Lorsqu’il rencontre un appel à la fonction <code>g</code>, il met en pause son exécution, et exécute la fonction <code>g</code> pour calculer la valeur à mettre dans <code>c</code>. Il copie donc la valeur <code>2</code> dans la variable locale <code>a</code> de <code>g</code>, qu’il place dans une nouvelle entrée de la pile.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Main: (main) a = 1, c = ?
+    G: (g) a = 2, b = ?
+    Main --&gt; G
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>La fonction doit alors effectuer un appel à <code>f</code>, le processeur crée une nouvelle entrée dans la pile, en copiant les valeurs de <code>a</code> et <code>a + 1</code> dans les variables locales <code>a</code> et <code>b</code> de <code>f</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Main : (main) a = 1, c = ?
+    G : (g) a = 2, b = ?
+    F : (f) a = 2, b = 3
+    Main --&gt; G
+    G --&gt; F
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>La fonction <code>f</code> renvoie <code>a + b = 5</code>. Le processeur peut alors dépiler l’entrée <code>f</code> de la pile, et donner la valeur <code>5</code> à <code>b</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Main : (main) a = 1, c = ?
+    G : (g) a = 2, b = 5
+    Main --&gt; G
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>La fonction <code>g</code> renvoie la valeur de <code>b</code>, donc <code>5</code>. Le processeur dépile l’entrée <code>g</code> de la pile et place la valeur <code>5</code> dans <code>c</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Main : (main) a = 1, c = 5
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>La fonction <code>printf</code> affiche :</p>
+<pre><code>a = 1, c = 5</code></pre>
+<p>La valeur de la variable locale a bien été sauvegardée durant les appels aux fonctions <code>g</code> et <code>f</code>.</p>
+<p>Une telle pile d’appel est utilisée dans la plupart des langages de programmation, mais elle est particulièrement présente dans le langage C, du fait de son positionnement de langage de programmation de bas-niveau, c’est-à-dire proche de la machine.</p>
+<p>On peut visualiser la pile d’appel et le tas avec CTutor : <img src="figures/ctutor.png" class="img-fluid" alt="Exécution du programme pas à pas avec CTutor"></p>
+<p><a href="https://pythontutor.com/visualize.html#code=%0Aint%20f%28int%20a,%20int%20b%29%20%7B%0A%20%20%20%20return%20a%20%2B%20b%3B%0A%7D%0A%0Aint%20g%28int%20a%29%20%7B%0A%20%20%20%20int%20b%20%3D%20f%28a,%20a%20%2B%201%29%3B%0A%20%20%20%20return%20b%3B%0A%7D%0A%0Aint%20main%28%29%20%7B%0A%20%20%20%20int%20a%20%3D%201%3B%0A%20%20%20%20int%20c%20%3D%20g%282%29%3B%0A%20%20%20%20printf%28%22a%20%3D%20%25d,%20c%20%3D%20%25d%5Cn%22,%20a,%20c%29%3B%0A%20%20%20%20return%200%3B%0A%7D&amp;cumulative=false&amp;heapPrimitives=nevernest&amp;mode=edit&amp;origin=opt-frontend.js&amp;py=c_gcc9.3.0&amp;rawInputLstJSON=%5B%5D&amp;textReferences=false">Lien vers le programme dans CTutor</a></p>
+</section>
+</section>
+<section id="implémentation" class="level2">
+<h2 class="anchored" data-anchor-id="implémentation">3) Implémentation</h2>
+<p>Il existe plusieurs manières d’implémenter une pile, dépendant des propriétés recherchées. Nous pouvons réutiliser la structure de liste dynamique implémentée au TP1, afin d’implémenter nos opérations de pile.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// stack.h</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"list_linked.c"</span><span class="pp"> </span><span class="co">// Implémentation par listes chaînées</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    t_list list<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_stack<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">// stack.c</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>t_stack create_empty_stack<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    t_stack stack<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    stack<span class="op">.</span>list <span class="op">=</span> create_empty_list<span class="op">();</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stack<span class="op">;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns true if the stack is empty</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_empty_stack<span class="op">(</span>t_stack <span class="op">*</span>stack<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> length<span class="op">(&amp;</span>stack<span class="op">-&gt;</span>list<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">// Pushes the value val to the top of the stack</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> push<span class="op">(</span>t_stack <span class="op">*</span>stack<span class="op">,</span> T val<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    push_front<span class="op">(&amp;</span>stack<span class="op">-&gt;</span>list<span class="op">,</span> val<span class="op">);</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns the value at the top of the stack</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>T get_top<span class="op">(</span>t_stack <span class="op">*</span>stack<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> get<span class="op">(&amp;</span>stack<span class="op">-&gt;</span>list<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns the value at the top of the stack and deletes it from the stack</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>T pop<span class="op">(</span>t_stack <span class="op">*</span>stack<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    T t <span class="op">=</span> get_top<span class="op">(</span>stack<span class="op">);</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    delete_at<span class="op">(&amp;</span>stack<span class="op">-&gt;</span>list<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t<span class="op">;</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La structure de liste chaînée (à une seule extrêmité) est pertinente pour implémenter une pile : les opérations <code>push_front(list, val)</code> d’ajout en tête, <code>get(list, 0)</code> d’accès en tête, et <code>delete_at(list, 0)</code> de suppression en tête ont toutes une complexité constante <span class="math inline">\(O(1)\)</span>.</p>
+<p>On a ici procédé à une <strong>encapsulation</strong> : on a caché l’implémentation d’une structure derrière une <strong>interface</strong> que l’on a mise à disposition de l’utilisateur. L’utilisateur de notre bibliothèque devra nécessairement passer par nos fonctions s’il souhaite accéder à la structure ou la modifier. Cela a le double avantage :</p>
+<ul>
+<li>pour l’utilisateur de ne pas se soucier des détails d’implémentation de la structure qu’il utilise.</li>
+<li>pour le développeur de la structure de garantir que l’utilisateur ne modifiera pas lui-même les variables de la structure de manière imprévisible.</li>
+</ul>
+<p>Nous avons également pu réutiliser du code existant, en <strong>spécialisant</strong> la structure de liste dynamique pour notre usage. L’implémentation d’une structure aussi générale que <code>t_list</code> dans le TP1 nous permet à présent d’implémenter une pile très facilement, en appelant des fonctions existantes avec les bons paramètres.</p>
+</section>
+</section>
+<section id="ii---structure-de-file" class="level1">
+<h1>II - Structure de file</h1>
+<section id="définition-1" class="level2">
+<h2 class="anchored" data-anchor-id="définition-1">1) Définition</h2>
+<p>Une <em>file</em> (en anglais <em>queue</em>) est un type abstrait de structure de données linéaire, de type <em>First In, First Out</em>, ou <em>FIFO</em>, c’est-à-dire qu’on accède à ses éléments par ordre d’ajout, à la manière d’une file d’attente (premier arrivé, premier servi).</p>
+<p>Une file permet les trois opérations suivantes :</p>
+<ul>
+<li>Déterminer si la file est vide</li>
+<li><em>Enfiler</em> un élément : l’ajouter à la file, à l’arrière. On appelle souvent cette opération <em>push</em> ou <em>enqueue</em>.</li>
+<li><em>Défiler</em> un élément : obtenir l’élément à l’avant de la file (le plus ancien encore présent par ordre d’ajout), et le retirer de la structure. On appelle souvent cette opération <em>pop</em> ou <em>dequeue</em>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-queue" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-queue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-queue">block-beta
+
+    columns 27
+    
+    space:4     pushed["3"]:3 space pushed2["4"]:3 space:9 pushed3["5"]:3 space:4
+    space:27
+    space:27
+
+    space:12                                        D4["4"]:3 space E4["4"]:3 space:5                   G4["5"]:3 space:4
+    space:4                         C3["3"]:3 space D3["3"]:3 space E3["3"]:3 space     F3["4"]:3 space G3["4"]:3    
+    A2["2"]:3 space B2["2"]:3 space C2["2"]:3 space D2["2"]:3 space E2["2"]:3 space     F2["3"]:3 space G2["3"]:3
+    A1["1"]:3 space B1["1"]:3 space C1["1"]:3 space D1["1"]:3 space:5                   F1["2"]:3 space G1["2"]:3
+
+    space:27
+    space:27
+
+    space:16 popped["1"]:3 space:8
+
+    pushed -- "enqueue" --&gt; B2
+    pushed2 -- "enqueue" --&gt; C3
+    E2 -- "dequeue" --&gt; popped
+    pushed3 -- "enqueue" --&gt; F3
+
+    style A1      fill:#feb,color:#000
+    style A2      fill:#feb,color:#000
+    style B1      fill:#feb,color:#000
+    style B2      fill:#feb,color:#000
+    style C1      fill:#feb,color:#000
+    style C2      fill:#feb,color:#000
+    style C3      fill:#feb,color:#000
+    style D1      fill:#feb,color:#000
+    style D2      fill:#feb,color:#000
+    style D3      fill:#feb,color:#000
+    style D4      fill:#feb,color:#000
+    style E2      fill:#feb,color:#000
+    style E3      fill:#feb,color:#000
+    style E4      fill:#feb,color:#000
+    style F1      fill:#feb,color:#000
+    style F2      fill:#feb,color:#000
+    style F3      fill:#feb,color:#000
+    style G1      fill:#feb,color:#000
+    style G2      fill:#feb,color:#000
+    style G3      fill:#feb,color:#000
+    style G4      fill:#feb,color:#000
+    style pushed  fill:#fb8,color:#000
+    style pushed2 fill:#fb8,color:#000
+    style pushed3 fill:#fb8,color:#000
+    style popped  fill:#fb8,color:#000
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-queue-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Opérations d’enfilement et de défilement
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="applications-1" class="level2">
+<h2 class="anchored" data-anchor-id="applications-1">2) Applications</h2>
+<p>Comme les piles, les files sont utilisées dans de nombreuses applications.</p>
+<section id="mise-en-attente-dobjets-par-ordre-darrivée" class="level3">
+<h3 class="anchored" data-anchor-id="mise-en-attente-dobjets-par-ordre-darrivée">Mise en attente d’objets par ordre d’arrivée</h3>
+<p>Comme dans le cas d’une file d’attente de personnes, de nombreuses applications informatiques nécessitent de mettre en attente des objets par ordre d’arrivée. Par exemple dans une situation où des utilisateurs doivent se connecter à un serveur saturé, et doivent attendre des déconnexions d’utilisateurs pour être connectés au serveur. Les utilisateurs sont placés dans une file et traités par ordre d’arrivée.</p>
+</section>
+<section id="ordonnancement-des-processus-par-le-système-dexploitation" class="level3">
+<h3 class="anchored" data-anchor-id="ordonnancement-des-processus-par-le-système-dexploitation">Ordonnancement des processus par le système d’exploitation</h3>
+<p>Le système d’exploitation de la machine s’occupe de gérer les différents processus qui s’exécutent par alternance. Pour ce faire, il place les processus dans plusieurs files d’attentes :</p>
+<ul>
+<li><strong>Job queue</strong> : les processus sont initialement placées dans la file des tâches à réaliser, en attente d’exécution.</li>
+<li><strong>Ready queue</strong> : les processus prêts à être exécutés sont ensuite acheminés vers la Ready queue, et attendent que le processeur soit disponible.</li>
+<li>L’ordonnanceur sélectionne ensuite les processus dans la Ready queue et les donne au CPU afin qu’il les exécute.</li>
+</ul>
+<p>En pratique, on utilisera plutôt une structure de <em>file de priorité</em>, où les éléments sont classés selon un niveau de priorité et défilés dans cet ordre. Il existe des méthodes efficaces pour implémenter les files de priorités, comme les <em>tas binaires</em>, un cas particulier d’<em>arbre binaire</em> (voir le cours 4).</p>
+</section>
+<section id="file-dattente-de-message" class="level3">
+<h3 class="anchored" data-anchor-id="file-dattente-de-message">File d’attente de message</h3>
+<p>Pour la communication entre processus ou de serveur à serveur, on utilise des <em>files d’attente de message</em>, pour mettre les messages en attente et les traiter par ordre d’envoi.</p>
+<p><a href="https://fr.wikipedia.org/wiki/File_d'attente_de_message">https://fr.wikipedia.org/wiki/File_d’attente_de_message</a></p>
+</section>
+<section id="parcours-en-largeur-et-parcours-en-profondeur" class="level3">
+<h3 class="anchored" data-anchor-id="parcours-en-largeur-et-parcours-en-profondeur">Parcours en largeur et parcours en profondeur</h3>
+<p>Supposons que l’on souhaite parcourir un <em>arbre</em> abstrait comme celui-ci.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    A1 : 1
+    A2 : 2
+    A3 : 3
+    A4 : 4
+    A5 : 5
+    A6 : 6
+    A7 : 7
+    A8 : 8
+    A9 : 9
+    A10 : 10
+    A11 : 11
+    A12 : 12
+    A13 : 13
+    A14 : 14
+    A15 : 15
+    A16 : 16
+    A17 : 17
+    A18 : 18
+    A19 : 19
+    A20 : 20
+
+    A1 --&gt; A2
+    A1 --&gt; A3
+    A1 --&gt; A4
+    A1 --&gt; A5
+    A2 --&gt; A6
+    A2 --&gt; A7
+    A2 --&gt; A8
+    A3 --&gt; A9
+    A3 --&gt; A10
+    A4 --&gt; A11
+    A5 --&gt; A12
+    A5 --&gt; A13
+    A5 --&gt; A14
+    A6 --&gt; A15
+    A6 --&gt; A16
+    A7 --&gt; A17
+    A8 --&gt; A18
+    A9 --&gt; A19
+    A9 --&gt; A20
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>On part du sommet <code>1</code>, et on place ses voisins dans une file. Ensuite, on défile le premier élément de la file, et on enfile ses voisins. On répète le processus jusqu’à ce qu’il n’y ait plus de sommets à explorer</p>
+<ul>
+<li>Après la première étape, la file contient les sommets <code>[ 2, 3, 4, 5 ]</code> dans cet ordre.</li>
+<li>On défile le sommet <code>2</code>, on place ses voisins dans la file : la file contient <code>[ 3, 4, 5, 6, 7, 8 ]</code>.</li>
+<li>On défile le sommet <code>3</code>, on place ses voisins dans la file : la file contient <code>[ 4, 5, 6, 7, 8, 9, 10 ]</code>.</li>
+</ul>
+<p>Ce type de parcours de l’arbre est appelé <strong>parcours en largeur</strong> (<em>breadth-first search</em>, <em>BFS</em>) : on parcourt les voisins d’un sommet, puis les voisins des voisins, puis leurs voisins, et ainsi de suite.</p>
+<p>Si l’on remplace la file par une pile, le parcours est différent.</p>
+<ul>
+<li>Après la première étape, la pile contient les sommets <code>[ 5, 4, 3, 2 ]</code> dans cet ordre.</li>
+<li>On dépile le sommet <code>5</code>, on place ses voisins dans la pile : la pile contient <code>[ 14, 13, 12, 5, 4, 3, 2 ]</code>.</li>
+<li>On dépile le sommet <code>14</code>, on place ses voisins dans la pile : la pile contient <code>[ 29, 28, 13, 12, 5, 4, 3, 2]</code>.</li>
+</ul>
+<p>Ce type de parcours est appelé <strong>parcours en profondeur</strong> (<em>depth-first search</em>, <em>DFS</em>) : on avance dans une branche en prenant le premier voisin, puis le premier voisin de ce sommet, et ainsi de suite, jusqu’à être bloqué. Ensuite, on recule d’une position (<em>backtrack</em>), et on emprunte cette fois la voie du deuxième voisin de ce sommet. On répète le processus jusqu’à ce qu’il n’y ait plus de sommets disponibles.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-dfs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dfs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-dfs">stateDiagram
+    A1 : 1 &lt;FONT color=red&gt;1&lt;/FONT&gt;
+    A2 : 2 &lt;FONT color=red&gt;13&lt;/FONT&gt;
+    A3 : 3 &lt;FONT color=red&gt;8&lt;/FONT&gt;
+    A4 : 4 &lt;FONT color=red&gt;6&lt;/FONT&gt;
+    A5 : 5 &lt;FONT color=red&gt;2&lt;/FONT&gt;
+    A6 : 6 &lt;FONT color=red&gt;18&lt;/FONT&gt;
+    A7 : 7 &lt;FONT color=red&gt;16&lt;/FONT&gt;
+    A8 : 8 &lt;FONT color=red&gt;14&lt;/FONT&gt;
+    A9 : 9 &lt;FONT color=red&gt;10&lt;/FONT&gt;
+    A10 : 10 &lt;FONT color=red&gt;9&lt;/FONT&gt;
+    A11 : 11 &lt;FONT color=red&gt;7&lt;/FONT&gt;
+    A12 : 12 &lt;FONT color=red&gt;5&lt;/FONT&gt;
+    A13 : 13 &lt;FONT color=red&gt;4&lt;/FONT&gt;
+    A14 : 14 &lt;FONT color=red&gt;3&lt;/FONT&gt;
+    A15 : 15 &lt;FONT color=red&gt;20&lt;/FONT&gt;
+    A16 : 16 &lt;FONT color=red&gt;19&lt;/FONT&gt;
+    A17 : 17 &lt;FONT color=red&gt;17&lt;/FONT&gt;
+    A18 : 18 &lt;FONT color=red&gt;15&lt;/FONT&gt;
+    A19 : 19 &lt;FONT color=red&gt;12&lt;/FONT&gt;
+    A20 : 20 &lt;FONT color=red&gt;11&lt;/FONT&gt;
+
+    A1 --&gt; A2
+    A1 --&gt; A3
+    A1 --&gt; A4
+    A1 --&gt; A5
+    A2 --&gt; A6
+    A2 --&gt; A7
+    A2 --&gt; A8
+    A3 --&gt; A9
+    A3 --&gt; A10
+    A4 --&gt; A11
+    A5 --&gt; A12
+    A5 --&gt; A13
+    A5 --&gt; A14
+    A6 --&gt; A15
+    A6 --&gt; A16
+    A7 --&gt; A17
+    A8 --&gt; A18
+    A9 --&gt; A19
+    A9 --&gt; A20
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dfs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Ordre de parcours des sommets lors d’un parcours en profondeur (en rouge)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ces deux parcours s’appliquent plus généralement aux <em>graphes</em> : un graphe est un ensemble de noeuds (<em>sommets</em>, en anglais <em>vertex</em> / <em>vertices</em>) reliés par des liaisons (<em>arêtes</em>, en anglais <em>edges</em>) et pouvant contenir des cycles. Dans un parcours en largeur ou en profondeur, on veille à ne pas passer deux fois par le même sommet, en marquant les sommets déjà parcourus.</p>
+<p>Le parcours en profondeur peut être utilisé dans le parcours de labyrinthe : on avance en suivant le mur de droite jusqu’à trouver la sortie. Il s’agit de la <em>méthode de la main droite</em>.</p>
+<p>Le parcours en largeur est lui utilisé pour déterminer le plus court chemin d’un sommet vers tous les autres sommets d’un graphe.</p>
+</section>
+</section>
+<section id="implémentation-1" class="level2">
+<h2 class="anchored" data-anchor-id="implémentation-1">3) Implémentation</h2>
+<p>A la différence des files, on doit ici considérer des <strong>listes chaînées à deux extrêmités</strong>, car celles-ci permettent des opérations d’ajout en dernière position et de retrait en première position en temps constant (les listes chaînées classiques nécessitent un temps linéaire pour ajouter en dernière position).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// queue.h</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"list_double-ended.h"</span><span class="pp"> </span><span class="co">// Implémentation par liste à deux extrêmités</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    t_list list<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_queue<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">// queue.c</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>t_queue create_empty_queue<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    t_queue queue<span class="op">;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    queue<span class="op">.</span>list <span class="op">=</span> create_empty_list<span class="op">();</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> queue<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns true if the queue is empty</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_empty_queue<span class="op">(</span>t_queue <span class="op">*</span>queue<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> length<span class="op">(&amp;</span>queue<span class="op">-&gt;</span>list<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">// Pushes the value val to the back of the queue</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> push_queue<span class="op">(</span>t_queue <span class="op">*</span>queue<span class="op">,</span> T val<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    push_back<span class="op">(&amp;</span>queue<span class="op">-&gt;</span>list<span class="op">,</span> val<span class="op">);</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns the value at the front of the queue</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>T get_front_queue<span class="op">(</span>t_queue <span class="op">*</span>queue<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> get<span class="op">(&amp;</span>queue<span class="op">-&gt;</span>list<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns the value at the front of the queue and deletes it from the queue</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>T pop_queue<span class="op">(</span>t_queue <span class="op">*</span>queue<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    T t <span class="op">=</span> get_front_queue<span class="op">(</span>queue<span class="op">);</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    delete_at<span class="op">(&amp;</span>queue<span class="op">-&gt;</span>list<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t<span class="op">;</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
