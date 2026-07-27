@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cours 3 : Algorithmes de tri – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#la-fonction-qsort" id="toc-la-fonction-qsort" class="nav-link active" data-scroll-target="#la-fonction-qsort">La fonction <code>qsort</code></a></li>
+  <li><a href="#algorithmes-de-tri" id="toc-algorithmes-de-tri" class="nav-link" data-scroll-target="#algorithmes-de-tri">Algorithmes de tri</a>
+  <ul class="collapse">
+  <li><a href="#les-algorithmes-quadratiques" id="toc-les-algorithmes-quadratiques" class="nav-link" data-scroll-target="#les-algorithmes-quadratiques">Les algorithmes quadratiques</a>
+  <ul class="collapse">
+  <li><a href="#tri-par-sélection" id="toc-tri-par-sélection" class="nav-link" data-scroll-target="#tri-par-sélection">1) Tri par sélection</a></li>
+  <li><a href="#tri-par-insertion" id="toc-tri-par-insertion" class="nav-link" data-scroll-target="#tri-par-insertion">2) Tri par insertion</a></li>
+  <li><a href="#tri-à-bulles" id="toc-tri-à-bulles" class="nav-link" data-scroll-target="#tri-à-bulles">3) Tri à bulles</a></li>
+  </ul></li>
+  <li><a href="#les-algorithmes-diviser-pour-régner" id="toc-les-algorithmes-diviser-pour-régner" class="nav-link" data-scroll-target="#les-algorithmes-diviser-pour-régner">Les algorithmes <em>Diviser pour régner</em></a>
+  <ul class="collapse">
+  <li><a href="#tri-rapide-quicksort" id="toc-tri-rapide-quicksort" class="nav-link" data-scroll-target="#tri-rapide-quicksort">4) Tri rapide (Quicksort)</a></li>
+  <li><a href="#tri-fusion" id="toc-tri-fusion" class="nav-link" data-scroll-target="#tri-fusion">5) Tri fusion</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#comparaison-des-algorithmes" id="toc-comparaison-des-algorithmes" class="nav-link" data-scroll-target="#comparaison-des-algorithmes">Comparaison des algorithmes</a></li>
+  <li><a href="#bonus-un-algorithme-rapide-pour-les-entiers-le-tri-radix" id="toc-bonus-un-algorithme-rapide-pour-les-entiers-le-tri-radix" class="nav-link" data-scroll-target="#bonus-un-algorithme-rapide-pour-les-entiers-le-tri-radix">Bonus : Un algorithme rapide pour les entiers, le tri radix</a>
+  <ul class="collapse">
+  <li><a href="#bucket-sort" id="toc-bucket-sort" class="nav-link" data-scroll-target="#bucket-sort">Bucket sort</a></li>
+  <li><a href="#tri-par-comptage" id="toc-tri-par-comptage" class="nav-link" data-scroll-target="#tri-par-comptage">Tri par comptage</a></li>
+  <li><a href="#tri-radix" id="toc-tri-radix" class="nav-link" data-scroll-target="#tri-radix">Tri radix</a></li>
+  <li><a href="#comparaison-avec-les-autres-algorithmes" id="toc-comparaison-avec-les-autres-algorithmes" class="nav-link" data-scroll-target="#comparaison-avec-les-autres-algorithmes">Comparaison avec les autres algorithmes</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Cours 3 : Algorithmes de tri</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="la-fonction-qsort" class="level1">
+<h1>La fonction <code>qsort</code></h1>
+<p>Les algorithmes de tri permettent de trier un ensemble de données selon un critère. On définit souvent ces algorithmes sur des entiers que l’on trie par ordre croissant, mais on peut trier tout type de données, à condition de fournir la fonction de comparaison adéquate.</p>
+<p>Par exemple, la bibliothèque standard du langage C propose déjà une fonction de tri appelée <code>qsort</code>, qui trie selon un critère défini par une fonction à fournir. Il faut pour cela écrire l’instruction suivante au début du programme :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Munissons-nous d’un type arbitraire, par exemple une <code>struct</code> contenant deux champs <code>a</code>, <code>b</code> entiers.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> b<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_pair<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans la fonction <code>main</code>, on dispose du tableau <code>t</code> et on suppose que l’on dispose également d’une fonction d’affichage de ce tableau :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    t_pair t<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="op">{</span><span class="dv">3</span><span class="op">,</span><span class="dv">2</span><span class="op">},</span> <span class="op">{</span><span class="dv">7</span><span class="op">,</span><span class="dv">6</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span><span class="dv">1</span><span class="op">},</span> <span class="op">{</span><span class="dv">5</span><span class="op">,</span><span class="dv">0</span><span class="op">},</span> <span class="op">{</span><span class="dv">6</span><span class="op">,</span><span class="dv">9</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span> <span class="dv">8</span><span class="op">}</span> <span class="op">};</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_elts <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    print_pair_array<span class="op">(</span>t<span class="op">,</span> nb_elts<span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">// affiche:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">// (3, 2) (7, 6) (4, 1) (5, 0) (6, 9) (4, 8)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On souhaite trier ces données selon le critère suivant : les couples ayant leur champ <code>a</code> pair en premier, dans un ordre quelconque, suivis des couples ayant leur champ <code>a</code> impair triés par ordre croissant de <code>b</code>.</p>
+<p>Nous allons utiliser la fonction <code>qsort</code>, qui demande en argument une fonction de comparaison de deux éléments quelconques. Le prototype de <code>qsort</code> est le suivant :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> qsort<span class="op">(</span><span class="dt">void</span> <span class="op">*</span> array<span class="op">,</span> <span class="dt">size_t</span> elementCount<span class="op">,</span> <span class="dt">size_t</span> elementSize<span class="op">,</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> <span class="op">(*</span>compareFunction<span class="op">)(</span><span class="dt">const</span> <span class="dt">void</span><span class="op">*,</span> <span class="dt">const</span> <span class="dt">void</span><span class="op">*));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>array</code> est le tableau à trier. Pour que <code>qsort</code> puisse trier des tableaux de tous types, le tableau est donné sous la forme d’un pointeur <code>void *</code>, c’est-à-dire un pointeur vers une plage mémoire de type inconnu.</li>
+<li><code>elementCount</code> est le nombre d’éléments du tableau.</li>
+<li><code>elementSize</code> est la taille en octets d’un élément du tableau, ici <code>sizeof(t_pair)</code>.</li>
+<li><code>compareFunction</code> est un <strong>pointeur de fonction</strong> : un pointeur qui contient l’adresse d’une fonction. Cette fonction doit prendre en entrée deux pointeurs <code>void *</code> (afin que <code>qsort</code> puisse s’appliquer à des données de n’importe quel type) et renvoie un <code>int</code>, qui sera une valeur strictement négatif si le premier argument est strictement inférieur au second, strictement positif s’il est strictement supérieur, et <code>0</code> s’ils sont égaux.</li>
+</ul>
+<p>On écrit donc la fonction suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> comp_pair<span class="op">(</span><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>elt_1<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>elt_2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> t_pair <span class="op">*</span>p1 <span class="op">=</span> <span class="op">(</span>t_pair <span class="op">*)</span> elt_1<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> t_pair <span class="op">*</span>p2 <span class="op">=</span> <span class="op">(</span>t_pair <span class="op">*)</span> elt_2<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>p1<span class="op">-&gt;</span>a <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>p2<span class="op">-&gt;</span>a <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p1<span class="op">-&gt;</span>b <span class="op">-</span> p2<span class="op">-&gt;</span>b<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On commence par <em>caster</em> nos pointeurs <code>elt_1</code> et <code>elt_2</code> en pointeurs <code>t_pair *</code>. Le mot-clé <code>const</code> signifie que la donnée pointée ne sera pas modifiée.</p>
+<p>On appelle la fonction dans <code>main</code> et on affiche le résultat :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    t_pair t<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="op">{</span><span class="dv">3</span><span class="op">,</span><span class="dv">2</span><span class="op">},</span> <span class="op">{</span><span class="dv">7</span><span class="op">,</span><span class="dv">6</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span><span class="dv">1</span><span class="op">},</span> <span class="op">{</span><span class="dv">5</span><span class="op">,</span><span class="dv">0</span><span class="op">},</span> <span class="op">{</span><span class="dv">6</span><span class="op">,</span><span class="dv">9</span><span class="op">},</span> <span class="op">{</span><span class="dv">4</span><span class="op">,</span> <span class="dv">8</span><span class="op">}</span> <span class="op">};</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nb_elts <span class="op">=</span> <span class="dv">6</span><span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    print_pair_array<span class="op">(</span>t<span class="op">,</span> nb_elts<span class="op">);</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    qsort<span class="op">(</span>t<span class="op">,</span> nb_elts<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>t_pair<span class="op">),</span> <span class="op">&amp;</span>comp_pair<span class="op">);</span> <span class="co">// &lt;- adresse de comp_pair</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    print_pair_array<span class="op">(</span>t<span class="op">,</span> nb_elts<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Affiche :</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">// (3, 2) (7, 6) (4, 1) (5, 0) (6, 9) (4, 8) </span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">// (4, 1) (6, 9) (4, 8) (5, 0) (3, 2) (7, 6) </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On observe que les couples ayant leur champ <code>a</code> pair sont bien en premières position, dans un ordre quelconque. Les autres couples sont triés par ordre croissant selon le champ <code>b</code>.</p>
+<p>On peut donc utiliser la fonction <code>qsort</code> pour trier des données de n’importe quel type. Pour trier des éléments entiers par ordre croissant, il suffit de fournir la fonction de comparaison suivante :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> comp_int<span class="op">(</span><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>elt_1<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>elt_2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">*(</span><span class="dt">int</span> <span class="op">*)</span> elt_1 <span class="op">-</span> <span class="op">*(</span><span class="dt">int</span> <span class="op">*)</span> elt_2<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> t<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">3</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">8</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">9</span> <span class="op">};</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> n <span class="op">=</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    qsort<span class="op">(</span>t<span class="op">,</span> n<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> <span class="op">&amp;</span>comp_int<span class="op">);</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> "</span><span class="op">,</span> t<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Affiche :</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">// 1 1 2 3 4 5 8 9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’algorithme utilisé par <code>qsort</code> est un mélange de Quicksort et de tri par insertion.</p>
+</section>
+<section id="algorithmes-de-tri" class="level1">
+<h1>Algorithmes de tri</h1>
+<p>Nous allons à présent voir le détail de plusieurs algorithmes de tri classiques. On considèrera des tableaux de type <code>T</code> défini ici par :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">int</span> T<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="les-algorithmes-quadratiques" class="level2">
+<h2 class="anchored" data-anchor-id="les-algorithmes-quadratiques">Les algorithmes quadratiques</h2>
+<section id="tri-par-sélection" class="level3">
+<h3 class="anchored" data-anchor-id="tri-par-sélection">1) Tri par sélection</h3>
+<section id="principe" class="level4">
+<h4 class="anchored" data-anchor-id="principe">Principe</h4>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<ul>
+<li>Pour <span class="math inline">\(i\)</span> de <span class="math inline">\(0\)</span> à <span class="math inline">\(n - 1\)</span> :
+<ul>
+<li>Trouver l’indice <span class="math inline">\(i_{min}\)</span> du plus petit élément de la liste parmi les éléments d’indices <span class="math inline">\(\geq i\)</span>.</li>
+<li>Echanger les éléments d’indices <span class="math inline">\(i_{min}\)</span> et <span class="math inline">\(i\)</span>.</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-trisel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-trisel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-trisel">block-beta
+    columns 10
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:10
+    
+    B1["4"]:2
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+    
+    space:10
+    style B4 fill:#DAC,stroke:#333,stroke-width:2px
+    
+    C1["1"]:2
+    C2["3"]:2
+    C3["5"]:2
+    C4["4"]:2
+    C5["2"]:2
+    
+    space:10
+    B4 --&gt; C1
+    B1 --&gt; C4
+    style C1 fill:#FFF
+    style C5 fill:#DAC,stroke:#333,stroke-width:2px
+
+    D1["1"]:2
+    D2["2"]:2
+    D3["5"]:2
+    D4["4"]:2
+    D5["3"]:2
+
+    C5 --&gt; D2
+    C2 --&gt; D5
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    space:10
+    
+    E1["1"]:2
+    E2["2"]:2
+    E3["3"]:2
+    E4["4"]:2
+    E5["5"]:2
+    D3 --&gt; E5
+    D5 --&gt; E3
+    style D5 fill:#DAC,stroke:#333,stroke-width:2px
+    style E1 fill:#FFF
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+
+    style E4 fill:#DAC,stroke:#333,stroke-width:2px
+    space:10
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    E4 --&gt; F4
+    
+    style F1 fill:#FFF
+    style F2 fill:#FFF
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trisel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Tri par sélection
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ou de manière équivalente :</p>
+<ul>
+<li>Si la liste est de longueur <span class="math inline">\(n \geq 2\)</span> :
+<ul>
+<li>Trouver le plus petit élément de la liste, et l’extraire de la liste.</li>
+<li>Ajouter cet élément en première position de la liste.</li>
+<li>Réitérer l’algorithme en ne considérant que les éléments à l’exception du premier.</li>
+</ul></li>
+</ul>
+</section>
+<section id="implémentation" class="level4">
+<h4 class="anchored" data-anchor-id="implémentation">Implémentation</h4>
+<p>On peut implémenter cet algorithme de manière itérative :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> find_min_index<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> index_start<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> index_min <span class="op">=</span> index_start<span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> index_start <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> size<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span>i<span class="op">]</span> <span class="op">&lt;</span> t<span class="op">[</span>index_min<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            index_min <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> index_min<span class="op">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> swap<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> i<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    T temp <span class="op">=</span> t<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    t<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> t<span class="op">[</span>j<span class="op">];</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    t<span class="op">[</span>j<span class="op">]</span> <span class="op">=</span> temp<span class="op">;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> selection_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> size <span class="op">-</span> <span class="dv">1</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsigned</span> <span class="dt">int</span> index_min <span class="op">=</span> find_min_index<span class="op">(</span>t<span class="op">,</span> size<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>index_min <span class="op">!=</span> i<span class="op">)</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>            swap<span class="op">(</span>t<span class="op">,</span> i<span class="op">,</span> index_min<span class="op">);</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On peut également l’implémenter de manière récursive :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> selection_sort_rec<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Si le tableau n'a qu'un seul élément, il est déjà trié</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>size <span class="op">&lt;=</span> <span class="dv">1</span><span class="op">)</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Sinon, on trouve le minimum et on l'échange avec l'élément d'indice 0</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">unsigned</span> <span class="dt">int</span> index_min <span class="op">=</span> find_min_index<span class="op">(</span>t<span class="op">,</span> size<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>index_min <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        swap<span class="op">(</span>t<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> index_min<span class="op">);</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// On répète le processus avec le reste du tableau</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    selection_sort_rec<span class="op">(</span>t <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> size <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le pointeur <code>t + 1</code> correspond à un pointeur vers <code>t[1]</code>, c’est-à-dire à un pointeur vers le reste du tableau (voir la partie <a href="ablanche.quarto.pub/alsi51-structures-de-donnees/rappels_C.html#arithmétique-des-pointeurs">Arithmétique des pointeurs</a> des rappels de C).</p>
+</section>
+<section id="complexité" class="level4">
+<h4 class="anchored" data-anchor-id="complexité">Complexité</h4>
+<p>Calculons la complexité en temps de cet algorithme.</p>
+<ul>
+<li><p>La fonction <code>find_min_index(t, size, index_start)</code> parcourt <code>size - 1 - index_start</code> éléments du tableau. Il a donc une complexité linéaire en pire cas.</p></li>
+<li><p>La fonction <code>swap(t, i, j)</code> s’exécute en temps constant.</p></li>
+<li><p>Dans la fonction <code>selection_sort(t, size)</code>, on effectue <code>size - 1</code> appels à <code>find_min_index</code>, respectivement avec <code>index_start</code> <span class="math inline">\(= 0, 1, \dots, size - 2\)</span>.</p></li>
+</ul>
+<p>Notons <span class="math inline">\(size = n\)</span> et calculons la complexité totale.</p>
+<span class="math display">\[\begin{array}{rcl}
+C_{select}(n) &amp; = &amp; \displaystyle \sum_{i = 0}^{n - 2} (n - 1 - i)\\
+&amp; = &amp; \displaystyle\sum_{i = 1}^{n - 1} i\\
+&amp; = &amp; \displaystyle\frac{n(n - 1)}{2} \\
+&amp; = &amp; O(n^2) \\
+\end{array}\]</span>
+<p>On peut également calculer cette complexité en considérant la variante récursive :</p>
+<span class="math display">\[\begin{array}{rcl}
+C_{select}(n) &amp; = &amp; (n - 1) + C_{select}(n - 1) \\
+&amp; = &amp; (n - 1) + (n - 2) + C_{select}(n - 2) \\
+&amp; = &amp; \dots \\
+&amp; = &amp; (n - 1) + (n - 2) + \dots + 1 + C_{select}(1) \\
+&amp; = &amp; (n - 1) + (n - 2) + \dots + 1 + 0 \\
+&amp; = &amp; \displaystyle\sum_{i = 0}^{n-1} i \\
+&amp; = &amp; \displaystyle\frac{n(n-1)}{2} \\
+&amp; = &amp; O(n^2) \\
+\end{array}\]</span>
+</section>
+</section>
+<section id="tri-par-insertion" class="level3">
+<h3 class="anchored" data-anchor-id="tri-par-insertion">2) Tri par insertion</h3>
+<section id="principe-1" class="level4">
+<h4 class="anchored" data-anchor-id="principe-1">Principe</h4>
+<ul>
+<li>On considère une liste <span class="math inline">\(aux\)</span>, initialement vide, et que l’on veillera à garder toujours triée.<br>
+</li>
+<li>Pour chaque élément <span class="math inline">\(x\)</span> de <span class="math inline">\(list\)</span> :
+<ul>
+<li>extraire <span class="math inline">\(x\)</span> de <span class="math inline">\(list\)</span></li>
+<li>insérer <span class="math inline">\(x\)</span> dans <span class="math inline">\(aux\)</span> de manière à ce qu’elle reste triée.</li>
+</ul></li>
+<li><span class="math inline">\(aux\)</span> est la liste triée renvoyée.</li>
+</ul>
+<p>On également implémenter cet algorithme <em>en place</em>, c’est-à-dire dans un seul tableau, sans allouer de mémoire supplémentaire. Pour cela, on pourra utiliser les <span class="math inline">\(i\)</span> premières cases du tableau pour représenter <span class="math inline">\(aux\)</span>, et les <span class="math inline">\(n - i\)</span> dernières cases pour la partie restante de <span class="math inline">\(list\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-triinsert" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-triinsert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-triinsert">block-beta
+    columns 11
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:1
+    space:11
+    
+    B1["4"]:2
+    space:1
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+
+    A1 --&gt; B1
+    
+    space:11
+    style A1 fill:#DAC,stroke:#333,stroke-width:2px
+    style B1 fill:#CFC
+    
+    C1["3"]:2
+    C2["4"]:2
+    space:1
+    C3["5"]:2
+    C4["1"]:2
+    C5["2"]:2
+
+    style B2 fill:#DAC,stroke:#333,stroke-width:2px
+    B2 --&gt; C1
+    
+    space:11
+    
+    style C1 fill:#CFC
+    style C2 fill:#FFF
+
+    D1["3"]:2
+    D2["4"]:2
+    D3["5"]:2
+    space:1
+    D4["1"]:2
+    D5["2"]:2
+
+    style C3 fill:#DAC,stroke:#333,stroke-width:2px
+    C3 --&gt; D3
+
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    style D3 fill:#CFC
+    space:11
+    
+    E1["1"]:2
+    E2["3"]:2
+    E3["4"]:2
+    E4["5"]:2
+    space:1
+    E5["2"]:2
+
+    style D4 fill:#DAC,stroke:#333,stroke-width:2px
+    D4 --&gt; E1
+    
+    style E1 fill:#CFC
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+    style E4 fill:#FFF
+
+    space:11
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    space:1
+
+    style E5 fill:#DAC,stroke:#333,stroke-width:2px
+    E5 --&gt; F2
+    
+    style F1 fill:#FFF
+    style F2 fill:#CFC
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-triinsert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Tri par insertion
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="implémentation-1" class="level4">
+<h4 class="anchored" data-anchor-id="implémentation-1">Implémentation</h4>
+<p>On peut implémenter l’algorithme de manière itérative comme ceci :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Insère l'élément t[i0] dans le tableau t[0 ... i0 - 1]</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> insert_sorted<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> i0<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> i0<span class="op">;</span> </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> T t0 <span class="op">=</span> t<span class="op">[</span>i0<span class="op">];</span> <span class="co">// élément à insérer</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>i <span class="op">&gt;</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span> t<span class="op">[</span>i <span class="op">-</span> <span class="dv">1</span><span class="op">]</span> <span class="op">&gt;</span> t0<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        t<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> t<span class="op">[</span>i <span class="op">-</span> <span class="dv">1</span><span class="op">];</span> <span class="co">// décalage de l'élément t[i - 1] vers la droite</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        i<span class="op">--;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    t<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> t0<span class="op">;</span> <span class="co">// insertion au bon endroit</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (en position 0 ou i avec t[i] précédemment décalé à droite)</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> insertion_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> size<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        insert_sorted<span class="op">(</span>t<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="complexité-1" class="level4">
+<h4 class="anchored" data-anchor-id="complexité-1">Complexité</h4>
+<ul>
+<li><p>La fonction <code>insert_sorted(t, i)</code> effectue au plus <code>i0</code> itérations.</p></li>
+<li><p>La fonction <code>insertion_sort(t, size)</code> effectue <code>size - 1</code> appels à la fonction <code>insert_sorted</code>, avec <code>i0</code> successivement égal à <span class="math inline">\(1, 2, \dots, size - 1\)</span>.</p></li>
+</ul>
+<p>La complexité en pire cas de <code>insertion_sort</code> est donc <span class="math inline">\(\displaystyle C_{insert}(n) = \sum_{i = 1}^{n-1} i = \frac{n(n-1)}{2} = O(n^2)\)</span>.</p>
+</section>
+</section>
+<section id="tri-à-bulles" class="level3">
+<h3 class="anchored" data-anchor-id="tri-à-bulles">3) Tri à bulles</h3>
+<section id="principe-2" class="level4">
+<h4 class="anchored" data-anchor-id="principe-2">Principe</h4>
+<p>L’opération <span class="math inline">\(bulle(i)\)</span> est définie par :</p>
+<ul>
+<li>Pour <span class="math inline">\(j\)</span> de <span class="math inline">\(0\)</span> à <span class="math inline">\(i\)</span> :
+<ul>
+<li>si <span class="math inline">\(list[j] &gt; list[j+1]\)</span>, échanger <span class="math inline">\(list[j]\)</span> et <span class="math inline">\(list[j+1]\)</span>.</li>
+</ul></li>
+</ul>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<p>L’algorithme du <strong>tri à bulles</strong> est le suivant :</p>
+<ul>
+<li>Pour <span class="math inline">\(i\)</span> décroissant de <span class="math inline">\(n-2\)</span> à <span class="math inline">\(0\)</span> :
+<ul>
+<li>appliquer l’opération <span class="math inline">\(bulle(i)\)</span></li>
+</ul></li>
+</ul>
+<p>Le nom de <em>bulle</em> vient du fait que les grands éléments de la liste vont progressivement monter jusqu’à la fin de la liste. En particulier, le maximum de la liste sera remonté jusqu’à la dernière position après la première application de l’opération <span class="math inline">\(bulle\)</span>.</p>
+</section>
+<section id="implémentation-2" class="level4">
+<h4 class="anchored" data-anchor-id="implémentation-2">Implémentation</h4>
+<p>On peut implémenter l’algorithme avec deux boucles imbriquées, comme ceci :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> bubble_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> size <span class="op">-</span> <span class="dv">2</span><span class="op">;</span> i <span class="op">&gt;=</span> <span class="dv">0</span><span class="op">;</span> i<span class="op">--)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;=</span> i<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span>j<span class="op">]</span> <span class="op">&gt;</span> t<span class="op">[</span>j <span class="op">+</span> <span class="dv">1</span><span class="op">])</span> <span class="op">{</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                swap<span class="op">(</span>t<span class="op">,</span> j<span class="op">,</span> j <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On peut également décomposer cette fonction grâce à une fonction auxiliaire <code>bubble</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> bubble<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">int</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;=</span> i<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span>j<span class="op">]</span> <span class="op">&gt;</span> t<span class="op">[</span>j <span class="op">+</span> <span class="dv">1</span><span class="op">])</span> <span class="op">{</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>            swap<span class="op">(</span>t<span class="op">,</span> j<span class="op">,</span> j <span class="op">+</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> bubble_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> size <span class="op">-</span> <span class="dv">2</span><span class="op">;</span> i <span class="op">&gt;=</span> <span class="dv">0</span><span class="op">;</span> i<span class="op">--)</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        bubble<span class="op">(</span>t<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="complexité-2" class="level4">
+<h4 class="anchored" data-anchor-id="complexité-2">Complexité</h4>
+<p>Le calcul de complexité est ici immédiat :</p>
+<p><span class="math display">\[C_{bubble}(n) = \displaystyle \sum_{i = 0}^{n-2} (i + 1) = \displaystyle \sum_{i = 1}^{n-1} i = \displaystyle\frac{n(n-1)}{2} = O(n^2)\]</span></p>
+</section>
+</section>
+</section>
+<section id="les-algorithmes-diviser-pour-régner" class="level2">
+<h2 class="anchored" data-anchor-id="les-algorithmes-diviser-pour-régner">Les algorithmes <em>Diviser pour régner</em></h2>
+<p>Les algorithmes précédents étaient tous de complexité quadratique <span class="math inline">\(O(n^2)\)</span>. La méthode <em>Diviser pour régner</em> (en anglais <em>Divide and conquer</em>) est une méthode algorithmique qui nous permet souvent d’atteindre de meilleures complexités.</p>
+<p>La méthode consiste à résoudre un problème sur une entrée de taille <span class="math inline">\(n\)</span> en le <strong>divisant</strong> en plusieurs sous-problèmes, en résolvant le problème sur des entrées de taille strictement inférieures à <span class="math inline">\(n\)</span>, puis en combinant les solutions.</p>
+<p>Nous allons voir deux exemples d’algorithmes Diviser pour régner, le <em>tri rapide</em> et le <em>tri fusion</em>.</p>
+<blockquote class="blockquote">
+<p>La méthode Diviser pour régner est utilisée dans de nombreux d’algorithmes performants, comme la <strong>multiplication rapide de grands nombres</strong>, avec l’algorithme de Karatsuba, ou la <strong>transformée de Fourier rapide</strong> (FFT), inventée par le mathématicien Carl Friedrich Gauss en 1805.</p>
+</blockquote>
+<p>Par exemple, si l’on peut résoudre notre problème sur une entrée de taille <span class="math inline">\(n\)</span> en combinant en temps <span class="math inline">\(O(n)\)</span> les solutions du problème sur deux entrées de taille <span class="math inline">\(n / 2\)</span>, on peut calculer la complexité totale en sommant les coûts de tous les appels récursifs et de la combinaison des solutions :</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    A: n
+    B0: n/2
+    B1: n/2
+    C0: n/4
+    C1: n/4
+    C2: n/4
+    C3: n/4
+
+    D0: n/8
+    D1: n/8
+    D2: n/8
+    D3: n/8
+    D4: n/8
+    D5: n/8
+    D6: n/8
+    D7: n/8
+
+    A --&gt; B0
+    A --&gt; B1
+    B0 --&gt; C0
+    B0 --&gt; C1
+    B1 --&gt; C2
+    B1 --&gt; C3
+
+    C0 --&gt; D0
+    C0 --&gt; D1
+    C1 --&gt; D2
+    C1 --&gt; D3
+    C2 --&gt; D4
+    C2 --&gt; D5
+    C3 --&gt; D6
+    C3 --&gt; D7
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p><span class="math display">\[\dots\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\dots\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\ \&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\dots\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    Z0: 1
+    Z1: 1
+    Z2: 1
+    Z3: 1
+    Z4: 1
+    Z5: 1
+    Z6: 1
+    Z7: 1
+
+    Z10: 1
+    Z11: 1
+    Z12: 1
+    Z13: 1
+    Z14: 1
+    Z15: 1
+    Z16: 1
+    Z17: 1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Les valeurs sur les noeuds indiquent les coûts des combinaisons de solutions. En divisant les sous-problèmes jusqu’à une taille atomique de <span class="math inline">\(1\)</span> (qui a un coût que l’on suppose égal à 1) et en sommant les coûts de l’arbre, on obtient un coût total de <span class="math inline">\(n\)</span> par ligne, et l’arbre contient <span class="math inline">\(O(\log_2(n))\)</span> lignes. On a donc un coût total (sous ces hypothèses) <strong>quasilinéaire</strong> en <span class="math inline">\(O(n \log n)\)</span>.</p>
+<section id="tri-rapide-quicksort" class="level3">
+<h3 class="anchored" data-anchor-id="tri-rapide-quicksort">4) Tri rapide (Quicksort)</h3>
+<section id="principe-3" class="level4">
+<h4 class="anchored" data-anchor-id="principe-3">Principe</h4>
+<p>L’algorithme du <strong>tri rapide</strong> est le suivant :</p>
+<ul>
+<li>On sélectionne un élément <span class="math inline">\(p\)</span> de la liste (par exemple <span class="math inline">\(list[0]\)</span>), que l’on appelle le <em>pivot</em>, et on l’extrait de la liste.</li>
+<li>On sépare la liste en deux sous-listes <span class="math inline">\(l_{inf}\)</span> et <span class="math inline">\(l_{sup}\)</span>, où <span class="math inline">\(l_{inf}\)</span> contient tous les éléments <span class="math inline">\(list[i] \leq p\)</span>, et <span class="math inline">\(l_{sup}\)</span> contient tous les éléments <span class="math inline">\(list[i] &gt; p\)</span>.</li>
+<li>On applique récursivement l’algorithme du tri rapide sur <span class="math inline">\(l_{inf}\)</span> et <span class="math inline">\(l_{sup}\)</span>. On suppose à présent qu’elles sont triées.</li>
+<li>La liste concaténée <span class="math inline">\(l_{inf} + [p] + l_{sup}\)</span> est la liste triée de sortie.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-quick" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-quick-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-quick">flowchart TD
+    A["t"] --&gt; Asplit(["split"])
+    Asplit --&gt; B["t_inf = { t[i] &lt;= pivot }"]
+    Asplit --&gt; C["pivot"]
+    Asplit --&gt; D["t_sup = { t[i] &gt; pivot }"]
+    
+    B --&gt; Q1(["Quicksort"])
+    D --&gt; Q2(["Quicksort"])
+    C ---&gt; C2["pivot"]
+
+    Q1 --&gt; B2["sorted t_inf"]
+    Q2 --&gt; D2["sorted t_sup"]
+    B2 --&gt; A2["sorted t"]
+    C2 --&gt; A2
+    D2 --&gt; A2
+     A:::ultra_wide_unsorted
+     B:::wide_unsorted
+     D:::wide_unsorted
+     B2:::wide_sorted
+     D2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Asplit fill:#BBDEFB
+    style C fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-quick-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Tri rapide (Quicksort)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>L’algorithme du tri rapide a été inventé en 1960 par Tony Hoare (1934-), un chercheur britannique connu pour ses travaux fondateurs sur les langages de programmation, l’algorithmique, la vérification formelle (avec la <em>logique de Hoare</em>) et la programmation concurrente. Il a obtenu le Prix Turing en 1980 pour ses travaux sur les langages de programmation.</p>
+</blockquote>
+</section>
+<section id="implémentation-3" class="level4">
+<h4 class="anchored" data-anchor-id="implémentation-3">Implémentation</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Sépare la section [i .. j] du tableau en deux sous-tableaux tinf and tsup, selon le pivot = t[i]</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">// Renvoie l'indice index_pivot du pivot après la séparation</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Après la séparation, tinf = t[i .. index_pivot - 1], tsup = t[index_pivot + 1 .. j]</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> split<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> i<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>j <span class="op">&lt;=</span> i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> index_pivot <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    T pivot <span class="op">=</span> t<span class="op">[</span>index_pivot<span class="op">];</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> imin <span class="op">=</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> imax <span class="op">=</span> j<span class="op">;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>imin <span class="op">&lt;</span> imax<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span>imin<span class="op">]</span> <span class="op">&lt;=</span> pivot<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>            imin<span class="op">++;</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>            swap<span class="op">(</span>t<span class="op">,</span> imin<span class="op">,</span> imax<span class="op">);</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>            imax<span class="op">--;</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// last_inf permet de savoir si le pivot doit être placé en position imin ou imin-1</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">// selon si le dernier élément échangé était dans la partie tinf ou tsup</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> last_inf <span class="op">=</span> <span class="op">(</span>t<span class="op">[</span>imin<span class="op">]</span> <span class="op">&lt;</span> pivot<span class="op">)</span> <span class="op">?</span> imin <span class="op">:</span> imin <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    swap<span class="op">(</span>t<span class="op">,</span> index_pivot<span class="op">,</span> last_inf<span class="op">);</span> <span class="co">// on replace le pivot entre tinf et tsup</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> last_inf<span class="op">;</span> <span class="co">// on renvoie l'indice actuel du pivot</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co">// Appplique le tri rapide sur la section t[i .. j] (i, j inclus)</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> quick_sort_aux<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> i<span class="op">,</span> <span class="dt">unsigned</span> <span class="dt">int</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>j <span class="op">==</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> <span class="co">// la section contient deux éléments</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span>i<span class="op">]</span> <span class="op">&gt;</span> t<span class="op">[</span>j<span class="op">])</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>            swap<span class="op">(</span>t<span class="op">,</span> i<span class="op">,</span> j<span class="op">);</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>j <span class="op">&lt;</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="co">// la section contient &lt; 1 élément</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> imid <span class="op">=</span> <span class="op">(</span>i <span class="op">+</span> j<span class="op">)</span> <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">// le pivot est en position imid</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    swap<span class="op">(</span>t<span class="op">,</span> i<span class="op">,</span> imid<span class="op">);</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">// le pivot est en position i (au début de la section)</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> index_pivot <span class="op">=</span> split<span class="op">(</span>t<span class="op">,</span> i<span class="op">,</span> j<span class="op">);</span></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">// le pivot est en position index_pivot</span></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (entre tinf = t[i .. index_pivot - 1] et tsup = t[index_pivot + 1 .. j])</span></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>index_pivot <span class="op">&gt;</span> i<span class="op">)</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>        quick_sort_aux<span class="op">(</span>t<span class="op">,</span> i<span class="op">,</span> index_pivot <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>index_pivot <span class="op">&lt;</span> j<span class="op">)</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>        quick_sort_aux<span class="op">(</span>t<span class="op">,</span> index_pivot <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> j<span class="op">);</span></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> quick_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>    quick_sort_aux<span class="op">(</span>t<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> size <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="complexité-3" class="level4">
+<h4 class="anchored" data-anchor-id="complexité-3">Complexité</h4>
+<p>On peut observer que le pire cas du tri rapide correspond au cas où le tableau initial est déjà trié, dans le sens croissant ou décroissant. Par exemple :</p>
+<ul>
+<li><code>t = [ 1, 2, 3, 4, 5 ]</code>, <code>pivot = 1</code>, <code>t_inf = []</code> et <code>t_sup = [2, 3, 4, 5]</code>.</li>
+<li><code>t2 = [ 2, 3, 4, 5 ]</code>, <code>pivot = 2</code>, <code>t_inf = []</code> et <code>t_sup = [3, 4, 5]</code>.</li>
+<li><code>t3 = [ 3, 4, 5 ]</code>, <code>pivot = 3</code>, <code>t_inf = []</code> et <code>t_sup = [4, 5]</code>.</li>
+<li><code>t4 = [ 4, 5 ]</code>, le tableau est trié.</li>
+<li>On combine : <code>t3 = [] + [3] + [4, 5] = [3, 4, 5]</code>.</li>
+<li>On combine : <code>t2 = [] + [2] + [3, 4, 5] = [2, 3, 4, 5]</code>.</li>
+<li>On comnine : <code>t = [] + [1] + [2, 3, 4, 5] = [1, 2, 3, 4, 5]</code>.</li>
+</ul>
+<p>Dans ce cas-là, on a <span class="math inline">\(C_{quick}(n) = n + C_{quick}(0) + C_{quick}(n - 1)\)</span>. On retrouve les formules récurrentes des tris quadratiques. On a donc une complexité en pire cas <span class="math inline">\(C_{quick}(n) = O(n^2)\)</span> (ce qui est assez décevant pour un algorithme baptisé “tri rapide”).</p>
+<p>Le réel intérêt du Quicksort se situe dans sa complexité <strong>en moyenne</strong>, c’est-à-dire de l’espérance de sa complexité si les entrées sont tirées aléatoirement et selon une loi de probabilité uniforme.</p>
+<p>On peut établir la complexité en moyenne du tri rapide comme ceci :</p>
+<ul>
+<li>Étant donnés deux éléments <span class="math inline">\(a, b\)</span> quelconques du tableau, <span class="math inline">\(\displaystyle \mathbb{P}[a &lt; b] = \frac{1}{2}\)</span>.</li>
+<li>La taille de <code>t_inf</code> (et de <code>t_sup</code>) est donc le résultat de <span class="math inline">\(n - 1\)</span> tirages aléatoires indépendants de probabilité <span class="math inline">\(\displaystyle \frac{1}{2}\)</span> : la taille du sous-tableau suit donc une loi binomiale de paramètres <span class="math inline">\(n - 1\)</span> et <span class="math inline">\(\displaystyle p = \frac{1}{2}\)</span>. La taille de <code>t_inf</code> et de <code>t_sup</code> est donc égale à l’espérance de la loi binomiale : <span class="math inline">\(\displaystyle (n-1)p = \frac{n-1}{2}\)</span>.</li>
+<li>La complexité moyenne du tri est donc <span class="math inline">\(\displaystyle C_{quick}^*(n) = n + 2 C_{quick}^*\left(\frac{n-1}{2}\right)\)</span>.</li>
+</ul>
+<p>On montre dans la partie suivante dédiée au tri fusion que cette formule nous donne <span class="math inline">\(C_{quick}^*(n) = O(n\log n)\)</span>. On a donc une complexité <strong>quasilinéaire</strong> en moyenne, ce qui correspond au meilleur cas que l’on visait avec la stratégie Diviser pour régner.</p>
+<p>En choisissant le pivot de manière aléatoire plutôt qu’en première position, on rend le pire cas extrêmement rare, et on garantit que la complexité quasilinéaire se produire presque toujours en pratique.</p>
+</section>
+</section>
+<section id="tri-fusion" class="level3">
+<h3 class="anchored" data-anchor-id="tri-fusion">5) Tri fusion</h3>
+<p>L’opération de <em>combinaison</em> de deux listes triées <span class="math inline">\(list_1\)</span>, <span class="math inline">\(list_2\)</span> est définie ainsi :</p>
+<ul>
+<li>On crée une liste <span class="math inline">\(l_{sort}\)</span>, initialement vide.</li>
+<li>Tant que <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span> sont non-vides :
+<ul>
+<li>Parmi les têtes <span class="math inline">\(x_1\)</span> et <span class="math inline">\(x_2\)</span> de <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>, on choisit le plus petit élément et on l’extrait de sa liste.<br>
+</li>
+<li>On ajoute cet élément en dernière position de <span class="math inline">\(l_{sort}\)</span>.<br>
+</li>
+</ul></li>
+<li>L’une des listes est à présent vide. On vide l’autre liste, en plaçant ses éléments tour à tour en dernière position de <span class="math inline">\(l_{sort}\)</span>.<br>
+</li>
+<li>On renvoie la liste <span class="math inline">\(l_{sort}\)</span>.</li>
+</ul>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<p>L’algorithme du <strong>tri fusion</strong> est le suivant :</p>
+<ul>
+<li>Si <span class="math inline">\(n \leq 1\)</span>, on renvoie la liste inchangée.</li>
+<li>Sinon, on coupe la liste en deux sous-listes <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span> de taille <span class="math inline">\(\left\lfloor n/2\right\rfloor\)</span> et <span class="math inline">\(\left\lceil n/2 \right\rceil\)</span>.</li>
+<li>On applique récursivement l’algorithme du tri fusion sur <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>. On suppose à présent qu’elles sont triées.</li>
+<li>On utilise l’opération de combinaison sur les listes <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>. La liste <span class="math inline">\(l_{sort}\)</span> obtenue est une liste triée, c’est la sortie de l’algorithme.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-merge" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-merge">flowchart TD
+    A["list"]
+    A --&gt; B1["list_1"]
+    A --&gt; B2["list_2"]
+    
+    B1 --&gt; Q1(["Merge sort"])
+    B2 --&gt; Q2(["Merge sort"])
+
+    Q1 --&gt; C1["sorted list_1"]
+    Q2 --&gt; C2["sorted list_2"]
+    C1 --&gt; Amerge(["Combine"])
+    C2 --&gt; Amerge
+    Amerge --&gt; A2["sorted list"]
+     A:::ultra_wide_unsorted
+     B1:::wide_unsorted
+     B2:::wide_unsorted
+     C1:::wide_sorted
+     C2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Tri fusion
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Le tri fusion a été inventé par le chercheur hongrois et américain John Von Neumann (1903-1957) en 1945. Von Neumann est considéré comme un des plus grands scientifiques du XXème siècle, ayant apporté d’importantes contributions aux mathématiques, à la physique, à l’économie et à l’informatique. C’est un pionnier des fondements mathématiques de la mécanique quantique, de la théorie des jeux, des automates cellulaires et de l’analyse fonctionnelle. Il a travaillé sur le projet Manhattan pendant la Seconde Guerre mondiale, et on lui doit l’architecture des premiers ordinateurs programmables, dite <em>architecture de Von Neumann</em>.</p>
+</blockquote>
+<section id="implémentation-4" class="level4">
+<h4 class="anchored" data-anchor-id="implémentation-4">Implémentation</h4>
+<p>Le tri fusion est difficile à implémenter <em>en place</em>, c’est-à-dire dans un seul tableau. Nous proposons ici une implémentation qui réutilise une partie du tableau <code>t</code> pour le sous-tableau <code>t2</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> combine<span class="op">(</span>T t<span class="op">[],</span> T t1<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size1<span class="op">,</span> T t2<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i1 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">unsigned</span> <span class="dt">int</span> i2 <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>i1 <span class="op">&lt;</span> size1 <span class="op">&amp;&amp;</span> i2 <span class="op">&lt;</span> size2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t1<span class="op">[</span>i1<span class="op">]</span> <span class="op">&lt;</span> t2<span class="op">[</span>i2<span class="op">])</span> <span class="op">{</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            t<span class="op">[</span>i1 <span class="op">+</span> i2<span class="op">]</span> <span class="op">=</span> t1<span class="op">[</span>i1<span class="op">];</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>            i1<span class="op">++;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>            t<span class="op">[</span>i1 <span class="op">+</span> i2<span class="op">]</span> <span class="op">=</span> t2<span class="op">[</span>i2<span class="op">];</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>            i2<span class="op">++;</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">// On vide le reste de t1 dans t :</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> i1<span class="op">;</span> i <span class="op">&lt;</span> size1<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>        t<span class="op">[</span>i2 <span class="op">+</span> i<span class="op">]</span> <span class="op">=</span> t1<span class="op">[</span>i<span class="op">];</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (Dans notre implémentation, t2 est physiquement la fin du tableau t.</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">//  La dernière boucle n'est donc pas nécessaire.)</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">//</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// On vide le reste de t2 dans t :</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">// for (unsigned int i = i2; i &lt; size2; i++) {</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">//    t[size1 + i] = t2[i];</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// }</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> merge_sort_aux<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>size <span class="op">&lt;</span> <span class="dv">2</span><span class="op">)</span> <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>size <span class="op">==</span> <span class="dv">2</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>t<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">&gt;</span> t<span class="op">[</span><span class="dv">1</span><span class="op">])</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>            swap<span class="op">(</span>t<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">unsigned</span> <span class="dt">int</span> imid <span class="op">=</span> size <span class="op">/</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">unsigned</span> <span class="dt">int</span> size1 <span class="op">=</span> imid <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">unsigned</span> <span class="dt">int</span> size2 <span class="op">=</span> size <span class="op">-</span> size1<span class="op">;</span></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Allocation d'un nouveau tableau pour t1</span></span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    T <span class="op">*</span>t1 <span class="op">=</span> malloc<span class="op">(</span>size1 <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span>T<span class="op">));</span> </span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    copy<span class="op">(</span>t<span class="op">,</span> t1<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> imid<span class="op">);</span></span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>    merge_sort_aux<span class="op">(</span>t1<span class="op">,</span> size1<span class="op">);</span></span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Réutilisation de la fin du tableau t pour t2</span></span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>    T <span class="op">*</span>t2 <span class="op">=</span> t <span class="op">+</span> size1<span class="op">;</span></span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>    merge_sort_aux<span class="op">(</span>t2<span class="op">,</span> size2<span class="op">);</span></span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>    combine<span class="op">(</span>t<span class="op">,</span> t1<span class="op">,</span> size1<span class="op">,</span> t2<span class="op">,</span> size2<span class="op">);</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>t1<span class="op">);</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> merge_sort<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>    merge_sort_aux<span class="op">(</span>t<span class="op">,</span> size<span class="op">);</span></span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="complexité-4" class="level4">
+<h4 class="anchored" data-anchor-id="complexité-4">Complexité</h4>
+<p>La complexité en pire cas du tri fusion peut se calculer grâce à la formule récurrente suivante :</p>
+<span class="math display">\[\begin{array}{rcl}
+C_{merge}(n) &amp; = &amp; \displaystyle n + 2 C_{merge}(\frac{n}{2}) \\
+&amp; = &amp; \displaystyle n + 2\times \frac{n}{2} + 4 C_{merge}(\frac{n}{4}) \\
+&amp; = &amp; \displaystyle n + 2\times \frac{n}{2} + 4\times \frac{n}{4} + 8 C_{merge}(\frac{n}{8}) \\
+&amp; = &amp; \displaystyle 3n + 2^3 C_{merge}(\frac{n}{2^3}) \\
+&amp; = &amp; \dots \\
+&amp; = &amp; \displaystyle kn + 2^k  C_{merge}(\frac{n}{2^k}) \\
+\end{array}\]</span>
+<p>Si <span class="math inline">\(k = \left\lceil \log_2(n)\right\rceil\)</span>, alors <span class="math inline">\(2^{k-1} &lt; n \leq 2^k\)</span>, et <span class="math inline">\(\frac{n}{2^k} \leq 1\)</span>. On en déduit le coût total du tri fusion : <span class="math display">\[C_{merge}(n) \leq (1 + \log_2(n)) + 2n \times 1 = O(n \log n)\]</span></p>
+<p>Le tri fusion a donc une complexité quasilinéaire <strong>en pire cas</strong>, ce qui est meilleur que le tri rapide. En revanche, ce grand O cache une constante qui est moins bonne que celle de la complexité moyenne du tri rapide. Le tri rapide est donc souvent plus efficace en pratique, car son pire cas est extrêmement rare si l’on choisit le pivot aléatoirement.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="comparaison-des-algorithmes" class="level1">
+<h1>Comparaison des algorithmes</h1>
+<p>Le code fourni avec le sujet du TP3 permet de lancer nos différentes fonctions sur des tableaux de longueur croissante, jusqu’à une table <span class="math inline">\(100000\)</span> et de générer les temps de calcul au format <code>.csv</code>. On peut ensuite utiliser la bibliothèque Matplotlib de Python, pour générer le programme suivant.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/comparison_all.png" class="img-fluid figure-img"></p>
+<figcaption>Comparaison des algorithmes de tri</figcaption>
+</figure>
+</div>
+<p>On observe bien des courbes paraboliques pour les trois algorithmes quadratiques, et des courbes plates très proches de l’axe des abscisses pour les deux algorithmes rapides.</p>
+<p>Le gain de performances est donc spectaculaire !</p>
+<p>Pour départager les algorithmes rapides, éliminons les algorithmes lents et relançons les tests, en poussant le nombre d’éléments à <span class="math inline">\(5000000\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/comparison_sort_2.png" class="img-fluid figure-img"></p>
+<figcaption>Comparaison des algorithmes de tri rapides</figcaption>
+</figure>
+</div>
+<p>Le tri fusion est ici plus performant que le tri rapide. Il s’agit vraisemblablement d’un effet secondaire de nos données de test, qui doivent coïncider avec le pire cas du tri rapide. On observe ainsi une courbe qui semble parabolique, bien qu’avec un facteur multiplicatif bien inférieur à celui des trois algorithmes quadratiques.</p>
+</section>
+<section id="bonus-un-algorithme-rapide-pour-les-entiers-le-tri-radix" class="level1">
+<h1>Bonus : Un algorithme rapide pour les entiers, le tri radix</h1>
+<section id="bucket-sort" class="level2">
+<h2 class="anchored" data-anchor-id="bucket-sort">Bucket sort</h2>
+<p>Dans le sujet du CC1, nous avons vu un algorithme de tri de nature différente, le <em>bucket sort</em>. Contrairement aux autres algorithmes de ce cours, celui-ci ne se base pas sur les comparaisons.</p>
+<p>On cherche à trier des <strong>couples</strong> de valeurs <span class="math inline">\((a, b)\)</span>, selon leur champ <span class="math inline">\(a\)</span>. Les couples ayant le même champ <span class="math inline">\(a\)</span> sont triées dans un ordre quelconque dans la liste finale. On se base sur l’hypothèse que les valeurs <span class="math inline">\(a\)</span> sont <strong>bornées</strong>, par exemple entre <span class="math inline">\(0\)</span> et <span class="math inline">\(M - 1\)</span>.</p>
+<p>L’algorithme consiste à créer <span class="math inline">\(M\)</span> ensembles (<em>paquets</em> / <em>buckets</em>), initialement vides, puis à placer les éléments dans l’ensemble qui correspond à leur valeur.</p>
+<p><strong>Exemple</strong> :</p>
+<p>On pose <span class="math inline">\(M = 5\)</span> et l’on souhaite trier la liste<br>
+<code>{ (4, B), (1, C), (1, D), (2, J), (3, B), (4, A), (3, K), (2, P), (1, A), (0, B) }</code>.</p>
+<p>Les ensembles <code>S0</code>, …, <code>S4</code> contiennent les valeurs suivantes (on ne place que le champ <span class="math inline">\(b\)</span>) :</p>
+<p><code>S0 = { B }</code>, <code>S1&nbsp;= { C, D, A }</code>, <code>S2 = { J, P }</code>, <code>S3 = { B, K }</code>, <code>S4 = { B, A }</code>.</p>
+<p>On peut alors recopier les valeurs, accompagnées de leur champ <span class="math inline">\(a\)</span>, dans une nouvelle liste triée :</p>
+<p><code>{ (0, B), (1, C), (1, D), (1, A), (2, J), (2, P), (3, B), (3, K), (4, B), (4, A) }</code>.</p>
+<p>La complexité de ce tri, sur une liste de taille <span class="math inline">\(n\)</span>, est la suivante :</p>
+<ul>
+<li>On doit créer <span class="math inline">\(M\)</span> ensembles, en temps <span class="math inline">\(O(M)\)</span>.</li>
+<li>On doit parcourir la liste, et placer chaque élément dans le bon ensemble. Chaque ajout dans un ensemble peut être réalisée en temps constant, donc cette étape peut être réalisée en temps <span class="math inline">\(O(n)\)</span>.</li>
+<li>On vide chaque ensemble dans la nouvelle liste triée, en temps <span class="math inline">\(\displaystyle \sum_{i = 0}^M \vert S_i\vert = n\)</span>.</li>
+</ul>
+<p>Le coût total est de <span class="math inline">\(O(M) + O(n) + n = O(M + n)\)</span>.</p>
+<p>Comme on peut raisonnablement supposer que <span class="math inline">\(M &lt; n\)</span>, on a donc une complexité <span class="math inline">\(O(n)\)</span>.</p>
+</section>
+<section id="tri-par-comptage" class="level2">
+<h2 class="anchored" data-anchor-id="tri-par-comptage">Tri par comptage</h2>
+<p>Si l’on souhaite uniquement trier des nombres entiers, dont les valeurs sont bornées entre <span class="math inline">\(0\)</span> et <span class="math inline">\(M - 1\)</span>, on peut adopter la même stratégie.</p>
+<p>Il est ici inutile de stocker des valeurs dans les ensembles, car il suffit de compter le nombre d’occurrence de chaque valeur :</p>
+<p><strong>Exemple</strong> :</p>
+<p>On pose encore <span class="math inline">\(M = 5\)</span>, et on souhaite trier la liste <code>{ 4, 0, 1, 2, 2, 3, 4, 0, 1, 4, 2, 2, 1, 3 }</code>.</p>
+<p>On initialise <span class="math inline">\(M\)</span> compteurs <code>c0</code>, …, <code>c4</code> à <span class="math inline">\(0\)</span>, et on compte le nombre d’occurrences de chaque valeur :<br>
+<code>c0 = 2</code>, <code>c1 = 3</code>, <code>c2 = 4</code>, <code>c3 = 2</code>, <code>c4 = 3</code>.</p>
+<p>On peut alors écrire les valeurs dans une nouvelle liste :</p>
+<p><code>{ 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4 }</code>.</p>
+<p>La complexité de cet algorithme est une nouvelle fois <span class="math inline">\(O(M + n)\)</span>.</p>
+<p>Bien sûr, cette stratégie n’est efficace que si <span class="math inline">\(M\)</span> est “petit” par rapport à <span class="math inline">\(n\)</span>. Pour trier des entiers <span class="math inline">\(32\)</span> bits, il serait mal avisé d’utiliser <span class="math inline">\(2^{32} = 4\)</span> milliards de compteurs…</p>
+</section>
+<section id="tri-radix" class="level2">
+<h2 class="anchored" data-anchor-id="tri-radix">Tri radix</h2>
+<p>Un algorithme de tri particulièrement efficace pour trier des entiers <span class="math inline">\(32\)</span> bits, est le <em>tri radix</em>.</p>
+<p>On souhaite trier <span class="math inline">\(n\)</span> entiers non-signés (<code>unsigned int</code>). Le tri radix consiste à :</p>
+<ul>
+<li><strong>Décomposer</strong> chaque entier <span class="math inline">\(k\)</span> en <span class="math inline">\(k = (a, b)\)</span>, où <span class="math inline">\(a\)</span> est l’entier (non-signé) représenté par les <span class="math inline">\(16\)</span> bits de poids fort de <span class="math inline">\(k\)</span>, et <span class="math inline">\(b\)</span> l’entier représenté par ses <span class="math inline">\(16\)</span> bits de poids faible. Les entiers <span class="math inline">\(a\)</span> et <span class="math inline">\(b\)</span> sont donc compris entre <span class="math inline">\(0\)</span> et <span class="math inline">\(2^{16} - 1 = 65535\)</span>. On a donc <span class="math inline">\(a = \left\lfloor k / (2^{16})\right\rfloor\)</span> et <span class="math inline">\(b = k \mod 2^{16}\)</span>.</li>
+<li>Effectuer un <strong>bucket sort</strong> sur les <span class="math inline">\(n\)</span> couples, selon la valeur de <span class="math inline">\(a\)</span>.</li>
+<li>Trier les valeurs <span class="math inline">\(b\)</span> présentes dans chaque ensemble avec un <strong>tri par comptage</strong>.</li>
+<li>Pour chaque élément de <span class="math inline">\((a, b)\)</span> de chaque ensemble (trié), écrire <span class="math inline">\(a \times 2^{16} + b\)</span> dans une nouvelle liste.</li>
+</ul>
+<p><strong>Exemple</strong> :</p>
+<p>L’entier <span class="math inline">\(24576779\)</span> se décompose en <span class="math inline">\(375 \times 2^{16} + 779\)</span>, et correspond au couple <span class="math inline">\((375, 779)\)</span>. On place donc la valeur <span class="math inline">\(779\)</span> dans l’ensemble <span class="math inline">\(S_{375}\)</span>.</p>
+<p>On trie chacun des ensembles <span class="math inline">\(S_0\)</span>, <span class="math inline">\(\dots\)</span>, <span class="math inline">\(S_{65535}\)</span>.</p>
+<p>Enfin, on vide les ensembles dans la nouvelle liste. Lorsque l’on arrive à la valeur <span class="math inline">\(779\)</span> de <span class="math inline">\(S_{375}\)</span>, on ajoute la valeur <span class="math inline">\(375 \times 2^{16} + 779 = 24576779\)</span> dans la nouvelle liste.</p>
+<p>Le coût de cet algorithme est le suivant :</p>
+<ul>
+<li>Créer <span class="math inline">\(65536\)</span> ensembles vides : <span class="math inline">\(O(1)\)</span>.</li>
+<li>Pour chaque valeur <span class="math inline">\(k\)</span> de la liste, placer <span class="math inline">\(k \mod 65536\)</span> dans l’ensemble <span class="math inline">\(S_{\left\lfloor k / (2^{16})\right\rfloor}\)</span> : <span class="math inline">\(O(n)\)</span>.</li>
+<li>Trier chacun des ensembles par comptage : <span class="math inline">\(\displaystyle \sum_{i = 0}^{65535} \vert S_i\vert = O(n)\)</span>.</li>
+<li>Vider les éléments dans la nouvelle liste : <span class="math inline">\(O(n)\)</span>.</li>
+</ul>
+<p>Le coût total est donc en temps <strong>linéaire</strong> <span class="math inline">\(O(n)\)</span>, ce qui est meilleur asymptotiquement que le tri rapide et le tri fusion !</p>
+</section>
+<section id="comparaison-avec-les-autres-algorithmes" class="level2">
+<h2 class="anchored" data-anchor-id="comparaison-avec-les-autres-algorithmes">Comparaison avec les autres algorithmes</h2>
+<p>En comparant avec mon implémentation du tri fusion j’obtiens un résultat spectaculaire !</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/comparison_fast.png" class="img-fluid figure-img"></p>
+<figcaption>Comparaison tri fusion / radix</figcaption>
+</figure>
+</div>
+<p>Pour <span class="math inline">\(100\)</span> millions d’éléments:<br>
+Tri fusion : <span class="math inline">\(6.042583\)</span> secondes, tri radix : <span class="math inline">\(3.013462\)</span> secondes, <code>qsort</code> : <span class="math inline">\(11.326148\)</span> secondes</p>
+<p>Le tri radix est donc <span class="math inline">\(2\)</span> fois plus rapide que le tri fusion, et <span class="math inline">\(3.76\)</span> fois plus rapide que le <code>qsort</code> !</p>
+<p>Les données utilisées pour ce test étaient générées aléatoirement avec la fonction <code>rand</code>. Le même tableau était utilisé pour tous les algorithmes du banc de test.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> fill_random<span class="op">(</span>T t<span class="op">[],</span> <span class="dt">unsigned</span> <span class="dt">int</span> size<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    srand<span class="op">(</span>time<span class="op">(</span>NULL<span class="op">));</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">unsigned</span> <span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> size<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> T r1 <span class="op">=</span> rand<span class="op">();</span> <span class="co">// entre 0 et 2^31 - 1</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> T r2 <span class="op">=</span> rand<span class="op">();</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        t<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> r1 <span class="op">*</span> RAND_MAX <span class="op">+</span> r2<span class="op">;</span> <span class="co">// entre 0 et 2^32 - 1</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

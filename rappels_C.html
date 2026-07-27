@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Rappels de programmation en langage C – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="./rappels_C.html" aria-current="page"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#le-langage-c" id="toc-le-langage-c" class="nav-link active" data-scroll-target="#le-langage-c">1. Le langage C</a>
+  <ul class="collapse">
+  <li><a href="#origine" id="toc-origine" class="nav-link" data-scroll-target="#origine">Origine</a></li>
+  <li><a href="#langage-compilé" id="toc-langage-compilé" class="nav-link" data-scroll-target="#langage-compilé">Langage compilé</a></li>
+  <li><a href="#paradigme-impératif" id="toc-paradigme-impératif" class="nav-link" data-scroll-target="#paradigme-impératif">Paradigme impératif</a></li>
+  <li><a href="#bas-niveau" id="toc-bas-niveau" class="nav-link" data-scroll-target="#bas-niveau">Bas-niveau</a></li>
+  </ul></li>
+  <li><a href="#syntaxe-et-concepts-du-langage" id="toc-syntaxe-et-concepts-du-langage" class="nav-link" data-scroll-target="#syntaxe-et-concepts-du-langage">2. Syntaxe et concepts du langage</a>
+  <ul class="collapse">
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables">Variables</a></li>
+  <li><a href="#types" id="toc-types" class="nav-link" data-scroll-target="#types">Types</a></li>
+  <li><a href="#tableaux" id="toc-tableaux" class="nav-link" data-scroll-target="#tableaux">Tableaux</a></li>
+  <li><a href="#types-structurés" id="toc-types-structurés" class="nav-link" data-scroll-target="#types-structurés">Types structurés</a></li>
+  <li><a href="#fonctions" id="toc-fonctions" class="nav-link" data-scroll-target="#fonctions">Fonctions</a></li>
+  <li><a href="#fonction-main" id="toc-fonction-main" class="nav-link" data-scroll-target="#fonction-main">Fonction main</a></li>
+  <li><a href="#instructions-conditionnelles-if" id="toc-instructions-conditionnelles-if" class="nav-link" data-scroll-target="#instructions-conditionnelles-if">Instructions conditionnelles (if)</a></li>
+  <li><a href="#boucles" id="toc-boucles" class="nav-link" data-scroll-target="#boucles">Boucles</a></li>
+  <li><a href="#fichiers-den-tête-headers" id="toc-fichiers-den-tête-headers" class="nav-link" data-scroll-target="#fichiers-den-tête-headers">Fichiers d’en-tête (headers)</a></li>
+  <li><a href="#compilation-simple" id="toc-compilation-simple" class="nav-link" data-scroll-target="#compilation-simple">Compilation simple</a></li>
+  <li><a href="#commentaires" id="toc-commentaires" class="nav-link" data-scroll-target="#commentaires">Commentaires</a></li>
+  <li><a href="#préprocesseur" id="toc-préprocesseur" class="nav-link" data-scroll-target="#préprocesseur">Préprocesseur</a></li>
+  <li><a href="#opérateur-ternaire" id="toc-opérateur-ternaire" class="nav-link" data-scroll-target="#opérateur-ternaire">Opérateur ternaire</a></li>
+  <li><a href="#switch" id="toc-switch" class="nav-link" data-scroll-target="#switch">Switch</a></li>
+  <li><a href="#types-énumérés" id="toc-types-énumérés" class="nav-link" data-scroll-target="#types-énumérés">Types énumérés</a></li>
+  </ul></li>
+  <li><a href="#gestion-de-la-mémoire" id="toc-gestion-de-la-mémoire" class="nav-link" data-scroll-target="#gestion-de-la-mémoire">3. Gestion de la mémoire</a>
+  <ul class="collapse">
+  <li><a href="#pointeurs" id="toc-pointeurs" class="nav-link" data-scroll-target="#pointeurs">Pointeurs</a></li>
+  <li><a href="#arithmétique-des-pointeurs" id="toc-arithmétique-des-pointeurs" class="nav-link" data-scroll-target="#arithmétique-des-pointeurs">Arithmétique des pointeurs</a></li>
+  <li><a href="#passage-darguments-aux-fonctions" id="toc-passage-darguments-aux-fonctions" class="nav-link" data-scroll-target="#passage-darguments-aux-fonctions">Passage d’arguments aux fonctions</a></li>
+  <li><a href="#allocation-mémoire-pile-tas" id="toc-allocation-mémoire-pile-tas" class="nav-link" data-scroll-target="#allocation-mémoire-pile-tas">Allocation mémoire (pile, tas)</a></li>
+  </ul></li>
+  <li><a href="#gestion-de-projet" id="toc-gestion-de-projet" class="nav-link" data-scroll-target="#gestion-de-projet">4. Gestion de projet</a>
+  <ul class="collapse">
+  <li><a href="#cmake" id="toc-cmake" class="nav-link" data-scroll-target="#cmake">CMake</a></li>
+  <li><a href="#gestion-de-versions" id="toc-gestion-de-versions" class="nav-link" data-scroll-target="#gestion-de-versions">Gestion de versions</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Rappels de programmation en langage C</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- # Rappels de programmation en langage C -->
+<section id="le-langage-c" class="level1">
+<h1>1. Le langage C</h1>
+<section id="origine" class="level2">
+<h2 class="anchored" data-anchor-id="origine">Origine</h2>
+<p>Le langage C est un langage de programmation créé en 1972 par Dennis Ritchie et Ken Thompson, pour leur permettre de développer Unix, l’ancêtre des systèmes d’exploitation Linux et MacOS. Ritchie et Thompson ont obtenu conjointement le prix Turing (souvent considéré comme l’équivalent du prix Nobel en informatique) en 1983 pour leurs travaux sur le développement d’Unix.<br>
+Le langage C est toujours très utilisé, car il est plutôt simple d’utilisation et procure un contrôle très fin du temps d’exécution et de l’usage mémoire du programme produit. Il a inspiré, notamment par sa syntaxe, de nombreux langages plus modernes comme le C++ (variante orienté-objet du langage C), C#, Rust, Java ou encore Javascript.</p>
+</section>
+<section id="langage-compilé" class="level2">
+<h2 class="anchored" data-anchor-id="langage-compilé">Langage compilé</h2>
+<p>Le langage C est un langage <em>compilé</em> : on utilise un programme appelé <em>compilateur</em> pour traduire le code source d’un programme C en langage machine, pour produire un fichier exécutable (portant l’extension “.exe” sous Windows). Ce fichier exécutable va être lu par la machine, qui va réaliser les instructions qu’il contient. L’exécution du programme est donc très performante, d’autant que le compilateur applique en général de nombreuses optimisations au code d’entrée, tout en préservant sa sémantique. En revanche, le temps de compilation d’un projet imposant peut être élevé, jusqu’à plusieurs heures pour un projet industriel. On veille donc à réaliser une compilation fichier par fichier (voir la section sur CMake), afin de ne recompiler que les parties qui ont été modifiées.</p>
+<p>Par opposition, certains langages comme le Python ou le Javascript sont des langages <em>interprétés</em> : un programme appelé <em>interpréteur</em> lit le code et l’exécute simultanément. Cela a l’avantage de ne pas nécessiter de recompilation à chaque modification du code, mais au prix d’une vitesse d’exécution bien moindre.</p>
+<p>Les compilateurs les plus utilisés sont GCC (GNU Compiler Collection), Clang, et MSVC (Microsoft Visual C++) qui est intégré à Visual Studio. GCC et Clang sont des logiciels libres.</p>
+</section>
+<section id="paradigme-impératif" class="level2">
+<h2 class="anchored" data-anchor-id="paradigme-impératif">Paradigme impératif</h2>
+<p>Un <em>paradigme</em> de programmation est une approche conceptuelle de la programmation, le point de vue selon lequel on va formuler les problèmes et les méthodes pour les résoudre.</p>
+<p>Le langage C utilise un paradigme <em>impératif</em> : la résolution d’un problème est effectuée par une suite d’instructions exécutées par la machine pour modifier l’état de diverses variables. C’est le paradigme le plus courant (C++, Java, Javascript, Python…), inspiré du modèle théorique des <em>machines de Turing</em>, créées dans les années 1930 par Alan Turing pour formaliser ce que deviendront ensuite les ordinateurs.</p>
+<!-- <div style="page-break-before:always"></div> -->
+<p>De nombreux autres paradigmes existent, comme la <em>programmation fonctionnelle</em>, où les programmes sont vus comme des fonctions mathématiques, où les variables ne peuvent pas être modifiées. Pour calculer le résultat renvoyé par une fonction, on combine les résultats d’appels de fonctions (éventuellement récursifs) sur d’autres paramètres. Les langages fonctionnels incluent OCaml, Haskell, Lisp, et sont inspirés par le modèle théorique du <em>Lambda-calcul</em> d’Alonzo Church, développé en parallèle des machines de Turing, dans les années 1930, et basé sur une approche mathématique du calcul.</p>
+</section>
+<section id="bas-niveau" class="level2">
+<h2 class="anchored" data-anchor-id="bas-niveau">Bas-niveau</h2>
+<p>En programmation, on parle de <em>haut-niveau</em> lorsque l’on traite de concepts relativement abstraits et proches de l’intuition. Un langage de programmation de haut-niveau va donner une description abstraite des opérations à réaliser. Il est en général plutôt simple d’utilisation, et permet d’écrire du code sans se soucier des opérations précises effectuées par le processeur, du temps d’exécution précis ou de l’utilisation de la mémoire. Python en est un bon exemple : syntaxe épurée, nombreuses bibliothèques, faibles contraintes sur les types des variables, l’accent est mis sur la simplicité d’utilisation, au détriment de la vitesse d’exécution.</p>
+<p>Des considérations de <em>bas-niveau</em> concernent à l’inverse l’utilisation précise du matériel : les opérations effectuées par le processeur, l’usage de la mémoire. Le langage de plus bas-niveau est le langage machine, directement exécuté par le processeur, ou l’assembleur, qui en est une version retranscrite sous forme lisible. Ces langages étaient utilisées à l’aube de l’informatique, et sont extrêmement difficiles d’accès.</p>
+<p>Le langage C est un langage plutôt bas-niveau. Il permet d’allouer et de manipuler la mémoire et les adresses mémoires via les pointeurs. Le langage impose de libérer manuellement la mémoire allouée, car il ne dispose pas d’un <em>ramasse-miettes</em> (<em>garbage collector</em>) comme par exemple en Java. L’utilisation de la mémoire est très précisément définie : chaque variable est associée à un type, ayant une taille mémoire calculée à la compilation (un <code>int</code> occupe en général 4 octets, un <code>long int</code> 8 octets, par exemple). Très peu d’opérations sont effectuées de manière invisible ou implicite, c’est le développeur qui doit lui-même indiquer toutes les opérations à effectuer.</p>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+</section>
+<section id="syntaxe-et-concepts-du-langage" class="level1">
+<h1>2. Syntaxe et concepts du langage</h1>
+<section id="variables" class="level2">
+<h2 class="anchored" data-anchor-id="variables">Variables</h2>
+<p>Les variables en C sont associées à un nom, un type, une adresse mémoire, et éventuellement une valeur.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> b<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>a<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fl">2.0</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> c <span class="op">=</span> <span class="ch">'a'</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> <span class="st">"abcd"</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> cond <span class="op">=</span> a <span class="op">&gt;</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La variable <code>a</code> est de type <code>int</code> (entier positif ou négatif, en général sur 32 bits) et contient la valeur <code>5</code>. La variable <code>b</code> est de type <code>float</code> (nombre décimal, à virgule flottante) et ne contient initialement pas de valeur. On lui donne ensuite la valeur <code>2.0</code>. La variable <code>c</code> est de type <code>char</code> (caractère), et <code>s</code> de type <code>char*</code> (chaîne de caractère, voir ci-dessous).<br>
+La variable <code>p</code> est de type <code>int *</code> (pointeur vers une variable de type <code>int</code>, voir la sous-section sur les pointeurs) et contient l’adresse (<code>&amp;a</code>) de la plage mémoire où est stockée la variable <code>a</code>.<br>
+Le booléen <code>cond</code> est égal à <code>true</code> si la condition <code>a &gt; 0</code> est vérifiée (ici oui) et <code>false</code> sinon.</p>
+<p>Attribuer <em>statiquement</em> (à la compilation) un type à une variable permet de contrôler le nombre de cases-mémoire dont celle-ci a besoin pour être stockée.</p>
+<p>Pour modifier une variable déjà déclarée, on utilise le symbole <code>=</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="op">&amp;</span>c<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cond <span class="op">=</span> <span class="op">(</span>a <span class="op">==</span> <span class="dv">0</span><span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ici, <code>a</code> reçoit la valeur <code>8</code>, <code>p</code> reçoit la valeur de l’adresse mémoire de la variable <code>c</code>, et <code>cond</code> reçoit <code>true</code> si <code>a</code> vaut <code>0</code>, et <code>false</code> sinon. Attention à ne pas confondre le <code>=</code> d’affectation des variables et le <code>==</code> de comparaison entre variables (le <code>=</code> des mathématiques).</p>
+</section>
+<section id="types" class="level2">
+<h2 class="anchored" data-anchor-id="types">Types</h2>
+<p>Les types de base sont les suivants. Les tailles indiquées sont les tailles habituelles, mais elles dépendent en pratique du compilateur. On peut les obtenir avec la fonction <code>sizeof(type)</code>. Les types entiers existent en version <code>signed</code> (signée) et <code>unsigned</code> (non-signé) : un type signé permet de stocker des nombres positifs ou négatifs, un type non-signé permet de ne stocker que des valeurs positives ou nulles.</p>
+<!-- <div style="page-break-before:always"></div> -->
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Signification</th>
+<th style="text-align: left;">Taille (octets)</th>
+<th style="text-align: left;">Valeurs min/max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">Booléen</td>
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(2\)</span> valeurs : <code>true</code>, <code>false</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>char</code></td>
+<td style="text-align: left;">Caractère</td>
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-128\ /\ 127\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>unsigned char</code></td>
+<td style="text-align: left;">Caractère</td>
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0\ /\ 255\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">Entier positif ou négatif</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-2^{31}\ /\ 2^{31} - 1\)</span> (2’147’483’647)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>unsigned int</code></td>
+<td style="text-align: left;">Entier positif ou nul</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0\ /\ 2^{32} - 1\)</span> (4’294’967’295)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>long int</code></td>
+<td style="text-align: left;">Entier positif ou négatif</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-2^{31}\ /\ 2^{31} - 1\)</span> (2’147’483’647)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>unsigned long int</code></td>
+<td style="text-align: left;">Entier positif ou nul</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0\ /\ 2^{32} - 1\)</span> (4’294’967’295)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>long long int</code></td>
+<td style="text-align: left;">Entier positif ou négatif</td>
+<td style="text-align: left;"><span class="math inline">\(8\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(-2^{63}\ /\ 2^{63} - 1\)</span> (9’223’372’036’854’775’807 )</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>unsigned long long int</code></td>
+<td style="text-align: left;">Entier positif ou nul</td>
+<td style="text-align: left;"><span class="math inline">\(8\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(0\ /\ 2^{64} - 1\)</span> (18’446’744’073’709’551’615)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Réel (précision simple)</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: left;">-Inf / +Inf</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>double</code></td>
+<td style="text-align: left;">Réel (précision double)</td>
+<td style="text-align: left;"><span class="math inline">\(8\)</span></td>
+<td style="text-align: left;">-Inf / +Inf</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>type *</code></td>
+<td style="text-align: left;">Pointeur vers type</td>
+<td style="text-align: left;"><span class="math inline">\(4\)</span> ou <span class="math inline">\(8\)</span></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>Les chaînes de caractères (string) ne sont pas présentes en C. Elles correspondent au type <code>char *</code> : elles sont représentées par un pointeur vers une suite de caractères en mémoire, terminés par un caractère ‘\0’.<br>
+Pour utiliser le type <code>bool</code>, il faut ajouter <code>#include &lt;stdbool.h&gt;</code> au début du programme, car ce type n’était pas présent dans le langage à l’origine.</p>
+</section>
+<section id="tableaux" class="level2">
+<h2 class="anchored" data-anchor-id="tableaux">Tableaux</h2>
+<p>On peut stocker plusieurs variables de même type de manière contigüe en mémoire en utilisant un tableau.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> array<span class="op">[</span><span class="dv">10</span><span class="op">];</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> t<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="fl">1.0</span><span class="op">,</span> <span class="op">-</span><span class="fl">2.0</span><span class="op">,</span> <span class="fl">3.5</span> <span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>En C, un tableau est un pointeur, non-modifiable, qui pointe vers une plage mémoire.<br>
+La taille d’un tableau est définie statiquement, à la compilation : sa taille doit être une constante, qui peut être définie par un <code>#define</code>. Ici, <code>array</code> est un pointeur vers 10 emplacements contigus en mémoire pouvant recevoir des valeurs de type <code>int</code>. Le tableau <code>t</code> est de taille 3, et contient 3 valeurs de type <code>float</code>.</p>
+<p>Pour accéder à l’élément d’indice <code>i</code> d’un tableau <code>t</code> ou modifier cet élément, on écrit <code>t[i]</code> et on utilise cette expression comme une variable. Les indices des éléments d’un tableau vont de <code>0</code> à <code>n-1</code>, où <code>n</code> est la taille du tableau. La taille d’un tableau doit être retenue dans une variable, car il est impossible d’obtenir cette valeur une fois le tableau créé.</p>
+<p>On parle de <em>taille physique</em> pour désigner la taille définie à la création du tableau, et de <em>taille logique</em> pour désigner le nombre effectif d’éléments ajoutés au tableau. On part souvent d’une taille logique égale à 0, avant de remplir le tableau élément par élément.</p>
+</section>
+<section id="types-structurés" class="level2">
+<h2 class="anchored" data-anchor-id="types-structurés">Types structurés</h2>
+<p>On peut regrouper plusieurs variables dans un même objet appelé <em>structure</em> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Déclaration de la structure struct s_str, renommée en t_str</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> s_str <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a<span class="op">;</span> <span class="co">// a, b, c sont les attributs de la structure</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> b<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">float</span> c<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> t_str<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Pour déclarer une variable t de type t_str</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>t_str t<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Pour affecter les attributs :</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>t<span class="op">.</span>a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>t<span class="op">.</span>b <span class="op">=</span> t<span class="op">.</span>a <span class="op">+</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>t<span class="op">.</span>c <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les variables <code>t.a</code>, <code>t.b</code>, <code>t.c</code> sont les <em>attributs</em> de la variable structurée <code>t</code>.</p>
+</section>
+<section id="fonctions" class="level2">
+<h2 class="anchored" data-anchor-id="fonctions">Fonctions</h2>
+<p>Le code d’un programme est organisé sous forme de <em>fonctions</em>. En entrée, une fonction reçoit des valeurs (appelées arguments) dans des variables (les paramètres de la fonction) d’un type fixe et défini à la déclaration de la fonction. Elle peut aussi ne prendre aucun paramètre en entrée.<br>
+Une fonction renvoie une valeur d’un type fixe et défini à la déclaration. Elle peut aussi ne renvoyer aucune variable : elle a le type <code>void</code> comme type de sortie.</p>
+<p>Exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> f<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> c <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b <span class="op">+</span> c<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La fonction <code>f</code> prend en entrée deux entiers <code>a</code> et <code>b</code>, et renvoie une valeur de type <code>int</code> avec le mot-clé <code>return</code>. Il peut y avoir plusieurs <code>return</code> dans une fonction : l’exécution du code de la fonction est interrompu et la valeur est renvoyée dès qu’un <code>return</code> est rencontré.<br>
+Les variables <code>a</code>, <code>b</code> et <code>c</code> sont des variables locales : elles sont créées au moment de l’appel de <code>f</code>, ne sont accessibles nulle-part ailleurs dans le code, et sont détruites à la fin de l’appel.</p>
+<p>Pour appeler une fonction et capter sa valeur de sortie dans une variable, on écrit :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> x <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> y <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> z <span class="op">=</span> f<span class="op">(</span>x<span class="op">,</span> y<span class="op">);</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">// z vaut 6</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>ou simplement <code>int z = f(3, 2);</code>.<br>
+Le contenu des variables <code>x</code> et <code>y</code> est copié dans de nouvelles variables <code>a</code> et <code>b</code> : <code>x</code> et <code>y</code> ne sont pas modifées par l’appel à la fonction <code>f</code>.</p>
+</section>
+<section id="fonction-main" class="level2">
+<h2 class="anchored" data-anchor-id="fonction-main">Fonction main</h2>
+<p>Le point d’entrée d’un programme C est une fonction <code>main</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Hello world!</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le programme exécutable produit par le compilateur commencera son exécution au début de la fonction <code>main</code>.</p>
+<p>Ici, <code>printf</code> permet d’afficher une chaîne de caractères dans la console. On a besoin d’include la bibliothèque <code>stdio.h</code> pour disposer de cette fonction.</p>
+<p>La fonction <code>main</code> va appeler les autres fonctions contenant le reste du code. La convention des systèmes Unix et Windows veut que la fonction <code>main</code> renvoie la valeur <code>0</code> si l’exécution s’est déroulée sans erreur, et <code>1</code> si l’exécution a dû être interrompue à cause d’une erreur.</p>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+<section id="instructions-conditionnelles-if" class="level2">
+<h2 class="anchored" data-anchor-id="instructions-conditionnelles-if">Instructions conditionnelles (if)</h2>
+<p>Si l’on souhaite effectuer un traitement seulement si une certaine condition est vérifiée, on utilise une instruction conditionnelle <code>if</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> c<span class="op">;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>a <span class="op">==</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>b <span class="op">==</span> <span class="dv">2</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>b <span class="op">==</span> <span class="dv">3</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">30</span><span class="op">;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans le code ci-dessus, le bloc <code>c = 10;</code> n’est exécuté que si <code>a</code> vaut <code>1</code>. La variable <code>c</code> sera affectée à la valeur <code>20</code> si <code>b</code> vaut <code>2</code>, à <code>30</code> si <code>b</code> vaut <code>3</code>, et à <code>0</code> sinon.</p>
+</section>
+<section id="boucles" class="level2">
+<h2 class="anchored" data-anchor-id="boucles">Boucles</h2>
+<p>Pour réaliser une action un nombre défini de fois, on utilise une boucle <code>for</code> (“Pour”) :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Iteration </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le code ci-dessus va afficher :</p>
+<pre><code>Iteration 0
+Iteration 1
+Iteration 2
+Iteration 3
+Iteration 4</code></pre>
+<p>La variable locale <code>i</code> est créée, puis on exécute le code entre accolades tant que la condition <code>i &lt; 5</code> est vérifiée, et l’on incrémente <code>i</code> à chaque étape avec l’instruction <code>i++</code>. Le corps de la boucle va donc s’exécuter 5 fois, avec <code>i</code> valant 0, puis 1, puis 2, etc. jusqu’à 4, avant de sortir de la boucle et de continuer l’exécution du reste du code. Le nombre d’itérations peut être une variable.</p>
+<!-- <div style="page-break-before:always"></div> -->
+<p>Si on ne sait pas de combien d’itérations nous aurons besoin, on utilise une boucle <code>while</code> (“Tant que”) :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span>a <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Iteration </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">);</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> a <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le code ci-dessus va afficher :</p>
+<pre><code>Iteration 5
+Iteration 4
+Iteration 3
+Iteration 2
+Iteration 1</code></pre>
+<p>L’instruction <code>printf</code> reçoit ici une chaînée formattée : le <code>%d</code> sera remplacé par le contenu d’une variable de type <code>int</code> donnée en paramètres, ici <code>a</code>. Le caractère <code>'\n'</code> produit un saut de ligne à l’affichage.</p>
+</section>
+<section id="fichiers-den-tête-headers" class="level2">
+<h2 class="anchored" data-anchor-id="fichiers-den-tête-headers">Fichiers d’en-tête (headers)</h2>
+<p>Pour organiser un projet, on sépare les fonctions en différents fichiers <code>file.c</code>, chacun ayant un nom explicite (<code>vector.c</code>, <code>material.c</code>, …) et regroupant les fonctions implémentant des fonctionnalités proches, ou traitant d’objets de même type. Pour que ces fonctions puissent être appelées depuis les autres fonctions du code, on fournit un fichier <code>file.h</code>, appelé <em>fichier d’en-tête</em>, contenant les prototypes des fonctions de <code>file.c</code>. Toutes les fonctions de <code>file.c</code> ne sont pas forcément déclarées dans <code>file.h</code>, seulement celles qui ont besoin d’être appelées depuis d’autres fichiers.<br>
+Dans les fichiers <code>other.c</code> nécessitant les fonctions de <code>file.c</code>, on ajout l’instruction <code>#include "file.h"</code> en début de <code>other.c</code>.</p>
+<p>Exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// file.c</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">// implémentation de fonctions</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> f<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> g<span class="op">(</span><span class="dt">float</span> x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x <span class="op">*</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- <div style="page-break-before:always"></div> -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">// file.h</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">// prototypes des fonctions de file.c disponibles pour utilisation dans les autres fichiers</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> f<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">);</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> g<span class="op">(</span><span class="dt">float</span> x<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">// other.c</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">"file.h"</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> func<span class="op">(</span>t_str <span class="op">*</span>obj<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> f<span class="op">(</span><span class="dv">5</span><span class="op">,</span> <span class="dv">10</span><span class="op">);</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Séparer ses fonctions et fournir le moins de fonctions possibles dans les <code>.h</code> est une bonne pratique de programmation. En effet, cela permet d’éviter de nombreuses erreurs, comme modifier les mauvaises variables, et de simplifier conceptuellement le programme, chaque fichier s’occupant d’une fonctionnalité, les autres utilisant ces fonctionnalités sans se soucier de leur implémentation.</p>
+</section>
+<section id="compilation-simple" class="level2">
+<h2 class="anchored" data-anchor-id="compilation-simple">Compilation simple</h2>
+<p>Pour compiler un projet composé des fichiers <code>file1.c</code>, <code>file2.c</code>, <code>file3.c</code>, avec par exemple GCC :</p>
+<pre><code>gcc file1.c file2.c file3.c -o prog</code></pre>
+<p>L’option <code>-o</code> permet de spécifier le nom de l’exécutable produit. Pour compiler avec Clang, on utilise la commande <code>cc</code> à la place de <code>gcc</code>.</p>
+</section>
+<section id="commentaires" class="level2">
+<h2 class="anchored" data-anchor-id="commentaires">Commentaires</h2>
+<p>On peut écrire des commentaires dans le code, c’est-à-dire du texte ignoré pour l’exécution. Ces commentaires seront syntaxiquement ignorés par le compilateur, et ne produisent donc aucun coût à l’exécution.</p>
+<p>On peut définir des commentaires de deux manières : une ligne précédée par <code>//</code> ou un bloc entouré par <code>/*</code> et <code>*/</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">// This is a single-line comment</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">/* This is a</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">block</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">comment</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">*/</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les commentaires permettent de documenter le code, donner une description concise du résultat renvoyé par une fonction, décrire les différentes étapes d’un programme. On veillera toutefois à ne pas en abuser.<br>
+Certains commentaires peuvent être formattés d’une manière à pouvoir générer automatiquement la documentation d’une bibliothèque, sous forme de page HTML, grâce à des outils comme Doxygen (pour le C), Sphinx (Python) ou Javadoc (Java).</p>
+</section>
+<section id="préprocesseur" class="level2">
+<h2 class="anchored" data-anchor-id="préprocesseur">Préprocesseur</h2>
+<p>On peut écrire des instructions de <em>preprocessing</em>, qui vont être traitées à la compilation.</p>
+<p><code>#define TAILLE_MAX 10</code> permet de définir la constante <code>TAILLE_MAX</code>, qui sera remplacée syntaxiquement par <code>10</code> dans le code. C’est une bonne pratique de programmation, car elle permet d’écrire des expressions comme <code>if (i &lt; TAILLE_MAX)</code> sans avoir à écrire en dur le contenu des constantes. Celles-ci sont définies une seule fois et peuvent être modifiées en une seule fois, sans coût mémoire (car ce <code>10</code> n’est pas stocké dans une variable, mais remplacé textuellement dans le programme) et sans coût en temps d’exécution.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#if </span><span class="co">/* condition */</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* code */</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#else</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* code */</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ces instructions permettent d’inclure ou non des sections du code, en fonction de conditions évaluables à la compilation. Exemples : si l’on se trouve sur un système Windows ou Linux, ou des conditions dépendant du compilateur : <code>sizeof(int) == 4</code>.</p>
+<p>Une bonne pratique consiste à utiliser l’instruction <code>#ifdef CONSTANTE ... #endif</code> (ou son inverse, <code>ifndef</code>), qui inclue le bloc si <code>CONSTANTE</code> a été définie avec <code>#define</code>. Exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define DEBUG</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">/* ... */</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef DEBUG</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"a : </span><span class="sc">%d</span><span class="st">, b : </span><span class="sc">%d</span><span class="st">, i : </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">,</span> b<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>a <span class="op">&gt;</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Error, a too big</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Il suffit simplement de commenter la ligne <code>#define DEBUG</code> et recompiler pour ne plus inclure le code entre <code>#ifdef</code> et <code>endif</code>, ce qui évite de devoir commenter manuellement de nombreuses sections du code.</p>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+<section id="opérateur-ternaire" class="level2">
+<h2 class="anchored" data-anchor-id="opérateur-ternaire">Opérateur ternaire</h2>
+<p>L’opérateur ternaire <code>cond ? expr_if_true : expr_if_false</code> permet de simplifier la syntaxe de certaines expressions. L’opérateur ternaire évalue la condition <code>cond</code>, et renvoie la valeur de l’expression <code>expr_if_true</code> si la <code>cond</code> s’évalue à <code>true</code>, et la valeur de <code>expr_if_false</code> sinon. Par exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a <span class="op">=</span> b <span class="op">&gt;</span> <span class="dv">5</span> <span class="op">?</span> b <span class="op">+</span> <span class="dv">1</span> <span class="op">:</span> b <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>est équivalent à :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a<span class="op">;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>b <span class="op">&gt;</span> <span class="dv">5</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> b <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> b <span class="op">-</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Outre l’allègement de la syntaxe, l’opérateur ternaire a l’avantage d’être en général plus efficace qu’un <code>if</code> à l’exécution (pour des raisons techniques : l’opérateur permet une meilleure prédiction de branche par le processeur).</p>
+</section>
+<section id="switch" class="level2">
+<h2 class="anchored" data-anchor-id="switch">Switch</h2>
+<p>On souhaite comparer une variable <code>x</code> avec plusieurs valeurs constantes <code>CONST1</code>, <code>CONST2</code>, …, déterminées à la compilation. On peut écrire :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>x <span class="op">==</span> CONST1<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* code1 */</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>x <span class="op">==</span> CONST2<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* code2 */</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> <span class="co">/* ... */</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le bloc <code>switch</code> permet de simplifier cette syntaxe, et de produire un code en général plus efficace à l’exécution :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">switch</span><span class="op">(</span>x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> CONST1<span class="op">:</span> <span class="op">{</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* code1 */</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> CONST2<span class="op">:</span> <span class="op">{</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* code2 */</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* code if x != CONST1, CONST2, ... */</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans ce cas, <code>x</code> est évalué et le code va sauter au début du bloc <code>case</code> correspondant à la valeur de <code>x</code>. Le <code>break</code> permet de quitter le bloc <code>switch</code> et de continuer l’exécution après celui-ci. Si le <code>break</code> est absent, les blocs <code>case</code> à la suite du bloc exécuté seront exécutés eux aussi, jusqu’au prochain <code>break</code> ou jusqu’à la fin du bloc <code>switch</code>.</p>
+<p>Si <code>x</code> ne vaut aucune des constantes <code>CONST1</code>, <code>CONST2</code>, …, le code du bloc <code>default</code> sera exécuté. Le bloc <code>default</code> est optionnel, de même que les accolades, autour de chaque sous-bloc.</p>
+<p>Les constantes <code>CONST1</code>, <code>CONST2</code>, …, doivent être des constantes déterminées à la compilation: des valeurs numériques, des constantes définies avec <code>#define</code>, des caractères, ou encore des éléments d’un type énuméré. Elles ne peuvent pas être égales au contenu d’une variable, à la manière de la taille physique d’un tableau.</p>
+</section>
+<section id="types-énumérés" class="level2">
+<h2 class="anchored" data-anchor-id="types-énumérés">Types énumérés</h2>
+<p>Un type énuméré est un type dont les valeurs possibles sont définies explicitement. Par exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> t_enum <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    T_A<span class="op">,</span> T_B<span class="op">,</span> T_C</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">enum</span> t_enum e <span class="op">=</span> T_A<span class="op">;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le type <code>t_enum</code> possède 3 valeurs possibles, et la variable <code>e</code> est égale à l’une d’entre elles, <code>T_A</code>. Les types énumérés se prêtent bien aux blocs <code>switch</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">switch</span> <span class="op">(</span>e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> T_A<span class="op">:</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"T_A</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> T_B<span class="op">:</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"T_B</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> T_C<span class="op">:</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"T_C</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+</section>
+<section id="gestion-de-la-mémoire" class="level1">
+<h1>3. Gestion de la mémoire</h1>
+<section id="pointeurs" class="level2">
+<h2 class="anchored" data-anchor-id="pointeurs">Pointeurs</h2>
+<p>En langage C, on dispose de types <em>pointeurs</em>, qui stockent des adresses mémoires, de manière à pouvoir modifier directement celle-ci.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>a<span class="op">;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> b <span class="op">=</span> <span class="op">*</span>p<span class="op">;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="op">*</span>p <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ici, <code>p</code> est un pointeur, une variable de type <code>int *</code>, qui contient l’adresse-mémoire de la variable <code>a</code> (obtenue avec l’opérateur <code>&amp;</code>).<br>
+On <em>déréférence</em> <code>p</code> en utilisant l’opérateur <code>*</code> : on accède au contenu de l’adresse-mémoire contenue dans <code>p</code>, ici le contenu de la variable <code>a</code>. La variable <code>b</code> reçoit donc la valeur <code>5</code>.<br>
+En déréférençant, on peut également modifier la valeur stockée à l’adresse contenue dans <code>p</code>. Après l’instruction <code>*p = 4;</code>, la variable <code>a</code> contient la valeur <code>4</code>.</p>
+<p>Lorsqu’on dispose d’un pointeur <code>p_t</code> vers une variable <code>t</code> de type structuré (<code>struct</code>), on peut utiliser la syntaxe <code>p_t-&gt;a</code> pour accéder à la valeur de l’attribut <code>a</code> de la variable <code>t</code>, ce qui est strictement équivalent à <code>(*p_t).a</code>.</p>
+</section>
+<section id="arithmétique-des-pointeurs" class="level2">
+<h2 class="anchored" data-anchor-id="arithmétique-des-pointeurs">Arithmétique des pointeurs</h2>
+<p>Si l’on utilise des opérations arithmétique sur des pointeurs (<code>p + 1</code>), le résultat est calculé avec l’adresse stockée dans les pointeurs. L’expression <code>p + 1</code> s’évalue en un pointeur qui contient l’adresse adjacente à l’adresse contenue dans <code>p</code>. Si <code>p</code> est de type <code>type *</code>, avec <code>sizeof(type) == n</code>, alors <code>p + 1</code> pointe sur une case mémoire décalée de <code>n</code> octets.</p>
+<p>Ainsi :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> t<span class="op">[</span><span class="dv">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span> <span class="op">};</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> <span class="op">&amp;</span>t<span class="op">[</span><span class="dv">0</span><span class="op">];</span> <span class="co">// p pointe vers t[0], qui contient 1</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">// p + 1 vaut p + 4 octets, soit l'adresse de t[1], qui contient 2</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">// p + 2 vaut p + 2 * 4 octets, soit l'adresse de t[2], qui contient 3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- <div style="page-break-before:always"></div> -->
+<p>On utilise particulièrement l’arithmétique des pointeurs pour parcours des chaînes de caractères, délimitées par un caractère <code>'\0'</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>s <span class="op">=</span> <span class="st">"Bonjour"</span><span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">// s pointe vers une plage de 8 octets, soit 8 * sizeof(char)</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">// car Bonjour contient 7 lettres, et on a un caractère '\0' pour terminer la chaîne</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> s<span class="op">;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(*</span>p <span class="op">!=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>p <span class="op">=</span> <span class="op">*</span>p <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// change un caractère en son successeur dans l'alphabet</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> p <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// p avance de 1 position dans la chaîne s</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%s\n</span><span class="st">"</span><span class="op">,</span> s<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le programme suivant parcourt la chaîne <code>s</code> d’élément en élément, et change chaque caractère en son successeur dans l’alphabet. Le programme affiche <code>Cpokpvs</code>.</p>
+</section>
+<section id="passage-darguments-aux-fonctions" class="level2">
+<h2 class="anchored" data-anchor-id="passage-darguments-aux-fonctions">Passage d’arguments aux fonctions</h2>
+<p>Lorsqu’une fonction prend un paramètre de type non-pointeur en entrée, le contenu de l’argument (valeur ou variable) est copié dans une nouvelle variable, locale à la fonction, et c’est cette variable qui va être manipulée par la fonction. On dit qu’on effectue un <em>appel par valeur</em>, ou <em>par copie</em>. Il est impossible de modifier la variable d’origine depuis la fonction appelée.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> f<span class="op">(</span><span class="dt">int</span> a<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> a <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// la fonction modifie sa variable locale et ne renvoie rien,</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>               <span class="co">// elle est inutile</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    f<span class="op">(</span>a<span class="op">);</span> <span class="co">// on donne à f la valeur de a</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">);</span> <span class="co">// affiche 2, la variable a n'a pas été modifié</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- <div style="page-break-before:always"></div> -->
+<p>Si l’on souhaite modifier la variable argument par la fonction, on réalise un <em>appel par pointeur</em>, en donnant un pointeur vers la variable à modifier.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> g<span class="op">(</span><span class="dt">int</span> <span class="op">*</span>a<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>a <span class="op">=</span> <span class="op">*</span>a <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// la fonction modifie le contenu de la variable donnée en paramètre</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    g<span class="op">(&amp;</span>a<span class="op">);</span> <span class="co">// on donne à g l'adresse de a</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> a<span class="op">);</span> <span class="co">// affiche 3, la variable a a bien été modifiée</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un autre avantage du passage par pointeur est de ne pas avoir à copier le contenu de tous les attributs d’une variable de type structuré (“<code>struct</code>”) à chaque appel de fonction. En effet, si un type structuré possède un grand nombre d’attributs, alors chaque passage par valeur d’une variable de ce type devra copier le contenu de tous les attributs dans une variable locale, ce qui causera une forte perte de performances. La bonne pratique est de passer les variables de type structuré par un pointeur lors d’un appel de fonction.</p>
+</section>
+<section id="allocation-mémoire-pile-tas" class="level2">
+<h2 class="anchored" data-anchor-id="allocation-mémoire-pile-tas">Allocation mémoire (pile, tas)</h2>
+<p>En langage C, on distingue la <em>pile</em> (<em>stack</em>) et le <em>tas</em> (<em>heap</em>), représentant chacun une partie différente de la mémoire, utilisables lors de l’exécution d’un programme.</p>
+<p>La pile contient le contenu des variables locales, ainsi que des informations utiles au processeur, comme des pointeurs contenant des adresses auxquelles sauter. Lorsque l’on effectue un appel de fonction, les variables locales à la fonction sont ajoutées au-dessus de la pile, à la suite des valeurs déjà stockées. L’adresse de retour dans le programme est également stockée sur la pile, ainsi que l’adresse à laquelle retrouver le contenu des variables de la fonction appelante.<br>
+Les données allouées sur la pile sont automatiquement libérées une fois celles-ci devenues inutiles.</p>
+<p>Exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> f<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> b <span class="op">=</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les valeurs de <code>a</code> et <code>b</code> sont stockées sur la pile, à la suite des valeurs déjà stockées. Après le retour à la fonction appelante, ces valeurs sont “oubliées” : le pointeur indiquant la position actuelle sur la pile est déplacé pour retrouver le contenu des variables de la fonction qui a appelé <code>f</code>.<br>
+On dit que les variables <code>a</code> et <code>b</code> sont allouées de manière <em>statique</em>.</p>
+<p>Le tas est au contraire une mémoire “permanente”, plus lente d’accès, mais de taille supérieure. C’est sur le tas que l’on stocke les données volumineuses, et les données qui doivent subsister après la fin de l’appel d’une fonction. L’espace-mémoire est alloué avec la fonction <code>malloc</code>, qui retourne un pointeur vers la plage allouée. Les données vont exister dans la mémoire jusqu’à ce qu’on les libère manuellement, avec l’instruction <code>free</code>. On parle d’allocation <em>dynamique</em>.</p>
+<p>Exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>allocate_array<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> malloc<span class="op">(</span><span class="dv">10</span> <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>t <span class="op">=</span> allocate_array<span class="op">();</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">*(</span>t <span class="op">+</span> <span class="dv">5</span><span class="op">)</span> <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>t<span class="op">);</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>On a alloué une plage pouvant accueillir 10 entiers, via la fonction <code>allocate_array</code>. On utilise le pointeur <code>t</code> vers cette plage pour écrire la valeur 4 dans l’une de ces cases, et enfin on libère la mémoire pour qu’elle puisse être réutilisée.</p>
+<p>Attention, si l’on oublie de libérer la mémoire allouée, et que celle-ci n’est plus accessible (par exemple si l’on a écrit une autre adresse dans l’unique pointeur qui pointait vers la plage), celle-ci reste verrouillée jusqu’à la fin de l’exécution du programme. On appelle cela une <em>fuite mémoire</em> : la mémoire va se remplir au fur et à mesure de l’exécution du programme, l’usage de mémoire-vive (RAM) va augmenter jusqu’à dépasser la capacité de la machine, et le programme va ralentir fortement puis planter.</p>
+<!-- <div style="page-break-before:always"></div> -->
+<p>Exemple de fuite mémoire :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// on oublie d'écrire free(p)</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ici, <code>p</code> est une variable locale, qui est supprimée à la fin de chaque itération de la boucle. Chaque itération va donc allouer 4 octets (<code>sizeof(int)</code>), et le pointeur vers chacune de ces plages va être perdu : la mémoire ne peut plus être libérée jusqu’à la fin de l’exécution du programme.</p>
+<p>Autre exemple :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> n <span class="op">=</span> <span class="dv">100000000</span><span class="op">;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span>n <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co">// On remplit la plage allouée par des 0</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    p<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="op">&amp;</span>a<span class="op">;</span> <span class="co">// on utilise p pour autre chose</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="co">// la plage allouée par malloc est à présent inaccessible</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’adresse de la plage allouée par <code>malloc</code> est perdue.</p>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+</section>
+<section id="gestion-de-projet" class="level1">
+<h1>4. Gestion de projet</h1>
+<section id="cmake" class="level2">
+<h2 class="anchored" data-anchor-id="cmake">CMake</h2>
+<p>Pour les projets contenant plus que quelques fichiers, on va utiliser un <em>système de construction logicielle</em> (<em>build</em>), comme CMake. Ce logiciel permet de spécifier facilement les fichiers composant notre code, de spécifier diverses options de compilation, de séparer les fichiers du projet en sous-bibliothèques, et d’ajouter facilement des bibliothèques externes.<br>
+CMake va générer un <em>Makefile</em>, à savoir un fichier contenant toutes les instructions de compilation, permettant une compilation séparée par fichiers, et qui peut être exécuté avec la commande shell <code>make</code>.</p>
+</section>
+<section id="gestion-de-versions" class="level2">
+<h2 class="anchored" data-anchor-id="gestion-de-versions">Gestion de versions</h2>
+<p>Pour n’importe quel projet, il est impératif de disposer d’un <em>système de gestions de versions</em>, ou <em>versioning</em>. Un tel système permet d’enregistrer les modifications successives du code, de retrouver une version précédente, de collaborer à plusieurs sur un même code, ou de faire évoluer plusieurs <em>branches</em> de versions en parallèle, avant de faire éventuellement des fusions de branches, pour introduire les modifications des versions d’une branche dans une autre version.<br>
+Le système le plus utilisé est Git.</p>
+<p>Pour stocker un code et ses différentes versions, il est nécessaire de disposer d’un espace de stockage, un <em>dépôt</em> (repository). Il est possible d’utiliser Github pour héberger son code, en l’utilisant en conjonction avec le système Git.</p>
+<p>On réalise un <em>commit</em> lorsque l’on regroupe plusieurs modifications du code en un paquet, et un <em>push</em> lorsque l’on envoie ce paquet de modifications au serveur de dépôt. Le système de gestion de versions va alors garder en mémoire les modifications et mettre à jour le code dans sa base de données. Seules les modifications sont stockées, et la dernière version est recomposée à partir des différentes modifications, pour un stockage efficace. On n’envoie que du texte à un serveur de dépôt, le code source, car les fichiers volumineux seraient trop gourmands en stockage.<br>
+On <em>clone</em> un dépôt lorsque l’on importe un projet dans notre machine. Les fichiers que l’on modifie alors sont une copie locale du projet stocké à distance. On peut alors ajouter ou modifier du code, et envoyer nos modifications (commit, push) au dépôt distant.</p>
+<p>Les environnements de développement (Visual Studio, Visual Studio Code, CLion, …) disposent d’interfaces permettant d’utiliser facilement les gestionnaires de versions.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

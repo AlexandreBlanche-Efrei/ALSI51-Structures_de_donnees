@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>TP3 - Algorithmes de tri – ALSI51 Structures de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./figures/efrei_pantheon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">ALSI51 Structures de données</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-cours" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Cours</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-cours">    
+        <li>
+    <a class="dropdown-item" href="./cm0-introduction.html">
+ <span class="dropdown-text">Introduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt1-tableaux_dynamiques.html">
+ <span class="dropdown-text">Cours 1, partie 1 : Tableaux dynamiques</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm1-pt2-listes_chainees.html">
+ <span class="dropdown-text">Cours 1, partie 2 : Listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm2-piles_files.html">
+ <span class="dropdown-text">Cours 2 : Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm3-algorithmes_de_tri.html">
+ <span class="dropdown-text">Cours 3 : Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./cm4-trees.html">
+ <span class="dropdown-text">Cours 4 : Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tp" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">TP</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tp">    
+        <li>
+    <a class="dropdown-item" href="./tp1.html">
+ <span class="dropdown-text">TP1 - Tableaux dynamiques, listes chaînées</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp2.html">
+ <span class="dropdown-text">TP2 - Piles, files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp3.html">
+ <span class="dropdown-text">TP3 - Algorithmes de tri</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tp4.html">
+ <span class="dropdown-text">TP4 - Structures arborescentes</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./rappels_C.html"> 
+<span class="menu-text">Rappels de langage C</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projet_compilateur.html"> 
+<span class="menu-text">Sujet du projet</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees"> 
+<span class="menu-text">Page Github du cours</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar"><div class="quarto-margin-header"><div class="margin-header-item">
+<p><img src="./figures/logo-efrei.svg" class="img-fluid"></p>
+</div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#partie-1-implémentation" id="toc-partie-1-implémentation" class="nav-link active" data-scroll-target="#partie-1-implémentation">Partie 1 : implémentation</a>
+  <ul class="collapse">
+  <li><a href="#tri-par-sélection" id="toc-tri-par-sélection" class="nav-link" data-scroll-target="#tri-par-sélection">Tri par sélection</a></li>
+  <li><a href="#tri-par-insertion" id="toc-tri-par-insertion" class="nav-link" data-scroll-target="#tri-par-insertion">Tri par insertion</a></li>
+  <li><a href="#tri-à-bulles" id="toc-tri-à-bulles" class="nav-link" data-scroll-target="#tri-à-bulles">Tri à bulles</a></li>
+  <li><a href="#tri-rapide-quicksort" id="toc-tri-rapide-quicksort" class="nav-link" data-scroll-target="#tri-rapide-quicksort">Tri rapide (Quicksort)</a></li>
+  <li><a href="#tri-fusion-mergesort" id="toc-tri-fusion-mergesort" class="nav-link" data-scroll-target="#tri-fusion-mergesort">Tri fusion (Mergesort)</a></li>
+  </ul></li>
+  <li><a href="#partie-2-comparaisons" id="toc-partie-2-comparaisons" class="nav-link" data-scroll-target="#partie-2-comparaisons">Partie 2 : comparaisons</a></li>
+  <li><a href="#partie-3-bonus-implémentation-avec-des-listes-chaînées" id="toc-partie-3-bonus-implémentation-avec-des-listes-chaînées" class="nav-link" data-scroll-target="#partie-3-bonus-implémentation-avec-des-listes-chaînées">Partie 3 : (Bonus) Implémentation avec des listes chaînées</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TP3 - Algorithmes de tri</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Un <em>algorithme de tri</em> est un algorithme qui réordonne une liste, ou en renvoie une nouvelle, de manière à ce que les éléments de la liste soient triés par ordre croissant (ou selon un autre critère paramétrable). Dans ce TP, on ne considérera que des listes d’entiers, et on dira qu’une liste est <em>triée</em> si ses éléments sont triés par ordre croissant. On appellera la liste d’entrée <span class="math inline">\(list\)</span>, et on notera l’élément d’indice <span class="math inline">\(i\)</span> par <span class="math inline">\(list[i]\)</span>.</p>
+<section id="partie-1-implémentation" class="level1">
+<h1>Partie 1 : implémentation</h1>
+<p>Nous donnons dans cette section cinq algorithmes de tri classiques. Pour chacun d’entre eux :</p>
+<ol type="1">
+<li>Implémenter l’algorithme dans le module correspondant.</li>
+<li>Modifier le tableau <code>algos</code> dans <code>tests.c</code> et la constante <code>NB_ALGO</code> dans <code>tests.h</code> pour ajouter votre algorithme au jeu de tests. Appeler la fonction <code>test_algorithms</code> du module <code>tests</code> pour vérifier que votre implémentation fonctionne.</li>
+<li>Estimer la complexité en pire cas de l’algorithme, et sa complexité en meilleur cas.</li>
+<li>Sa complexité en moyenne est-elle meilleure que la complexité en pire cas ?</li>
+</ol>
+<section id="tri-par-sélection" class="level2">
+<h2 class="anchored" data-anchor-id="tri-par-sélection">Tri par sélection</h2>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<ul>
+<li>Pour <span class="math inline">\(i\)</span> de <span class="math inline">\(0\)</span> à <span class="math inline">\(n - 1\)</span> :
+<ul>
+<li>Trouver l’indice <span class="math inline">\(i_{min}\)</span> du plus petit élément de la liste parmi les éléments d’indices <span class="math inline">\(\geq i\)</span>.</li>
+<li>Echanger les éléments d’indices <span class="math inline">\(i_{min}\)</span> et <span class="math inline">\(i\)</span>.</li>
+</ul></li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-trisel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-trisel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-trisel">block-beta
+    columns 10
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:10
+    
+    B1["4"]:2
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+    
+    space:10
+    style B4 fill:#DAC,stroke:#333,stroke-width:2px
+    
+    C1["1"]:2
+    C2["3"]:2
+    C3["5"]:2
+    C4["4"]:2
+    C5["2"]:2
+    
+    space:10
+    B4 --&gt; C1
+    B1 --&gt; C4
+    style C1 fill:#FFF
+    style C5 fill:#DAC,stroke:#333,stroke-width:2px
+
+    D1["1"]:2
+    D2["2"]:2
+    D3["5"]:2
+    D4["4"]:2
+    D5["3"]:2
+
+    C5 --&gt; D2
+    C2 --&gt; D5
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    space:10
+    
+    E1["1"]:2
+    E2["2"]:2
+    E3["3"]:2
+    E4["4"]:2
+    E5["5"]:2
+    D3 --&gt; E5
+    D5 --&gt; E3
+    style D5 fill:#DAC,stroke:#333,stroke-width:2px
+    style E1 fill:#FFF
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+
+    style E4 fill:#DAC,stroke:#333,stroke-width:2px
+    space:10
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    E4 --&gt; F4
+    
+    style F1 fill:#FFF
+    style F2 fill:#FFF
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trisel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Tri par sélection
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Ou de manière équivalente :</p>
+<ul>
+<li>Si la liste est de longueur <span class="math inline">\(n \geq 2\)</span> :
+<ul>
+<li>Trouver le plus petit élément de la liste, et l’extraire de la liste.</li>
+<li>Ajouter cet élément en première position de la liste.</li>
+<li>Réitérer l’algorithme en ne considérant que les éléments à l’exception du premier.</li>
+</ul></li>
+</ul>
+</section>
+<section id="tri-par-insertion" class="level2">
+<h2 class="anchored" data-anchor-id="tri-par-insertion">Tri par insertion</h2>
+<ul>
+<li>On considère une liste <span class="math inline">\(aux\)</span>, initialement vide, et que l’on veillera à garder toujours triée.<br>
+</li>
+<li>Pour chaque élément <span class="math inline">\(x\)</span> de <span class="math inline">\(list\)</span> :
+<ul>
+<li>extraire <span class="math inline">\(x\)</span> de <span class="math inline">\(list\)</span></li>
+<li>insérer <span class="math inline">\(x\)</span> dans <span class="math inline">\(aux\)</span> de manière à ce qu’elle reste triée.</li>
+</ul></li>
+<li><span class="math inline">\(aux\)</span> est la liste triée renvoyée.</li>
+</ul>
+<p>On également implémenter cet algorithme <em>en place</em>, c’est-à-dire dans un seul tableau, sans allouer de mémoire supplémentaire. Pour cela, on pourra utiliser les <span class="math inline">\(i\)</span> premières cases du tableau pour représenter <span class="math inline">\(aux\)</span>, et les <span class="math inline">\(n - i\)</span> dernières cases pour la partie restante de <span class="math inline">\(list\)</span>.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-triinsert" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-triinsert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-triinsert">block-beta
+    columns 11
+
+    A1["4"]:2
+    A2["3"]:2
+    A3["5"]:2
+    A4["1"]:2
+    A5["2"]:2
+    
+    space:1
+    space:11
+    
+    B1["4"]:2
+    space:1
+    B2["3"]:2
+    B3["5"]:2
+    B4["1"]:2
+    B5["2"]:2
+
+    A1 --&gt; B1
+    
+    space:11
+    style A1 fill:#DAC,stroke:#333,stroke-width:2px
+    style B1 fill:#CFC
+    
+    C1["3"]:2
+    C2["4"]:2
+    space:1
+    C3["5"]:2
+    C4["1"]:2
+    C5["2"]:2
+
+    style B2 fill:#DAC,stroke:#333,stroke-width:2px
+    B2 --&gt; C1
+    
+    space:11
+    
+    style C1 fill:#CFC
+    style C2 fill:#FFF
+
+    D1["3"]:2
+    D2["4"]:2
+    D3["5"]:2
+    space:1
+    D4["1"]:2
+    D5["2"]:2
+
+    style C3 fill:#DAC,stroke:#333,stroke-width:2px
+    C3 --&gt; D3
+
+    style D1 fill:#FFF
+    style D2 fill:#FFF
+    style D3 fill:#CFC
+    space:11
+    
+    E1["1"]:2
+    E2["3"]:2
+    E3["4"]:2
+    E4["5"]:2
+    space:1
+    E5["2"]:2
+
+    style D4 fill:#DAC,stroke:#333,stroke-width:2px
+    D4 --&gt; E1
+    
+    style E1 fill:#CFC
+    style E2 fill:#FFF
+    style E3 fill:#FFF
+    style E4 fill:#FFF
+
+    space:11
+    F1["1"]:2
+    F2["2"]:2
+    F3["3"]:2
+    F4["4"]:2
+    F5["5"]:2
+    space:1
+
+    style E5 fill:#DAC,stroke:#333,stroke-width:2px
+    E5 --&gt; F2
+    
+    style F1 fill:#FFF
+    style F2 fill:#CFC
+    style F3 fill:#FFF
+    style F4 fill:#FFF
+    style F5 fill:#FFF
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-triinsert-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Tri par insertion
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="tri-à-bulles" class="level2">
+<h2 class="anchored" data-anchor-id="tri-à-bulles">Tri à bulles</h2>
+<p>L’opération <span class="math inline">\(bulle(i)\)</span> est définie par :</p>
+<ul>
+<li>Pour <span class="math inline">\(j\)</span> de <span class="math inline">\(0\)</span> à <span class="math inline">\(i\)</span> :
+<ul>
+<li>si <span class="math inline">\(list[j] &gt; list[j+1]\)</span>, échanger <span class="math inline">\(list[j]\)</span> et <span class="math inline">\(list[j+1]\)</span>.</li>
+</ul></li>
+</ul>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<p>L’algorithme du <strong>tri à bulles</strong> est le suivant :</p>
+<ul>
+<li>Pour <span class="math inline">\(i\)</span> décroissant de <span class="math inline">\(n-2\)</span> à <span class="math inline">\(0\)</span> :
+<ul>
+<li>appliquer l’opération <span class="math inline">\(bulle(i)\)</span></li>
+</ul></li>
+</ul>
+<p>Le nom de <em>bulle</em> vient du fait que les grands éléments de la liste vont progressivement monter jusqu’à la fin de la liste. En particulier, le maximum de la liste sera remonté jusqu’à la dernière position après la première application de l’opération <span class="math inline">\(bulle\)</span>.</p>
+</section>
+<section id="tri-rapide-quicksort" class="level2">
+<h2 class="anchored" data-anchor-id="tri-rapide-quicksort">Tri rapide (Quicksort)</h2>
+<p>L’algorithme du tri rapide et le suivant, le tri fusion, sont intrinsèquement récursifs : nous allons appliquer l’algorithme récursivement sur des sous-listes pour obtenir la liste triée.</p>
+<p>L’algorithme du <strong>tri rapide</strong> est le suivant :</p>
+<ul>
+<li>On sélectionne un élément <span class="math inline">\(p\)</span> de la liste (par exemple <span class="math inline">\(list[0]\)</span>), que l’on appelle le <em>pivot</em>, et on l’extrait de la liste.</li>
+<li>On sépare la liste en deux sous-listes <span class="math inline">\(l_{inf}\)</span> et <span class="math inline">\(l_{sup}\)</span>, où <span class="math inline">\(l_{inf}\)</span> contient tous les éléments <span class="math inline">\(list[i] \leq p\)</span>, et <span class="math inline">\(l_{sup}\)</span> contient tous les éléments <span class="math inline">\(list[i] &gt; p\)</span>.</li>
+<li>On applique récursivement l’algorithme du tri rapide sur <span class="math inline">\(l_{inf}\)</span> et <span class="math inline">\(l_{sup}\)</span>. On suppose à présent qu’elles sont triées.</li>
+<li>La liste concaténée <span class="math inline">\(l_{inf} + [p] + l_{sup}\)</span> est la liste triée de sortie.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-quick" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-quick-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-quick">flowchart TD
+    A["t"] --&gt; Asplit(["split"])
+    Asplit --&gt; B["t_inf = { t[i] &amp;lt;= pivot }"]
+    Asplit --&gt; C["pivot"]
+    Asplit --&gt; D["t_sup = { t[i] &gt; pivot }"]
+    
+    B --&gt; Q1(["Quicksort"])
+    D --&gt; Q2(["Quicksort"])
+    C ---&gt; C2["pivot"]
+
+    Q1 --&gt; B2["sorted t_inf"]
+    Q2 --&gt; D2["sorted t_sup"]
+    B2 --&gt; A2["sorted t"]
+    C2 --&gt; A2
+    D2 --&gt; A2
+     A:::ultra_wide_unsorted
+     B:::wide_unsorted
+     D:::wide_unsorted
+     B2:::wide_sorted
+     D2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Asplit fill:#BBDEFB
+    style C fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-quick-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Tri rapide (Quicksort)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>L’algorithme du tri rapide a été inventé en 1960 par Tony Hoare (1934-), un chercheur britannique connu pour ses travaux fondateurs sur les langages de programmation, l’algorithmique, la vérification formelle (avec la <em>logique de Hoare</em>) et la programmation concurrente. Il a obtenu le Prix Turing en 1980 pour ses travaux sur les langages de programmation.</p>
+</blockquote>
+</section>
+<section id="tri-fusion-mergesort" class="level2">
+<h2 class="anchored" data-anchor-id="tri-fusion-mergesort">Tri fusion (Mergesort)</h2>
+<p>L’opération de <em>combinaison</em> de deux listes triées <span class="math inline">\(list_1\)</span>, <span class="math inline">\(list_2\)</span> est définie ainsi :</p>
+<ul>
+<li>On crée une liste <span class="math inline">\(l_{sort}\)</span>, initialement vide.</li>
+<li>Tant que <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span> sont non-vides :
+<ul>
+<li>Parmi les têtes <span class="math inline">\(x_1\)</span> et <span class="math inline">\(x_2\)</span> de <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>, on choisit le plus petit élément et on l’extrait de sa liste.<br>
+</li>
+<li>On ajoute cet élément en dernière position de <span class="math inline">\(l_{sort}\)</span>.<br>
+</li>
+</ul></li>
+<li>L’une des listes est à présent vide. On vide l’autre liste, en plaçant ses éléments tour à tour en dernière position de <span class="math inline">\(l_{sort}\)</span>.<br>
+</li>
+<li>On renvoie la liste <span class="math inline">\(l_{sort}\)</span>.</li>
+</ul>
+<p>On note <span class="math inline">\(n\)</span> le nombre d’éléments de la liste.</p>
+<p>L’algorithme du <strong>tri fusion</strong> est le suivant :</p>
+<ul>
+<li>Si <span class="math inline">\(n \leq 1\)</span>, on renvoie la liste inchangée.</li>
+<li>Sinon, on coupe la liste en deux sous-listes <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span> de taille <span class="math inline">\(\left\lfloor n/2\right\rfloor\)</span> et <span class="math inline">\(\left\lceil n/2 \right\rceil\)</span>.</li>
+<li>On applique récursivement l’algorithme du tri fusion sur <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>. On suppose à présent qu’elles sont triées.</li>
+<li>On utilise l’opération de combinaison sur les listes <span class="math inline">\(list_1\)</span> et <span class="math inline">\(list_2\)</span>. La liste <span class="math inline">\(l_{sort}\)</span> obtenue est une liste triée, c’est la sortie de l’algorithme.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-merge" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-merge">flowchart TD
+    A["list"]
+    A --&gt; B1["list_1"]
+    A --&gt; B2["list_2"]
+    
+    B1 --&gt; Q1(["Merge sort"])
+    B2 --&gt; Q2(["Merge sort"])
+
+    Q1 --&gt; C1["sorted list_1"]
+    Q2 --&gt; C2["sorted list_2"]
+    C1 --&gt; Amerge(["Combine"])
+    C2 --&gt; Amerge
+    Amerge --&gt; A2["sorted list"]
+     A:::ultra_wide_unsorted
+     B1:::wide_unsorted
+     B2:::wide_unsorted
+     C1:::wide_sorted
+     C2:::wide_sorted
+     A2:::ultra_wide_sorted
+    classDef wide_unsorted width:300px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef wide_sorted width:300px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    classDef ultra_wide_unsorted width:650px, display:flex, align-items:center, justify-content:center, fill:#FCC
+    classDef ultra_wide_sorted width:650px, display:flex, align-items:center, justify-content:center, fill:#CFC
+    style Q1 fill:#FFE0B2
+    style C2 fill:#CFC
+    style Q2 fill:#FFE0B2
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-merge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Tri fusion
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>Le tri fusion a été inventé par le chercheur hongrois et américain John Von Neumann (1903-1957) en 1945. Von Neumann est considéré comme un des plus grands scientifiques du XXème siècle, ayant apporté d’importantes contributions aux mathématiques, à la physique, à l’économie et à l’informatique. C’est un pionnier des fondements mathématiques de la mécanique quantique, de la théorie des jeux, des automates cellulaires et de l’analyse fonctionnelle. Il a travaillé sur le projet Manhattan pendant la Seconde Guerre mondiale, et on lui doit l’architecture des premiers ordinateurs programmables, dite <em>architecture de Von Neumann</em>.</p>
+</blockquote>
+</section>
+</section>
+<section id="partie-2-comparaisons" class="level1">
+<h1>Partie 2 : comparaisons</h1>
+<ol type="1">
+<li>Modifier la fonction <code>measure_algorithms</code> du module <code>tests</code> pour comparer le temps de calcul de chaque algorithme. Vous devez afficher les temps calculés dans la console.</li>
+</ol>
+<p>On dispose de la fonction <code>export_csv</code> dans le module <code>algorithm</code>, qui exporte les résultats de tests au format CSV.</p>
+<ol start="2" type="1">
+<li><p>Modifier la fonction <code>measure_algorithms</code> pour qu’elle génère un fichier au format CSV contenant les résultats de vos mesures.</p></li>
+<li><p>A l’aide de la librairie <strong>Matplotlib</strong>, écrire un programme <strong>Python</strong> qui affiche la courbe du temps de calcul de chaque algorithme en fonction de la taille de la liste. Conclure sur vos calculs de complexité.</p></li>
+<li><p>Eliminer les algorithmes les plus lents du jeu de tests, et comparer les algorithmes les plus rapides sur des listes plus grandes. Qu’observez-vous ?</p></li>
+</ol>
+</section>
+<section id="partie-3-bonus-implémentation-avec-des-listes-chaînées" class="level1">
+<h1>Partie 3 : (Bonus) Implémentation avec des listes chaînées</h1>
+<p>Implémenter les algorithmes de tri de ce TP, cette fois avec la structure <code>t_stack</code> du TP2. On adoptera cette fois une approche récursive.</p>
+<p>On pourra pour cela se donner des fonctions :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>T get_head<span class="op">(</span>t_list <span class="op">*</span>list<span class="op">);</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>t_list get_tail<span class="op">(</span>t_list <span class="op">*</span>list<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>où la <em>queue</em> (<em>tail</em>) désigne cette fois tous les éléments de la liste sauf le premier.</p>
+<p>Selon vous, quels algorithmes se prêtent mieux à une implémentation par liste chaînée ?</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
