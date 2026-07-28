@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ALSI51 Structures de données</title>
+<title>TP2 - Piles, files – ALSI51 Structures de données</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -177,13 +177,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#projet-de-fin-de-module" id="toc-projet-de-fin-de-module" class="nav-link active" data-scroll-target="#projet-de-fin-de-module">Projet de fin de module</a></li>
-  <li><a href="#dépôt-github-du-cours" id="toc-dépôt-github-du-cours" class="nav-link" data-scroll-target="#dépôt-github-du-cours">Dépôt Github du cours</a></li>
-  <li><a href="#a-lire" id="toc-a-lire" class="nav-link" data-scroll-target="#a-lire">A lire :</a></li>
-  <li><a href="#devoir-maison-dentraînement" id="toc-devoir-maison-dentraînement" class="nav-link" data-scroll-target="#devoir-maison-dentraînement">Devoir maison d’entraînement</a>
+  <li><a href="#objectif-du-tp" id="toc-objectif-du-tp" class="nav-link active" data-scroll-target="#objectif-du-tp"><strong>Objectif du TP</strong></a></li>
+  <li><a href="#partie-1-structure-de-pile" id="toc-partie-1-structure-de-pile" class="nav-link" data-scroll-target="#partie-1-structure-de-pile">Partie 1 : Structure de pile</a></li>
+  <li><a href="#partie-2-structure-de-file" id="toc-partie-2-structure-de-file" class="nav-link" data-scroll-target="#partie-2-structure-de-file">Partie 2 : Structure de file</a></li>
+  <li><a href="#partie-3-evaluation-dexpressions-en-notation-postfixée" id="toc-partie-3-evaluation-dexpressions-en-notation-postfixée" class="nav-link" data-scroll-target="#partie-3-evaluation-dexpressions-en-notation-postfixée">Partie 3 : Evaluation d’expressions en notation postfixée</a></li>
+  <li><a href="#partie-4-evaluation-dexpressions-en-notation-infixée" id="toc-partie-4-evaluation-dexpressions-en-notation-infixée" class="nav-link" data-scroll-target="#partie-4-evaluation-dexpressions-en-notation-infixée">Partie 4 : Evaluation d’expressions en notation infixée</a>
   <ul class="collapse">
-  <li><a href="#organisation-du-cours" id="toc-organisation-du-cours" class="nav-link" data-scroll-target="#organisation-du-cours">Organisation du cours</a></li>
+  <li><a href="#algorithme-shunting-yard" id="toc-algorithme-shunting-yard" class="nav-link" data-scroll-target="#algorithme-shunting-yard"><strong>Algorithme Shunting-yard</strong></a></li>
   </ul></li>
+  <li><a href="#partie-5-bonus" id="toc-partie-5-bonus" class="nav-link" data-scroll-target="#partie-5-bonus">Partie 5 : Bonus</a></li>
   </ul>
 </nav>
     </div>
@@ -192,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ALSI51 Structures de données</h1>
+<h1 class="title">TP2 - Piles, files</h1>
 </div>
 
 
@@ -209,66 +211,109 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="projet-de-fin-de-module" class="level1">
-<h1>Projet de fin de module</h1>
-<p>Le sujet de projet est publié <a href="./projet_compilateur.html">ici</a>.</p>
-<p>Le projet est à déposer au format <strong>.zip</strong> sur <a href="https://moodle.myefrei.fr/mod/assign/view.php?id=124400">cette page Moodle</a> pour le <strong>vendredi 6 février, 23h59</strong>.</p>
-<p>Alternativement, vous pouvez m’envoyer par mail le lien vers votre dépôt Github, ou m’ajouter en collaborateur si celui-ci est privé.</p>
-<!-- # Prochaine séance (16/01) :
-
-Nous commencerons la séance par un **CC** d'une heure, qui portera sur les arbres binaires, à la manière du TP4.
-
-Lisez bien le [cours 4](cm4-trees.qmd) que je viens de publier.
-Il n'y a encore une fois rien à retenir par coeur, mais il faut avoir compris le principe des arbres binaires, comment les implémenter, et savoir coder des fonctions de parcours récursives.
-
-Vous pouvez vous entraîner au CC en reprenant les parties 1 et 3 du TP4.
-
-N'hésitez pas à me contacter si vous avez des questions. -->
+<section id="objectif-du-tp" class="level2">
+<h2 class="anchored" data-anchor-id="objectif-du-tp"><strong>Objectif du TP</strong></h2>
+<p>Nous allons coder un <strong>évaluateur d’expressions arithmétiques</strong>, en notation <em>infixée</em> (la notation mathématique classique), c’est-à-dire un programme qui reçoit une chaîne de caractères représentant une expression arithmétique en entrée, et qui renvoie le résultat de son évaluation.<br>
+Exemple : pour la chaîne <code>"2 * (3 + 4) - (5 + 1)"</code> en entrée, le programme doit renvoyer <code>8</code>.</p>
+<p>Pour obtenir ce résultat, nous allons utiliser (en partie 4) l’algorithme <em>Shunting-yard</em> pour convertir l’expression vers la notation <em>postfixée</em>, et nous l’évaluons avec un algorithme spécifique (en partie 3). Les expressions en notation postfixée (présentée en partie 3) ont l’avantage d’être simples à évaluer, et ce ne pas nécessiter de parenthèses.</p>
+<p>Pour représenter les formules, nous utiliserons :</p>
+<ul>
+<li>Un type <code>operator_type</code>, représentant les opérateurs, donné dans le fichier <code>operator.h</code>.</li>
+<li>Un type <code>t_token</code>, qui représente les <em>tokens</em> (entités), à savoir les nombres, opérateurs et parenthèses. Ce type est donné dans le fichier <code>token.h</code> et déjà implémenté dans <code>token.c</code>.</li>
+<li>Un type <code>t_expr</code>, qui représente une expression avec une structure <em>file</em> contenant des tokens.</li>
+</ul>
 </section>
-<section id="dépôt-github-du-cours" class="level1">
-<h1>Dépôt Github du cours</h1>
-<p>La base de code pour chaque TP et pour le projet est disponible sur la page Github du cours :</p>
-<p><a href="https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees">https://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees</a></p>
-<p>Pour travailler sur un TP, téléchargez ou clonez l’ensemble du dépôt, et ouvrez le dossier correspondant dans CLion.</p>
-</section>
-<section id="a-lire" class="level1">
-<h1>A lire :</h1>
+<section id="partie-1-structure-de-pile" class="level2">
+<h2 class="anchored" data-anchor-id="partie-1-structure-de-pile">Partie 1 : Structure de pile</h2>
+<p>Une <em>pile</em> (<em>stack</em> en anglais) est une structure de données linéaire de type <em>Last In, First Out</em>, ou LIFO, c’est-à-dire qu’on accède aux éléments par ordre inverse de l’ordre d’ajout. On dispose de trois opérations :</p>
+<ul>
+<li>Déterminer si la pile est vide</li>
+<li><em>Empiler</em> un élément : l’ajouter à la pile, à l’avant. On appelle souvent cette opération <em>push</em>.</li>
+<li><em>Dépiler</em> un élément : obtenir le dernier élément à avoir été ajouté (celui à l’avant), et le retirer de la structure. On appelle souvent cette opération <em>pop</em>.</li>
+</ul>
 <blockquote class="blockquote">
-<ul>
-<li>Cours : <a href="./cm0-introduction.html">Introduction aux structures de données</a>, et introduction à la complexité algorithmique <br><br></li>
-<li>Cours 1, partie 1 : <a href="./cm1-pt1-tableaux_dynamiques.html">Tableaux dynamiques</a> et explication de l’implémentation <br><br></li>
-<li>Cours 1, partie 2 : <a href="./cm1-pt2-listes_chainees.html">Listes chaînées</a>, illustration, implémentation et comparaison <br><br></li>
-<li>Cours 2 : <a href="./cm2-piles_files.html">Piles, files</a>, illustration, implémentation et applications <br><br></li>
-<li>Cours 3 : <a href="./cm3-algorithmes_de_tri.html">Algorithmes de tri</a>, implémentation, calcul des complexités, comparaison <br><br></li>
-<li>Cours 4 : <a href="./cm4-trees.html">Arbres binaires</a>, arbres binaires de recherche, arbres équilibrés</li>
-</ul>
+<p>Les piles sont utilisées dans de nombreux algorithmes. Un exemple important est l’usage d’une <em>pile d’appel</em> (<em>call stack</em>) par la machine lors de l’exécution d’un code : lors d’un appel de fonction, les variables locales à la fonction sont placées sur le haut de la pile (avec une opération push), et quand l’appel est terminé les variables de la fonction appelante sont retrouvées en dépilant (avec une opération pop). En langage C, on désigne cette pile d’appel simplement par <em>la pile</em> (<em>stack</em>), par opposition à la mémoire destinée aux allocations dynamiques, appelée <em>le tas</em> (<em>heap</em>).</p>
 </blockquote>
+<ol type="1">
+<li><p>Implémenter une structure de pile en utilisant l’implémentation du type <code>t_list</code> donnée dans le fichier <code>list_double-ended.h</code> et implémentée dans <code>list_double-ended.c</code>. Une <code>t_list</code> contient ici des valeurs de type <code>t_token</code> (ou <code>T</code>).<br>
+L’interface de la structure <code>t_stack</code> est donnée dans le fichier <code>stack.h</code>.<br>
+On veillera à n’utiliser que <strong>les fonctions de la bibliothèque</strong> <code>t_list</code> (<code>get</code>, <code>push_front</code>, <code>delete_at</code>, …) <strong>sans utiliser</strong> les attributs internes de l’objet <code>list</code> (<code>head</code>, <code>size</code>, <code>capacity</code>).</p></li>
+<li><p>Tester les fonctions de la bibliothèque dans le fichier <code>main.c</code>.</p></li>
+</ol>
 </section>
-<section id="devoir-maison-dentraînement" class="level1">
-<h1>Devoir maison d’entraînement</h1>
-<p><a href="documents/DM_entrainement.pdf">Sujet du devoir maison</a></p>
-<p>Ce devoir est facultatif, mais c’est une bonne manière de réviser pour les CC. Les CC seront bien sûr plus courts.</p>
-<p>N’hésitez pas à me contacter si vous avez besoin d’aide pour le devoir maison, ou envie d’un retour sur votre travail.</p>
-<section id="organisation-du-cours" class="level2">
-<h2 class="anchored" data-anchor-id="organisation-du-cours">Organisation du cours</h2>
+<section id="partie-2-structure-de-file" class="level2">
+<h2 class="anchored" data-anchor-id="partie-2-structure-de-file">Partie 2 : Structure de file</h2>
+<p>Une <em>file</em> (<em>queue</em> en anglais) est une structure de données linéaire, de type <em>First, In First Out</em>, ou FIFO, c’est-à-dire qu’on accède aux éléments par ordre d’ajout. On dispose de nouveau des trois opérations :</p>
 <ul>
-<li>Enseignant : Alexandre Blanché</li>
-<li><a href="documents/CV_CU_Syllabus_ALSI51-6.pdf">Syllabus</a></li>
-<li>5x CTP 3.5h</li>
-<li>3x PRJ 3.5h suivi de projet</li>
-<li>Evaluation
-<ul>
-<li>50% Evaluations TP
-<ul>
-<li>20% Evaluation 1</li>
-<li>30% Evaluation 2</li>
-</ul></li>
-<li>50% Projet</li>
-</ul></li>
+<li>Déterminer si la file est vide</li>
+<li><em>Enfiler</em> un élément (<em>push</em>) : l’ajouter à la file, à l’arrière.</li>
+<li><em>Défiler</em> un élément (<em>pop</em>) : obtenir l’élément à l’avant de la file, et le retirer de la structure.</li>
 </ul>
-
-
+<ol type="1">
+<li><p>Implémenter une structure de file en utilisant l’implémentation du type <code>t_list</code> donnée dans le fichier <code>list_double-ended.h</code>. L’interface de la structure <code>t_queue</code> est donnée dans le fichier <code>queue.h</code>.<br>
+On veillera de nouveau à n’utiliser que les fonctions de la bibliothèque <code>t_list</code>, sans utiliser les attributs internes de l’objet <code>list</code>.</p></li>
+<li><p>Tester les fonctions de la bibliothèque dans le fichier <code>main.c</code>.</p></li>
+</ol>
 </section>
+<section id="partie-3-evaluation-dexpressions-en-notation-postfixée" class="level2">
+<h2 class="anchored" data-anchor-id="partie-3-evaluation-dexpressions-en-notation-postfixée">Partie 3 : Evaluation d’expressions en notation postfixée</h2>
+<p>On souhaite implémenter dans un premier temps une calculatrice d’expressions arithmétiques en notation postfixée (<em>notation polonaise inversée</em>, ou reverse Polish notation, <em>RPN</em>), qui a l’avantage de ne pas nécessiter de parenthèses.</p>
+<p>Une expression en notation <em>postfixée</em> s’écrit à la manière de :</p>
+<pre><code>3 4 5 + 6 + *</code></pre>
+<p>Cette expression s’évalue à 3 * ((4 + 5) + 6) = 45.<br>
+Pour évaluer cette expression, on avance jusqu’au premier opérateur, qui est <code>+</code>. On prend les deux entiers à sa gauche, <code>4</code> et <code>5</code>, on calcule <code>4 + 5 = 9</code>, et on remplace <code>4 5 +</code> dans l’expression par <code>9</code>.<br>
+On a à présent l’expression <code>3 9 6 + *</code>. On trouve l’opérateur <code>+</code>, on calcule donc <code>9 + 6</code>, qui vaut <code>15</code>. On a l’expression <code>3 15 *</code>, donc on calcule <code>3 * 15</code>, qui vaut <code>45</code>. L’expression ne contient plus qu’un seul entier, c’est son résultat.<br>
+Une telle expression ne contient pas de parenthèses.</p>
+<ol type="1">
+<li><p>Implémenter les fonctions <code>is_empty_expr</code>, <code>add_token</code>, <code>get_next_token</code> et <code>print_expr</code>, déclarées dans le fichier <code>expr.h</code>, dans le fichier <code>expr.c</code>.</p></li>
+<li><p>Tester les fonctions précédentes.<br>
+On dispose pour cela d’une fonction <code>parse_expr</code>, déclarée dans <code>expr.h</code>, qui prend en entrée une chaîne de caractères représentant une expression, et renvoie une valeur de type <code>t_expr</code> représentant cette expression.</p></li>
+<li><p>Ecrire la fonction <code>eval_rpn</code> dans le fichier <code>expr.c</code>. Cette fonction prend en entrée une expression en notation postfixée, l’évalue et renvoie son résultat.<br>
+La fonction doit écrire un message d’erreur si l’expression n’est pas bien formée.</p></li>
+</ol>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+<section id="partie-4-evaluation-dexpressions-en-notation-infixée" class="level2">
+<h2 class="anchored" data-anchor-id="partie-4-evaluation-dexpressions-en-notation-infixée">Partie 4 : Evaluation d’expressions en notation infixée</h2>
+<section id="algorithme-shunting-yard" class="level3">
+<h3 class="anchored" data-anchor-id="algorithme-shunting-yard"><strong>Algorithme Shunting-yard</strong></h3>
+<p>L’algorithme Shunting-yard permet de convertir une expression arithmétique écrite en notation infixée en notation postfixée.</p>
+<blockquote class="blockquote">
+<p>L’algorithme <em>Shunting-yard</em> (littéralement “de la gare de triage”) a été inventé par Edsger Dijkstra (1930-2002) en 1961. Dijkstra est un mathématicien et informaticien néerlandais et un grand nom de l’algorithmique, notamment via l’algorithme de calcul de plus court chemin dans un graphe qui porte son nom. Il a obtenu le Prix Turing (souvent considéré comme le “prix Nobel d’informatique”) en 1972 pour ses travaux sur l’algorithmique et les structures de données.</p>
+</blockquote>
+<p>Les tokens <code>(</code> et <code>)</code> (parenthèses ouvrante et fermante) sont ajoutés à l’ensemble des symboles autorisés. L’algorithme utilise une pile appelée <em>op_stack</em> qui stocke des opérateurs et des parenthèses, et une file <em>output_queue</em> qui stocke des nombres et des opérateurs (pas de parenthèses).</p>
+<p><strong>Algorithme</strong></p>
+<ul>
+<li>Pour chaque token de l’expression d’entrée :
+<ul>
+<li>Si le token est un nombre, enfiler ce nombre à <em>output_queue</em>.</li>
+<li>Si le token est une parenthèse ouvrante <code>"("</code>, empiler ce token sur <em>op_stack</em>.</li>
+<li>Si le token est une parenthèse fermante <code>")"</code>, alors dépiler les opérateurs de <em>op_stack</em> et les enfiler sur <em>output_queue</em>, jusqu’à trouver une parenthèse ouvrante <code>"("</code>. Cette parenthèse ouvrante est dépilée de <em>op_stack</em> mais pas enfilée.</li>
+<li>Si le token est un opérateur <em>op1</em>, alors tant qu’il y a un opérateur <em>op2</em> en premier élément de <em>op_stack</em> qui est <strong>prioritaire</strong> sur <em>op1</em>, dépiler <em>op2</em> de <em>op_stack</em> et l’enfiler sur <em>output_queue</em>. Ensuite, empiler <em>op1</em> sur <em>op_stack</em>.<br>
+On dit que <em>op2</em> est <em>prioritaire</em> sur <em>op1</em> si <em>op1</em> = <code>+</code> ou <code>-</code>, ou si <em>op2</em> = <code>/</code>.</li>
+</ul></li>
+<li>Une fois toute l’expression lue, dépiler tous les opérateurs restants de <em>op_stack</em> et les enfiler sur <em>output_queue</em>. Si l’on rencontre une parenthèse, c’est que l’expression était incorrectement parenthésée.</li>
+<li>On renvoie la file <em>output_queue</em>.</li>
+</ul>
+<ol start="2" type="1">
+<li><p>Implémenter la fonction <code>takes_priority</code> dans le fichier <code>operator.c</code>, qui permet de comparer la priorité de deux opérateurs.</p></li>
+<li><p>Implémenter la fonction <code>shunting_yard</code> dans le fichier <code>expr.c</code>, qui exécute l’algorithme Shunting-yard sur une expression d’entrée en notation infixée et renvoie une expression en notation postfixée.</p></li>
+<li><p>Implémenter la fonction <code>eval_expr</code> dans <code>expr.c</code>, qui prend une expression de type <code>t_expr</code> en notation infixée en entrée et renvoie le résultat de son évaluation.</p></li>
+<li><p>Implémenter la fonction <code>eval</code> dans <code>expr.c</code>, qui prend en entrée une chaîne de caractères représentant une expression arithmétique en notation infixée, et renvoie le résultat de son évaluation.</p></li>
+</ol>
+<!-- <div style="page-break-before:always"></div> -->
+</section>
+</section>
+<section id="partie-5-bonus" class="level2">
+<h2 class="anchored" data-anchor-id="partie-5-bonus">Partie 5 : Bonus</h2>
+<ol type="1">
+<li><p>Ajouter l’opérateur <code>^</code> d’exponentiation.<br>
+Lorsque vous modifierez la fonction <code>takes_priority</code>, notez que cet opérateur est prioritaire sur tous les autres, et doit être parenthésé à droite : a ^ b ^ c est égal à a ^ (b ^ c).</p></li>
+<li><p>Effacer et réécrire la fonction de parsing <code>parse_expr</code>. Cette fonction prend en entrée une chaîne de caractères (type <code>char *</code>) et renvoie l’expression qu’elle représente au type <code>t_expr</code>.<br>
+La fonction fournie dans le sujet gère le cas du <code>-</code> unaire pour représenter les nombres négatifs. Vous pouvez commencer par supposer que tous les nombres de l’expression seront positifs ou nuls.</p></li>
+</ol>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -345,7 +390,7 @@ N'hésitez pas à me contacter si vous avez des questions. -->
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/AlexandreBlanche-Efrei\.github\.io\/ALSI51-Structures_de_donnees\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
