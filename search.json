@@ -417,7 +417,7 @@
     "href": "index.html",
     "title": "ALSI51 Structures de données",
     "section": "",
-    "text": "Le sujet de projet est publié ici.\nLe projet est à déposer au format .zip sur cette page Moodle pour le vendredi 6 février, 23h59.\nAlternativement, vous pouvez m’envoyer par mail le lien vers votre dépôt Github, ou m’ajouter en collaborateur si celui-ci est privé."
+    "text": "La base de code pour chaque TP et pour le projet est disponible sur la page Github du cours :\nhttps://github.com/AlexandreBlanche-Efrei/ALSI51-Structures_de_donnees\nPour travailler sur un TP : - Téléchargez ou clonez l’ensemble du dépôt sur votre machine - Ouvrez le dossier correspondant au TP (ex : TP1_listes_dynamiques/code_sujet) dans CLion."
   },
   {
     "objectID": "index.html#organisation-du-cours",
