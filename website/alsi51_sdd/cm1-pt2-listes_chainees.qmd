@@ -314,6 +314,9 @@ void push_back(t_list *list, int val) {
     t_cell *newcell = create_cell(val);
     list->tail->next = newcell;
     list->tail = newcell;
+    if (list->head == NULL) {
+        list->head = newcell;
+    }
     list->size++;
 }
 ```

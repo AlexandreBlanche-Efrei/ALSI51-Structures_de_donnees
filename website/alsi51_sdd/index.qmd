@@ -25,10 +25,11 @@ Pour travailler sur un TP :
 > - Rappels : [Le langage C](rappels_C.qmd)
 > - Cours : [Introduction aux structures de données](cm0-introduction.qmd), et introduction à la complexité algorithmique
 > <br><br>
-<!-- > - Cours 1, partie 1 : [Tableaux dynamiques](cm1-pt1-tableaux_dynamiques.qmd) et explication de l'implémentation
+> - Cours 1, partie 1 : [Tableaux dynamiques](cm1-pt1-tableaux_dynamiques.qmd) et explication de l'implémentation
 > <br><br>
 > - Cours 1, partie 2 : [Listes chaînées](cm1-pt2-listes_chainees.qmd), illustration, implémentation et comparaison
 > <br><br>
+<!-- 
 > - Cours 2 : [Piles, files](cm2-piles_files.qmd), illustration, implémentation et applications
 > <br><br>
 > - Cours 3 : [Algorithmes de tri](cm3-algorithmes_de_tri.qmd), implémentation, calcul des complexités, comparaison
