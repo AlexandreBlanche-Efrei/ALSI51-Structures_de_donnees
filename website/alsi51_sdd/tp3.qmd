@@ -116,7 +116,7 @@ Ou de manière équivalente :
     - insérer $x$ dans $aux$ de manière à ce qu'elle reste triée.
 - $aux$ est la liste triée renvoyée.
 
-On également implémenter cet algorithme *en place*, c'est-à-dire dans un seul tableau, sans allouer de mémoire supplémentaire. Pour cela, on pourra utiliser les $i$ premières cases du tableau pour représenter $aux$, et les $n - i$ dernières cases pour la partie restante de $list$.
+On peut également implémenter cet algorithme *en place*, c'est-à-dire dans un seul tableau, sans allouer de mémoire supplémentaire. Pour cela, on pourra utiliser les $i$ premières cases du tableau pour représenter $aux$, et les $n - i$ dernières cases pour la partie restante de $list$.
 
 ```{mermaid}
 %%| fig-align: center

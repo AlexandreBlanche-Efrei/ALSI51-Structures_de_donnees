@@ -586,8 +586,8 @@ Après une insertion d'une valeur dans le fils $T_{left}$ ou $T_{right}$ d'un ar
 	- Si $bf(T_{right}) = -1$: **rotation à gauche** de $T$
 	- Sinon si $bf(T_{right}) = 1$: **rotation à droite** de $T_{right}$ puis **rotation à gauche** de $T$
 - Sinon si $bf(T) = 2$:
-	- Si $bf(T_{right}) = -1$: **rotation à gauche** de $T_{left}$ puis **rotation à droite** de $T$
-	- Sinon si $bf(T_{right}) = 1$: **rotation à droite** de $T$
+	- Si $bf(T_{left}) = -1$: **rotation à gauche** de $T_{left}$ puis **rotation à droite** de $T$
+	- Sinon si $bf(T_{left}) = 1$: **rotation à droite** de $T$
 - Sinon, on ne fait rien.
 
 Il faut appliquer ces opérations en remontant le long du chemin entre la racine et le noeud où a eu lieu l'insertion.
