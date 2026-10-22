@@ -233,7 +233,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#instructions-statements" id="toc-instructions-statements" class="nav-link" data-scroll-target="#instructions-statements">Instructions (<em>statements</em>)</a></li>
   <li><a href="#indentation" id="toc-indentation" class="nav-link" data-scroll-target="#indentation">Indentation</a></li>
   </ul></li>
-  <li><a href="#modalités-de-rendu" id="toc-modalités-de-rendu" class="nav-link" data-scroll-target="#modalités-de-rendu">Modalités de rendu</a></li>
   </ul>
 </nav>
     </div>
@@ -259,24 +258,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="callout callout-style-default callout-note callout-titled" title="Modalités du projet">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Modalités du projet
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li>Projet à réaliser en trinômes</li>
-<li>Trois séances en classe : 11/12, 16/01, 27/01</li>
-<li>Soutenance au cours de la dernière séance, sur le projet en cours de complétion</li>
-<li>Rendu du code la semaine du 06/02</li>
-</ul>
-</div>
-</div>
+<!-- ::: {.callout-note title="Modalités du projet"}
+- Projet à réaliser en trinômes
+- Trois séances en classe : 11/12, 16/01, 27/01
+- Soutenance au cours de la dernière séance, sur le projet en cours de complétion
+- Rendu du code la semaine du 06/02
+::: -->
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <section id="objectif-du-projet" class="level2">
@@ -296,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="fig-code" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-code-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div id="61b71b3c" class="cell" data-execution_count="1">
+<div id="6be7cddd" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="dv">0</span></span>
@@ -343,7 +330,7 @@ Figure&nbsp;1: Exemple de code en mini-langage
 </div>
 <div class="callout-body-container callout-body">
 <p>On se donne le code source suivant :</p>
-<div id="bc1c4479" class="cell" data-execution_count="2">
+<div id="56def141" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> a</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span></span>
@@ -485,7 +472,7 @@ Figure&nbsp;3
 </div>
 <div class="callout-body-container callout-body">
 <p>L’exécution de l’AST de la <a href="#fig-ast" class="quarto-xref">Figure&nbsp;2</a> produit le résultat suivant :</p>
-<div id="71f984d2" class="cell" data-execution_count="3">
+<div id="f7f57430" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span></span>
@@ -494,7 +481,7 @@ Figure&nbsp;3
 </div>
 <p>Les nombres sont affichés par l’instruction <code>print</code>, et la flèche finale représente la valeur renvoyée en sortie de l’exécution par l’instruction <code>return</code>.</p>
 <p>De même, l’exécution du code d’exemple :</p>
-<div id="cf5c9df5" class="cell" data-execution_count="4">
+<div id="e73541c8" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">1</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> a</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span></span>
@@ -503,7 +490,7 @@ Figure&nbsp;3
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> a</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>produit le résultat suivant :</p>
-<div id="59fe253b" class="cell" data-execution_count="5">
+<div id="34a4bf11" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">-&gt;</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -636,7 +623,7 @@ Quelques exemples d’extensions possibles :</p>
 <pre><code>[var] = [expr]</code></pre>
 <p>Exemple :</p></li>
 </ul>
-<div id="8be2b8dd" class="cell" data-execution_count="6">
+<div id="370ae856" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> <span class="dv">3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
@@ -644,7 +631,7 @@ Quelques exemples d’extensions possibles :</p>
 <pre><code>print [expr]</code></pre>
 <p>Exemple :</p></li>
 </ul>
-<div id="3d5375bd" class="cell" data-execution_count="7">
+<div id="37b37a72" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span> <span class="dv">2</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
@@ -655,7 +642,7 @@ else
     [prog_if_false]</code></pre>
 <p>Exemple :</p></li>
 </ul>
-<div id="8c91d4d1" class="cell" data-execution_count="8">
+<div id="c61787fb" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> a <span class="op">==</span> <span class="dv">0</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
@@ -667,7 +654,7 @@ else
     [block]</code></pre>
 <p>Exemple :</p></li>
 </ul>
-<div id="f8c1d88e" class="cell" data-execution_count="9">
+<div id="3a55e7d8" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> x <span class="op">!=</span> <span class="dv">0</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x <span class="op">-</span> <span class="dv">1</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -676,14 +663,14 @@ else
 <section id="indentation" class="level2">
 <h2 class="anchored" data-anchor-id="indentation">Indentation</h2>
 <p>A chaque entrée dans un bloc de <code>if</code>, <code>else</code> ou <code>while</code>, on indente le code du bloc avec 4 espaces. Cette convention est importante si vous souhaitez écrire l’analyseur lexical.</p>
-</section>
-</section>
-<section id="modalités-de-rendu" class="level1">
-<h1>Modalités de rendu</h1>
-<p>Le projet est à déposer au format <strong>.zip</strong> sur <a href="https://moodle.myefrei.fr/mod/assign/view.php?id=124400">cette page Moodle</a> pour le <strong>vendredi 6 février, 23h59</strong>.</p>
-<p>Alternativement, vous pouvez m’envoyer par mail le lien vers votre dépôt Github, ou m’ajouter en collaborateur si celui-ci est privé.</p>
+<!-- # Modalités de rendu
+
+Le projet est à déposer au format **.zip** sur [cette page Moodle](https://moodle.myefrei.fr/mod/assign/view.php?id=124400) pour le **vendredi 6 février, 23h59**.
+
+Alternativement, vous pouvez m'envoyer par mail le lien vers votre dépôt Github, ou m'ajouter en collaborateur si celui-ci est privé. -->
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
