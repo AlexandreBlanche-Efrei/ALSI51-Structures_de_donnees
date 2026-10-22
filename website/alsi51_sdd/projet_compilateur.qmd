@@ -5,12 +5,12 @@ format:
     code-fold: false
 ---
 
-::: {.callout-note title="Modalités du projet"}
+<!-- ::: {.callout-note title="Modalités du projet"}
 - Projet à réaliser en trinômes
 - Trois séances en classe : 11/12, 16/01, 27/01
 - Soutenance au cours de la dernière séance, sur le projet en cours de complétion
 - Rendu du code la semaine du 06/02
-:::
+::: -->
 
 # Introduction
 
@@ -359,8 +359,8 @@ Quelques exemples d'extensions possibles :
 A chaque entrée dans un bloc de ``if``, ``else`` ou ``while``, on indente le code du bloc avec 4 espaces. Cette convention est importante si vous souhaitez écrire l'analyseur lexical.
 
 
-# Modalités de rendu
+<!-- # Modalités de rendu
 
 Le projet est à déposer au format **.zip** sur [cette page Moodle](https://moodle.myefrei.fr/mod/assign/view.php?id=124400) pour le **vendredi 6 février, 23h59**.
 
-Alternativement, vous pouvez m'envoyer par mail le lien vers votre dépôt Github, ou m'ajouter en collaborateur si celui-ci est privé.
+Alternativement, vous pouvez m'envoyer par mail le lien vers votre dépôt Github, ou m'ajouter en collaborateur si celui-ci est privé. -->
